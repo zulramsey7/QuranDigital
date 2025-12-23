@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from "sonner";
 
 interface PrayerTimes {
   Fajr: string;
@@ -63,8 +64,8 @@ export function usePrayerTimes(latitude: number, longitude: number) {
         if (!response.ok) throw new Error('Failed to fetch prayer times');
         
         const data: PrayerTimesResponse = await response.json();
-        
         const timings = data.data.timings;
+        
         const prayerList: PrayerInfo[] = [
           { name: 'Fajr', nameKey: 'fajr', time: timings.Fajr, timestamp: parseTime(timings.Fajr) },
           { name: 'Sunrise', nameKey: 'sunrise', time: timings.Sunrise, timestamp: parseTime(timings.Sunrise) },
@@ -75,11 +76,9 @@ export function usePrayerTimes(latitude: number, longitude: number) {
         ];
         
         setPrayerTimes(prayerList);
-        
         const hijri = data.data.date.hijri;
         setHijriDate(`${hijri.day} ${hijri.month.en} ${hijri.year}H`);
         setGregorianDate(data.data.date.readable);
-        
         setError(null);
       } catch (err) {
         setError('Failed to load prayer times');
@@ -97,6 +96,7 @@ export function usePrayerTimes(latitude: number, longitude: number) {
   return { prayerTimes, hijriDate, gregorianDate, loading, error };
 }
 
+// Menukar string "HH:mm" kepada objek Date yang betul
 function parseTime(timeStr: string): Date {
   const [hours, minutes] = timeStr.split(':').map(Number);
   const date = new Date();
@@ -104,27 +104,65 @@ function parseTime(timeStr: string): Date {
   return date;
 }
 
+// Logik utama untuk pengiraan baki masa dan notifikasi Azan
 export function getNextPrayer(prayers: PrayerInfo[]): { prayer: PrayerInfo | null; countdown: string } {
+  if (!prayers || prayers.length === 0) return { prayer: null, countdown: '--:--:--' };
+
   const now = new Date();
-  
+  let targetPrayer: PrayerInfo | null = null;
+  let diff = 0;
+
+  // 1. Cari solat seterusnya untuk hari ini
   for (const prayer of prayers) {
     if (prayer.timestamp > now) {
-      const diff = prayer.timestamp.getTime() - now.getTime();
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
-      return {
-        prayer,
-        countdown: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-      };
+      targetPrayer = prayer;
+      diff = prayer.timestamp.getTime() - now.getTime();
+      break;
     }
   }
-  
-  // If all prayers have passed, return first prayer of next day
-  if (prayers.length > 0) {
-    return { prayer: prayers[0], countdown: '--:--:--' };
+
+  // 2. Jika semua solat hari ini dah lepas (selepas Isyak), ambil Fajr esok
+  if (!targetPrayer) {
+    targetPrayer = prayers[0];
+    const tomorrowFajr = new Date(prayers[0].timestamp);
+    tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
+    diff = tomorrowFajr.getTime() - now.getTime();
   }
-  
-  return { prayer: null, countdown: '--:--:--' };
+
+  // 3. AZAN ALERT: Jika baki masa kurang 1 saat (Waktu Azan Tiba)
+  // Kita guna range 0-1000ms untuk trigger sekali sahaja
+  if (diff > 0 && diff <= 1000) {
+    triggerAzanAlert(targetPrayer.name);
+  }
+
+  return {
+    prayer: targetPrayer,
+    countdown: formatCountdown(diff)
+  };
+}
+
+// Fungsi Notifikasi & Getaran
+function triggerAzanAlert(prayerName: string) {
+  // Bunyi Notifikasi (Sistem default browser toast)
+  toast.success(`Waktu Azan ${prayerName} telah tiba!`, {
+    description: `Marilah menuju kejayaan.`,
+    duration: 10000, // Papar selama 10 saat
+  });
+
+  // Getaran telefon (jika disokong)
+  if ("vibrate" in navigator) {
+    navigator.vibrate([500, 200, 500, 200, 500]);
+  }
+}
+
+// Helper untuk format masa HH:mm:ss
+function formatCountdown(ms: number): string {
+  if (ms < 0) return "00:00:00";
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+
+  return [hours, minutes, seconds]
+    .map(val => val.toString().padStart(2, '0'))
+    .join(':');
 }

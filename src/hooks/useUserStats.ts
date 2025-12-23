@@ -30,27 +30,30 @@ export function useUserStats() {
   const [stats, setStats] = useState<UserStats>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      const parsed = JSON.parse(saved) as UserStats;
-      const today = getTodayDate();
-      
-      // LOGIK RESET HARIAN & STREAK
-      if (parsed.lastActiveDate !== today) {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
+      try {
+        const parsed = JSON.parse(saved) as UserStats;
+        const today = getTodayDate();
         
-        if (parsed.lastActiveDate === yesterdayStr) {
-          // Jika semalam aktif, tambah streak
-          parsed.dailyStreak += 1;
-        } else {
-          // Jika skip hari, streak kembali ke 0 (atau 1 jika baru mula hari ini)
-          parsed.dailyStreak = 0;
+        // LOGIK RESET HARIAN & STREAK
+        if (parsed.lastActiveDate !== today) {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          
+          if (parsed.lastActiveDate === yesterdayStr) {
+            // Kekalkan streak sedia ada (streak dikira bertambah bila ada aktiviti hari ini)
+          } else if (parsed.lastActiveDate !== '') {
+            // Jika skip lebih dari sehari, reset streak ke 0
+            parsed.dailyStreak = 0;
+          }
+          
+          parsed.totalZikirToday = 0;
+          parsed.lastActiveDate = today;
         }
-        
-        parsed.totalZikirToday = 0;
-        parsed.lastActiveDate = today;
+        return parsed;
+      } catch (e) {
+        return getDefaultStats();
       }
-      return parsed;
     }
     return getDefaultStats();
   });
@@ -65,11 +68,15 @@ export function useUserStats() {
     setStats(prev => {
       if (prev.surahsRead.includes(surahNumber)) return prev;
       const today = getTodayDate();
+      
+      // Jika streak adalah 0, jadikan 1. Jika hari baru bermula, kita kekalkan streak lama.
+      const newStreak = prev.dailyStreak === 0 ? 1 : prev.dailyStreak;
+
       return {
         ...prev,
         surahsRead: [...prev.surahsRead, surahNumber],
         lastActiveDate: today,
-        dailyStreak: prev.dailyStreak === 0 ? 1 : prev.dailyStreak
+        dailyStreak: newStreak
       };
     });
   }, []);
@@ -96,14 +103,16 @@ export function useUserStats() {
         });
       }
 
-      // Simpan sejarah 30 hari sahaja untuk jimat memori browser
       if (updatedHistory.length > 30) updatedHistory = updatedHistory.slice(-30);
+
+      // Logik Streak: Jika baru buat aktiviti hari ini, pastikan streak minimum 1
+      const newStreak = prev.dailyStreak === 0 ? 1 : prev.dailyStreak;
 
       return {
         ...prev,
         totalZikirToday: prev.totalZikirToday + count,
         lastActiveDate: today,
-        dailyStreak: prev.dailyStreak === 0 ? 1 : prev.dailyStreak,
+        dailyStreak: newStreak,
         zikirHistory: updatedHistory,
       };
     });
@@ -118,14 +127,16 @@ export function useUserStats() {
   const resetStats = useCallback(() => {
     if (confirm("Adakah anda pasti mahu memadam semua rekod aktiviti?")) {
       setStats(getDefaultStats());
+      localStorage.removeItem(STORAGE_KEY);
     }
   }, []);
 
   return {
-    surahsReadCount: stats.surahsRead.length,
+    // Return stats yang diperlukan oleh Profil
+    surahsReadCount: stats.surahsRead.length || 0,
+    totalZikirToday: stats.totalZikirToday || 0,
+    dailyStreak: stats.dailyStreak || 0,
     surahsRead: stats.surahsRead,
-    totalZikirToday: stats.totalZikirToday,
-    dailyStreak: stats.dailyStreak,
     getTodayZikir,
     markSurahRead,
     addZikir,
