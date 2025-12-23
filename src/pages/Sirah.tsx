@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 
-// Skema warna GOLD Premium
+// Skema warna GOLD Premium tetap dikekalkan sebagai aksen
 const goldGradient = "linear-gradient(135deg, #d4af37 0%, #b8860b 100%)";
 
 const sirahData = {
@@ -17,7 +17,7 @@ const sirahData = {
     { id: 102, title: "Wahyu Pertama", content: "Malaikat Jibril datang membawa wahyu pertama (Surah Al-Alaq: 1-5) di Gua Hira'. Jibril memeluk Baginda sambil berkata 'Iqra!' (Bacalah). Ini menandakan bermulanya tugas dakwah Baginda.", icon: <BookOpen className="w-5 h-5" />, color: goldGradient },
     { 
       id: 103, title: "Isra' & Mi'raj", icon: <Star className="w-5 h-5" />, color: goldGradient, 
-      isNovel: true, // Mode Cerita Bergambar
+      isNovel: true, 
       scenes: [
         { img: "/sirah1.png", text: "Tahun Kesedihan. Allah menghiburkan Rasulullah SAW dengan jemputan ke langit selepas pemergian Abu Talib & Khadijah." },
         { img: "/sirah2.png", text: "Buraq membawa Rasulullah ke Masjidil Aqsa. Di sana, Baginda mengimamkan solat bersama para Nabi terdahulu." },
@@ -81,46 +81,66 @@ export default function SirahPage() {
               <h1 className="text-2xl font-black dark:text-white uppercase tracking-tighter">
                 {view === 'menu' ? "Sirah & Kisah" : view === 'nabawiyah' ? "Sirah Nabawiyah" : "25 Para Nabi"}
               </h1>
-              <p className="text-[10px] text-amber-600 font-bold uppercase tracking-[0.3em]">Hikmah & Teladan</p>
+              <p className="text-[10px] text-primary font-bold uppercase tracking-[0.3em]">Hikmah & Teladan</p>
             </div>
+          </div>
+
+          {/* 🟢 HERO CARD: Warna Hijau Tenang (Sama seperti Yasin) */}
+          <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
+            <div className="relative z-10 flex flex-col items-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h2 className="text-3xl font-serif font-bold tracking-wide">
+                {view === 'menu' ? "Khazanah Sejarah" : view === 'nabawiyah' ? "Nabawiyah" : "Kisah Para Nabi"}
+              </h2>
+              <p className="text-emerald-100 text-xs font-medium italic opacity-80">Mempelajari kebesaran Allah melalui sejarah utusan-Nya</p>
+            </div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
           </div>
 
           {view !== 'menu' && (
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500/50" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
               <input
                 type="text"
                 placeholder="Cari kisah..."
-                className="w-full bg-amber-50/30 dark:bg-slate-900 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-1 focus:ring-amber-500/30 outline-none dark:text-white"
+                className="w-full bg-secondary/30 dark:bg-slate-900 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary/30 outline-none dark:text-white"
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           )}
         </div>
 
-        {/* MENU UTAMA - 100% GOLD */}
+        {/* MENU UTAMA - DIBERI SENTUHAN GOLD PADA TEKS/IKON */}
         {view === 'menu' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <button 
               onClick={() => setView('nabawiyah')}
-              className="group relative overflow-hidden rounded-[35px] p-8 h-64 bg-gradient-to-br from-[#d4af37] to-[#b8860b] text-left shadow-xl shadow-amber-500/20 active:scale-95 transition-all"
+              className="group relative overflow-hidden rounded-[35px] p-8 h-56 bg-white dark:bg-slate-900 text-left shadow-sm border border-black/5 active:scale-95 transition-all"
             >
-              <Book className="w-16 h-16 text-white/10 absolute -right-2 -top-2 rotate-12" />
-              <div className="mt-auto">
-                <h2 className="text-2xl font-black text-white uppercase leading-tight">Sirah<br/>Nabawiyah</h2>
-                <p className="text-white/70 text-xs mt-1 font-medium">Kisah Agung Rasulullah SAW</p>
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#d4af37] to-[#b8860b] flex items-center justify-center mb-6 shadow-lg shadow-amber-500/20">
+                <Book className="w-6 h-6 text-white" />
               </div>
+              <div>
+                <h2 className="text-2xl font-black text-foreground uppercase leading-tight">Sirah<br/>Nabawiyah</h2>
+                <p className="text-muted-foreground text-xs mt-1 font-medium italic">Kisah Agung Rasulullah SAW</p>
+              </div>
+              <ChevronLeft className="absolute right-8 bottom-8 w-6 h-6 text-amber-500 rotate-180 opacity-30" />
             </button>
 
             <button 
               onClick={() => setView('paraNabi')}
-              className="group relative overflow-hidden rounded-[35px] p-8 h-64 bg-gradient-to-br from-[#d4af37] to-[#b8860b] text-left shadow-xl shadow-amber-500/20 active:scale-95 transition-all"
+              className="group relative overflow-hidden rounded-[35px] p-8 h-56 bg-white dark:bg-slate-900 text-left shadow-sm border border-black/5 active:scale-95 transition-all"
             >
-              <Users className="w-16 h-16 text-white/10 absolute -right-2 -top-2 rotate-12" />
-              <div className="mt-auto">
-                <h2 className="text-2xl font-black text-white uppercase leading-tight">25 Para<br/>Nabi</h2>
-                <p className="text-white/70 text-xs mt-1 font-medium">Sejarah Utusan Allah AS</p>
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#d4af37] to-[#b8860b] flex items-center justify-center mb-6 shadow-lg shadow-amber-500/20">
+                <Users className="w-6 h-6 text-white" />
               </div>
+              <div>
+                <h2 className="text-2xl font-black text-foreground uppercase leading-tight">25 Para<br/>Nabi</h2>
+                <p className="text-muted-foreground text-xs mt-1 font-medium italic">Sejarah Utusan Allah AS</p>
+              </div>
+              <ChevronLeft className="absolute right-8 bottom-8 w-6 h-6 text-amber-500 rotate-180 opacity-30" />
             </button>
           </div>
         )}
@@ -129,7 +149,7 @@ export default function SirahPage() {
         {view !== 'menu' && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {filterData(view === 'nabawiyah' ? sirahData.nabawiyah : sirahData.paraNabi).map((item) => (
-              <div key={item.id} className="bg-white dark:bg-slate-900 rounded-[28px] p-5 flex flex-col items-center text-center shadow-sm border border-amber-500/10">
+              <div key={item.id} className="bg-white dark:bg-slate-900 rounded-[28px] p-5 flex flex-col items-center text-center shadow-sm border border-black/5 hover:border-primary/20 transition-all">
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-amber-500/20" style={{ background: item.color }}>
                   {item.icon}
                 </div>
@@ -145,23 +165,22 @@ export default function SirahPage() {
           </div>
         )}
 
-        {/* MODAL STORY */}
+        {/* MODAL STORY (Pengekalan Modal Sedia Ada) */}
         {selectedStory && (
           <div className="fixed inset-0 z-[999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="relative bg-white dark:bg-slate-950 rounded-[40px] shadow-2xl w-full max-w-lg overflow-hidden border border-amber-500/20">
+            <div className="relative bg-white dark:bg-slate-950 rounded-[40px] shadow-2xl w-full max-w-lg overflow-hidden border border-amber-500/10">
               
-              <div className="p-6 flex items-center justify-between border-b border-amber-500/10">
+              <div className="p-6 flex items-center justify-between border-b border-black/5">
                 <h2 className="font-black text-xl dark:text-white">{selectedStory.title}</h2>
-                <button onClick={() => setSelectedStory(null)} className="p-2 bg-amber-100 dark:bg-slate-800 rounded-full">
-                  <X className="w-5 h-5 text-amber-700 dark:text-amber-500" />
+                <button onClick={() => setSelectedStory(null)} className="p-2 bg-secondary dark:bg-slate-800 rounded-full">
+                  <X className="w-5 h-5 text-foreground" />
                 </button>
               </div>
 
               <div className="p-6">
-                {/* MODE NOVEL (Untuk Isra' Mi'raj) */}
                 {selectedStory.isNovel ? (
                   <div className="space-y-6">
-                    <div className="relative rounded-[30px] overflow-hidden aspect-video border-4 border-amber-500/20 shadow-xl bg-slate-100">
+                    <div className="relative rounded-[30px] overflow-hidden aspect-video border-4 border-secondary shadow-xl bg-slate-100">
                       <img 
                         src={selectedStory.scenes[currentScene].img} 
                         className="w-full h-full object-cover" 
@@ -175,7 +194,7 @@ export default function SirahPage() {
                       </div>
                     </div>
                     
-                    <div className="p-6 bg-amber-50/50 dark:bg-slate-900 rounded-[30px] border border-amber-500/10 min-h-[120px] flex items-center">
+                    <div className="p-6 bg-secondary/30 dark:bg-slate-900 rounded-[30px] border border-black/5 min-h-[120px] flex items-center">
                       <p className="text-lg leading-relaxed text-center font-medium italic dark:text-slate-200 w-full">
                         "{selectedStory.scenes[currentScene].text}"
                       </p>
@@ -185,22 +204,21 @@ export default function SirahPage() {
                       <button 
                         disabled={currentScene === 0}
                         onClick={() => setCurrentScene(c => c - 1)}
-                        className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 rounded-2xl font-black text-xs disabled:opacity-20 transition-all"
+                        className="flex-1 py-4 bg-secondary dark:bg-slate-800 rounded-2xl font-black text-xs disabled:opacity-20 transition-all"
                       >
                         BALIK
                       </button>
                       <button 
                         onClick={() => currentScene < selectedStory.scenes.length - 1 ? setCurrentScene(c => c + 1) : setSelectedStory(null)}
-                        className="flex-[2] py-4 bg-gradient-to-r from-[#d4af37] to-[#b8860b] text-white rounded-2xl font-black text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
+                        className="flex-[2] py-4 bg-gradient-to-r from-[#d4af37] to-[#b8860b] text-white rounded-2xl font-black text-xs shadow-lg active:scale-95 transition-all"
                       >
                         {currentScene === selectedStory.scenes.length - 1 ? "TAMAT" : "SETERUSNYA"}
                       </button>
                     </div>
                   </div>
                 ) : (
-                  /* MODE TEKS (Untuk 25 Nabi) */
                   <div className="space-y-6">
-                    <div className="p-8 bg-amber-50/30 dark:bg-slate-900 rounded-[35px] border border-amber-500/10 shadow-inner">
+                    <div className="p-8 bg-secondary/20 dark:bg-slate-900 rounded-[35px] border border-black/5 shadow-inner">
                       <p className="text-lg leading-relaxed text-justify dark:text-slate-300 font-medium">
                         {selectedStory.content}
                       </p>
