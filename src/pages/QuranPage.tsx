@@ -1,5 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, Pause, ChevronLeft, Bookmark, Languages, Globe, BookOpen, Volume2 } from 'lucide-react';
+import {
+  Search,
+  Pause,
+  ChevronLeft,
+  Bookmark,
+  Languages,
+  Globe,
+  BookOpen,
+  Volume2
+} from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Input } from '@/components/ui/input';
@@ -41,6 +50,7 @@ export default function QuranPage() {
     return saved ? JSON.parse(saved) : null;
   });
 
+  /* ================= FETCH SURAH LIST ================= */
   useEffect(() => {
     const fetchSurahs = async () => {
       try {
@@ -56,6 +66,7 @@ export default function QuranPage() {
     fetchSurahs();
   }, []);
 
+  /* ================= FETCH AYAT (FULL) ================= */
   const fetchSurahDetails = async (surahNumber: number) => {
     setLoadingAyahs(true);
     try {
@@ -68,7 +79,6 @@ export default function QuranPage() {
 
       const uthmaniJson = await uthmaniRes.json();
       const latinJson = await latinRes.json();
-
       const latinAyat = latinJson.data.ayat;
 
       const fullAyahs: Ayah[] = uthmaniJson.verses.map((v: any, i: number) => ({
@@ -116,73 +126,136 @@ export default function QuranPage() {
     s.number.toString().includes(searchQuery)
   );
 
-  /* ================= DETAIL SURAH ================= */
+  /* ================= DETAIL SURAH (UI ASAL) ================= */
   if (selectedSurah) {
     const surah = surahs.find(s => s.number === selectedSurah);
 
     return (
       <MainLayout>
         <audio ref={audioRef} onEnded={() => setPlayingAyah(null)} />
-        <div className="space-y-6 pb-20">
-          <button onClick={() => setSelectedSurah(null)} className="w-10 h-10 rounded-xl border">
-            <ChevronLeft />
-          </button>
 
-          <h1 className="text-3xl font-serif text-center">{surah?.name}</h1>
+        <div className="space-y-6 animate-fade-in pb-20">
+          {/* Header */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                setSelectedSurah(null);
+                audioRef.current?.pause();
+                setPlayingAyah(null);
+              }}
+              className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            <div>
+              <h1 className="text-xl font-bold">{surah?.englishName}</h1>
+              <p className="text-[10px] text-primary font-bold uppercase tracking-widest">
+                {surah?.revelationType} • {surah?.numberOfAyahs} Ayat
+              </p>
+            </div>
+          </div>
+
+          {/* Hero */}
+          <div className="rounded-[32px] p-8 bg-gradient-to-br from-primary via-primary/90 to-primary/80 shadow-xl">
+            <div className="flex flex-col items-center text-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-5xl font-serif text-white font-bold">{surah?.name}</h2>
+              <p className="text-white italic">{surah?.englishNameTranslation}</p>
+            </div>
+          </div>
 
           {loadingAyahs ? (
-            <p className="text-center">Memuat ayat...</p>
+            <div className="flex flex-col items-center py-20 gap-4">
+              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+              <p className="text-xs font-bold tracking-widest">Menyusun Ayat…</p>
+            </div>
           ) : (
-            ayahs.map(a => (
-              <div key={a.nomorAyat} className="p-6 rounded-xl bg-secondary/20 space-y-4">
-                <div className="flex justify-between items-center">
-                  <span>{a.nomorAyat}</span>
-                  <button onClick={() => toggleAudio(a.nomorAyat, a.audio)}>
-                    <Volume2 />
-                  </button>
+            <div className="space-y-4">
+              {ayahs.map(a => (
+                <div
+                  key={a.nomorAyat}
+                  className="floating-card p-6 bg-secondary/20 space-y-6"
+                  onClick={() => saveLastRead(selectedSurah, a.nomorAyat)}
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="w-8 h-8 rounded-lg bg-primary text-xs font-bold flex items-center justify-center">
+                      {a.nomorAyat}
+                    </span>
+
+                    <button
+                      onClick={e => {
+                        e.stopPropagation();
+                        toggleAudio(a.nomorAyat, a.audio);
+                      }}
+                      className={cn(
+                        'w-10 h-10 rounded-full flex items-center justify-center',
+                        playingAyah === a.nomorAyat
+                          ? 'bg-primary text-black'
+                          : 'bg-background border'
+                      )}
+                    >
+                      {playingAyah === a.nomorAyat ? <Pause size={18} /> : <Volume2 size={18} />}
+                    </button>
+                  </div>
+
+                  <p className="text-3xl leading-[4.5rem] text-right font-serif dir-rtl">
+                    {a.teksArab}
+                  </p>
+
+                  <div className="pt-4 border-t space-y-4">
+                    <div className="flex gap-3">
+                      <Languages size={16} className="text-primary" />
+                      <p className="italic text-primary">{a.teksLatin}</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <Globe size={16} />
+                      <p>{a.teksTranslation}</p>
+                    </div>
+                  </div>
                 </div>
-
-                <p className="text-3xl text-right font-serif leading-[4rem]">
-                  {a.teksArab}
-                </p>
-
-                <p className="italic text-primary">{a.teksLatin}</p>
-                <p>{a.teksTranslation}</p>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </MainLayout>
     );
   }
 
-  /* ================= LIST SURAH ================= */
+  /* ================= LIST SURAH (UI ASAL) ================= */
   return (
     <MainLayout>
-      <div className="space-y-6 pb-20">
-        <button onClick={() => navigate('/')}>
-          <ChevronLeft />
-        </button>
+      <div className="space-y-6 animate-fade-in pb-20">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/')} className="w-10 h-10 rounded-2xl border">
+            <ChevronLeft />
+          </button>
+          <h1 className="text-2xl font-bold">{t('quran')}</h1>
+        </div>
 
         <Input
-          placeholder="Cari surah..."
+          placeholder={`${t('search')} ${t('surah')}...`}
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
 
         {loading ? (
-          <p>Memuat...</p>
+          <p>Memuat…</p>
         ) : (
-          filteredSurahs.map(s => (
-            <button
-              key={s.number}
-              onClick={() => handleSurahClick(s.number)}
-              className="w-full text-left p-4 rounded-xl bg-secondary/10"
-            >
-              <p className="font-bold">{s.englishName}</p>
-              <p className="font-serif text-xl">{s.name}</p>
-            </button>
-          ))
+          <div className="grid gap-3">
+            {filteredSurahs.map(s => (
+              <button
+                key={s.number}
+                onClick={() => handleSurahClick(s.number)}
+                className="p-5 rounded-2xl bg-secondary/10 text-left"
+              >
+                <p className="font-bold">{s.englishName}</p>
+                <p className="font-serif text-2xl">{s.name}</p>
+              </button>
+            ))}
+          </div>
         )}
       </div>
     </MainLayout>
