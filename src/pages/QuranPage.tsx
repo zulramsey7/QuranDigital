@@ -103,12 +103,6 @@ export default function QuranPage() {
     }
   };
 
-  const saveLastRead = (surah: number, ayah: number) => {
-    const data = { surah, ayah };
-    setLastRead(data);
-    localStorage.setItem('last-read', JSON.stringify(data));
-  };
-
   const filteredSurahs = surahs.filter(surah =>
     surah.englishName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     surah.name.includes(searchQuery) ||
@@ -119,7 +113,6 @@ export default function QuranPage() {
     const surah = surahs.find(s => s.number === selectedSurah);
     return (
       <MainLayout>
-        {/* ⚡ TEKNIK BARU: Menggunakan Google Fonts "Amiri" yang diiktiraf dunia untuk Resm Uthmani */}
         <style dangerouslySetInnerHTML={{ __html: `
           @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -129,14 +122,13 @@ export default function QuranPage() {
             text-align: right !important;
             line-height: 2.8 !important;
             word-spacing: 2px;
-            font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1; /* Mengaktifkan baris standard Quran */
+            font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1;
             -webkit-font-smoothing: antialiased;
           }
         `}} />
 
         <audio ref={audioRef} onEnded={() => setPlayingAyah(null)} />
         <div className="space-y-6 animate-fade-in pb-20 px-1">
-          {/* Header & Hero tetap sama */}
           <div className="flex items-center gap-4">
             <button onClick={() => setSelectedSurah(null)} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center">
               <ChevronLeft className="w-6 h-6 dark:text-white" />
@@ -147,9 +139,16 @@ export default function QuranPage() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] shadow-xl text-white text-center">
-             <h2 className="text-5xl font-serif font-bold mb-2">{surah?.name}</h2>
-             <p className="opacity-80 italic font-medium">{surah?.englishNameTranslation}</p>
+          {/* 🟢 HERO CARD: Warna Hijau Tenang selaras dengan Yasin & Tahlil */}
+          <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
+            <div className="relative z-10 flex flex-col items-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h2 className="text-5xl font-serif font-bold tracking-wider">{surah?.name}</h2>
+              <p className="text-emerald-100 text-sm italic font-medium">{surah?.englishNameTranslation}</p>
+            </div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
           </div>
 
           {loadingAyahs ? (
@@ -167,7 +166,6 @@ export default function QuranPage() {
                     </div>
                   </div>
 
-                  {/* 📖 Paparan Teks yang telah di-FIX-kan */}
                   <p className="quran-render text-4xl sm:text-5xl text-foreground">
                     {ayah.teksArab}
                   </p>
@@ -185,7 +183,6 @@ export default function QuranPage() {
     );
   }
 
-  // Bahagian List Surah (Tiada perubahan)
   return (
     <MainLayout>
       <div className="space-y-6 animate-fade-in pb-20 px-1">
