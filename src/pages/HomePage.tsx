@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   MapPin, Clock, ChevronRight, BookOpen, Moon, CircleDot, 
   ScrollText, FileText, LibraryBig, Bookmark, 
-  History, Compass, Share2, Star, Play
+  History, Compass, Share2, Star, Play, Download
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { usePrayerTimes, getNextPrayer } from '@/hooks/usePrayerTimes';
 import { useLocation } from '@/hooks/useLocation';
 import { cn } from '@/lib/utils';
+import { toast } from "sonner";
 
 export default function HomePage() {
   const { t } = useLanguage();
@@ -22,6 +23,58 @@ export default function HomePage() {
   const [countdown, setCountdown] = useState('--:--:--');
   const [nextPrayer, setNextPrayer] = useState<string>('');
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Logik PWA Install
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    // Cek jika sudah dalam mode standalone (app installed)
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+    }
+
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) {
+      toast.info("Gunakan menu browser anda untuk 'Add to Home Screen'");
+      return;
+    }
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+      setIsInstalled(true);
+    }
+  };
+
+  // Fungsi Kongsi (Native Share)
+  const handleShareApp = async () => {
+    const shareData = {
+      title: 'QuranDigital 2025',
+      text: 'Jom guna aplikasi QuranDigital 2025. Lengkap dengan Al-Quran, Waktu Solat dan Doa.',
+      url: window.location.origin,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.origin);
+        toast.success("Pautan telah disalin!");
+      }
+    } catch (err) {
+      console.log('Error sharing:', err);
+    }
+  };
 
   const zikirs = [
     { ar: "سُبْحَانَ اللَّهِ", ms: "Maha Suci Allah" },
@@ -52,8 +105,8 @@ export default function HomePage() {
     { label: 'Doa', icon: Moon, path: '/doa', color: 'bg-purple-500/10 text-purple-500' },
     { label: 'Tahlil', icon: ScrollText, path: '/tahlil-lengkap', color: 'bg-amber-600/10 text-amber-600' },
     { label: 'Sirah', icon: History, path: '/sirah', color: 'bg-rose-500/10 text-rose-500' },
-    { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-orange-500/10 text-orange-500' }, // Disambungkan ke navigasi bawah
-    { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-slate-500/10 text-slate-500' },
+    { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-orange-500/10 text-orange-500' },
+    { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-slate-500/10 text-slate-500', onClick: handleShareApp },
   ];
 
   return (
@@ -140,12 +193,21 @@ export default function HomePage() {
         {/* 4. FEATURE GRID */}
         <div className="grid grid-cols-4 gap-4">
           {features.map((item, i) => (
-            <Link key={i} to={item.path} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
-              <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm border border-black/5 dark:border-white/5 transition-colors', item.color)}>
-                <item.icon className="w-6 h-6" />
-              </div>
-              <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">{item.label}</span>
-            </Link>
+            item.onClick ? (
+              <button key={i} onClick={item.onClick} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
+                <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm border border-black/5 dark:border-white/5 transition-colors', item.color)}>
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">{item.label}</span>
+              </button>
+            ) : (
+              <Link key={i} to={item.path} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
+                <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm border border-black/5 dark:border-white/5 transition-colors', item.color)}>
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">{item.label}</span>
+              </Link>
+            )
           ))}
         </div>
 
@@ -156,7 +218,7 @@ export default function HomePage() {
           <p className="text-xs text-muted-foreground font-medium">{dailyZikir.ms}</p>
         </div>
 
-        {/* 6. POPULAR SECTION (Tanpa Href/Link) */}
+        {/* 6. POPULAR SECTION */}
         <div className="space-y-3">
           <h2 className="text-[11px] font-black text-foreground px-1 uppercase tracking-[0.2em]">Popular Hari Ini</h2>
           <div className="floating-card p-4 flex items-center justify-between border-none bg-emerald-500/5 shadow-sm">
@@ -171,6 +233,25 @@ export default function HomePage() {
             </div>
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 opacity-50" />
           </div>
+
+          {/* BUTANG INSTALL (Akan hilang jika sudah install) */}
+          {!isInstalled && (
+            <button 
+              onClick={handleInstallApp}
+              className="w-full mt-4 p-4 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-between group active:scale-95 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-black">
+                  <Download className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-sm text-primary">Pasang Aplikasi</h3>
+                  <p className="text-[10px] text-muted-foreground uppercase font-medium">Akses lebih pantas & jimat data</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
+            </button>
+          )}
         </div>
 
       </div>
