@@ -2,21 +2,21 @@ import { useState, useEffect } from 'react';
 import { 
   MapPin, Clock, ChevronRight, BookOpen, Moon, CircleDot, 
   ScrollText, FileText, LibraryBig, Bookmark, 
-  History, Compass, Share2, Star, Play, Download, Flame // Tambah Flame untuk streak
+  History, Compass, Share2, Star, Play, Download, Flame 
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePrayerTimes, getNextPrayer } from '@/hooks/usePrayerTimes';
 import { useLocation } from '@/hooks/useLocation';
-import { useUserStats } from '@/hooks/useUserStats'; // Import Hook Stats
+import { useUserStats } from '@/hooks/useUserStats'; 
 import { cn } from '@/lib/utils';
 import { toast } from "sonner";
 
 export default function HomePage() {
   const { t } = useLanguage();
   const { location } = useLocation();
-  const { dailyStreak, totalZikirToday } = useUserStats(); // Panggil data stats di sini
+  const { dailyStreak, totalZikirToday } = useUserStats(); 
   
   const { prayerTimes, hijriDate, gregorianDate } = usePrayerTimes(
     location.latitude, 
@@ -96,7 +96,7 @@ export default function HomePage() {
 
   const features = [
     { label: 'Quran', icon: BookOpen, path: '/quran', color: 'bg-emerald-500/10 text-emerald-500' },
-    { label: 'Solat', icon: Clock, path: '/solat', color: 'bg-blue-500/10 text-blue-500' },
+    { label: 'Sirah', icon: FileText, path: '/sirah', color: 'bg-rose-500/10 text-rose-500' }, // Solat diganti Sirah
     { label: 'Tasbih', icon: CircleDot, path: '/tasbih', color: 'bg-amber-500/10 text-amber-600' },
     { label: 'Doa', icon: Moon, path: '/doa', color: 'bg-purple-500/10 text-purple-500' },
     { label: 'Yasin', icon: LibraryBig, path: '/yasin', color: 'bg-green-600/10 text-green-600' },
@@ -172,7 +172,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 3. NEW STATS DASHBOARD - Daily Streak & Zikir */}
+        {/* 3. NEW STATS DASHBOARD */}
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-orange-500/10 border border-orange-500/20 p-4 rounded-[24px] flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
