@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
+// Antaramuka Data
 interface Surah {
   number: number;
   name: string;
@@ -40,6 +41,7 @@ export default function QuranPage() {
     return saved ? JSON.parse(saved) : null;
   });
 
+  // Fetch senarai Surah
   useEffect(() => {
     const fetchSurahs = async () => {
       try {
@@ -55,14 +57,14 @@ export default function QuranPage() {
     fetchSurahs();
   }, []);
 
+  // Fetch perincian Ayat dengan format Uthmani Standard
   const fetchSurahDetails = async (surahNumber: number) => {
     setLoadingAyahs(true);
     try {
-      // Cari surah untuk dapatkan jumlah ayat sebenar
       const surahData = surahs.find(s => s.number === surahNumber);
-      const totalAyahs = surahData?.numberOfAyahs || 100; // default 100 jika tak jumpa
+      const totalAyahs = surahData?.numberOfAyahs || 100;
 
-      // Tambah per_page=${totalAyahs} supaya API hantar SEMUA ayat surah tersebut
+      // Mengambil teks_uthmani (Standard) dan terjemahan/latin
       const [resUthmani, resLatin] = await Promise.all([
         fetch(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?language=ms&words=false&translations=39&fields=text_uthmani&per_page=${totalAyahs}`),
         fetch(`https://equran.id/api/v2/surat/${surahNumber}`)
@@ -121,6 +123,20 @@ export default function QuranPage() {
     const surah = surahs.find(s => s.number === selectedSurah);
     return (
       <MainLayout>
+        {/* Suntikan Font Resm Uthmani Khusus */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @font-face {
+            font-family: 'KFGQPC_Uthmanic';
+            src: url('https://cdn.jsdelivr.net/gh/muhammedtaha38/uthmanic-hafs-font/UthmanicHafs.ttf') format('truetype');
+          }
+          .quran-font {
+            font-family: 'KFGQPC_Uthmanic', serif;
+            direction: rtl;
+            text-align: right;
+            word-spacing: 4px;
+          }
+        `}} />
+        
         <audio ref={audioRef} onEnded={() => setPlayingAyah(null)} />
         <div className="space-y-6 animate-fade-in pb-20 px-1">
           <div className="flex items-center gap-4">
@@ -153,7 +169,7 @@ export default function QuranPage() {
           {loadingAyahs ? (
             <div className="flex flex-col items-center py-20 gap-4">
               <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Menyusun Ayat...</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Menyusun Ayat Standard...</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -164,7 +180,7 @@ export default function QuranPage() {
                   onClick={() => saveLastRead(selectedSurah, ayah.nomorAyat)}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="w-8 h-8 rounded-lg bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow-md">
+                    <span className="w-8 h-8 rounded-lg bg-primary text-black text-xs font-bold flex items-center justify-center shadow-md">
                       {ayah.nomorAyat}
                     </span>
                     <div className="flex items-center gap-2">
@@ -197,7 +213,8 @@ export default function QuranPage() {
                     </div>
                   </div>
 
-                  <p className="text-3xl leading-[4.5rem] text-right font-serif dir-rtl text-foreground whitespace-pre-wrap">
+                  {/* Teks Arab dengan Font Standard Uthmani */}
+                  <p className="quran-font text-4xl sm:text-5xl leading-[5rem] sm:leading-[6.5rem] text-foreground whitespace-pre-wrap">
                     {ayah.teksArab}
                   </p>
 
@@ -224,6 +241,7 @@ export default function QuranPage() {
     );
   }
 
+  // Paparan Senarai Surah (Tiada perubahan logik)
   return (
     <MainLayout>
       <div className="space-y-6 animate-fade-in pb-20 px-1">
@@ -293,7 +311,7 @@ export default function QuranPage() {
                     {surah.revelationType} • {surah.numberOfAyahs} {t('ayat')}  
                   </p>  
                 </div>  
-                <p className="text-3xl font-serif text-primary/80 group-hover:text-primary transition-colors">{surah.name}</p>  
+                <p className="text-4xl font-serif text-primary/80 group-hover:text-primary transition-colors">{surah.name}</p>  
               </button>
             ))}
           </div>
