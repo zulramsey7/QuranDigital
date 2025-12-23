@@ -2,19 +2,22 @@ import { useState, useEffect } from 'react';
 import { 
   MapPin, Clock, ChevronRight, BookOpen, Moon, CircleDot, 
   ScrollText, FileText, LibraryBig, Bookmark, 
-  History, Compass, Share2, Star, Play, Download
+  History, Compass, Share2, Star, Play, Download, Flame // Tambah Flame untuk streak
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePrayerTimes, getNextPrayer } from '@/hooks/usePrayerTimes';
 import { useLocation } from '@/hooks/useLocation';
+import { useUserStats } from '@/hooks/useUserStats'; // Import Hook Stats
 import { cn } from '@/lib/utils';
 import { toast } from "sonner";
 
 export default function HomePage() {
   const { t } = useLanguage();
   const { location } = useLocation();
+  const { dailyStreak, totalZikirToday } = useUserStats(); // Panggil data stats di sini
+  
   const { prayerTimes, hijriDate, gregorianDate } = usePrayerTimes(
     location.latitude, 
     location.longitude
@@ -24,21 +27,17 @@ export default function HomePage() {
   const [nextPrayer, setNextPrayer] = useState<string>('');
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Logik PWA Install
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Cek jika sudah dalam mode standalone (app installed)
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
     }
-
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
     };
-
     window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
@@ -56,14 +55,12 @@ export default function HomePage() {
     }
   };
 
-  // Fungsi Kongsi (Native Share)
   const handleShareApp = async () => {
     const shareData = {
       title: 'QuranDigital 2025',
-      text: 'Jom guna aplikasi QuranDigital 2025. Lengkap dengan Al-Quran, Waktu Solat dan Doa.',
+      text: 'Jom guna aplikasi QuranDigital 2025.',
       url: window.location.origin,
     };
-
     try {
       if (navigator.share) {
         await navigator.share(shareData);
@@ -94,17 +91,16 @@ export default function HomePage() {
         setNextPrayer(t(prayer.nameKey));
       }
     }, 1000);
-    
     return () => clearInterval(interval);
   }, [prayerTimes, t]);
 
   const features = [
     { label: 'Quran', icon: BookOpen, path: '/quran', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'Solat', icon: Clock, path: '/solat', color: 'bg-blue-500/10 text-blue-500' },
-    { label: 'Yasin', icon: LibraryBig, path: '/yasin', color: 'bg-green-600/10 text-green-600' },
+    { label: 'Tasbih', icon: CircleDot, path: '/tasbih', color: 'bg-amber-500/10 text-amber-600' },
     { label: 'Doa', icon: Moon, path: '/doa', color: 'bg-purple-500/10 text-purple-500' },
+    { label: 'Yasin', icon: LibraryBig, path: '/yasin', color: 'bg-green-600/10 text-green-600' },
     { label: 'Tahlil', icon: ScrollText, path: '/tahlil-lengkap', color: 'bg-amber-600/10 text-amber-600' },
-    { label: 'Sirah', icon: History, path: '/sirah', color: 'bg-rose-500/10 text-rose-500' },
     { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-orange-500/10 text-orange-500' },
     { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-slate-500/10 text-slate-500', onClick: handleShareApp },
   ];
@@ -176,7 +172,30 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 3. CONTINUE READING */}
+        {/* 3. NEW STATS DASHBOARD - Daily Streak & Zikir */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-orange-500/10 border border-orange-500/20 p-4 rounded-[24px] flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+              <Flame className="w-5 h-5 fill-current" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-orange-500 uppercase tracking-tighter leading-none mb-1">Tasbih</p>
+              <p className="text-lg font-bold leading-none">{dailyStreak} <span className="text-[10px] font-medium text-muted-foreground uppercase">Hari</span></p>
+            </div>
+          </div>
+          
+          <div className="bg-primary/10 border border-primary/20 p-4 rounded-[24px] flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-black shadow-lg shadow-primary/20">
+              <CircleDot className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-primary uppercase tracking-tighter leading-none mb-1">Zikir</p>
+              <p className="text-lg font-bold leading-none">{totalZikirToday} <span className="text-[10px] font-medium text-muted-foreground uppercase">Kali</span></p>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. CONTINUE READING */}
         <Link to="/quran" className="floating-card p-4 flex items-center justify-between bg-white dark:bg-secondary/20 border-none shadow-sm group">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -190,7 +209,7 @@ export default function HomePage() {
           <Play className="w-4 h-4 text-primary fill-current group-hover:scale-125 transition-transform" />
         </Link>
 
-        {/* 4. FEATURE GRID */}
+        {/* 5. FEATURE GRID */}
         <div className="grid grid-cols-4 gap-4">
           {features.map((item, i) => (
             item.onClick ? (
@@ -211,14 +230,14 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* 5. ZIKIR HARI INI */}
+        {/* 6. ZIKIR HARI INI */}
         <div className="floating-card p-5 bg-gradient-to-b from-secondary/40 to-secondary/10 border-none text-center">
           <p className="text-[9px] uppercase font-black text-primary mb-3 tracking-[0.2em]">Zikir Hari Ini</p>
           <h4 className="text-2xl font-serif text-foreground mb-1">{dailyZikir.ar}</h4>
           <p className="text-xs text-muted-foreground font-medium">{dailyZikir.ms}</p>
         </div>
 
-        {/* 6. POPULAR SECTION */}
+        {/* 7. POPULAR SECTION */}
         <div className="space-y-3">
           <h2 className="text-[11px] font-black text-foreground px-1 uppercase tracking-[0.2em]">Popular Hari Ini</h2>
           <div className="floating-card p-4 flex items-center justify-between border-none bg-emerald-500/5 shadow-sm">
@@ -234,7 +253,6 @@ export default function HomePage() {
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 opacity-50" />
           </div>
 
-          {/* BUTANG INSTALL (Akan hilang jika sudah install) */}
           {!isInstalled && (
             <button 
               onClick={handleInstallApp}
@@ -253,7 +271,6 @@ export default function HomePage() {
             </button>
           )}
         </div>
-
       </div>
     </MainLayout>
   );
