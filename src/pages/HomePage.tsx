@@ -57,8 +57,8 @@ export default function HomePage() {
 
   const handleShareApp = async () => {
     const shareData = {
-      title: 'QuranDigital 2025',
-      text: 'Jom guna aplikasi QuranDigital 2025.',
+      title: 'JomNgaji 2025',
+      text: 'Jom mengaji di aplikasi JomNgaji 2025.',
       url: window.location.origin,
     };
     try {
