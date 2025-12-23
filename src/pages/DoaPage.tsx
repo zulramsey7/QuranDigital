@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Languages, Globe, Search, BookOpen } from 'lucide-react';
+import { Languages, Globe, Search, BookOpen, ChevronLeft } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
 
 interface Doa {
   id: string;
@@ -53,7 +54,7 @@ const STATIC_DOAS: Doa[] = [
     doa: 'Doa Keluar Tandas',
     ayat: 'غُفْرَانَكَ الْحَمْدُ لِلَّهِ الَّذِي أَذْهَبَ عَنِّي الْأَذَى وَعَافَانِي',
     latin: 'Ghufranaka. Alhamdu lillahil-ladzi adzhaba ‘annil adza wa ‘afani',
-    artinya: 'Aku memohon ampunan-Mu. Segala puji bagi Allah yang telah menghilangkan penyakit dariku dan menjaga kesihatanku.'
+    artinya: 'Aku memohon ampunan-Mu. Segala puji bagi Allah yang telah menghilangkan penyakit dariku.'
   },
   {
     id: '7',
@@ -67,26 +68,27 @@ const STATIC_DOAS: Doa[] = [
     doa: 'Doa Ibu Bapa',
     ayat: 'رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا',
     latin: 'Rabbighfir li wa liwalidayya warhamhuma kama rabbayani saghira',
-    artinya: 'Ya Tuhanku, ampunilah dosaku dan dosa kedua ibu bapaku, dan kasihilah mereka sebagaimana mereka menyayangiku sewaktu kecil.'
+    artinya: 'Ya Tuhanku, ampunilah dosaku dan dosa kedua ibu bapaku, dan kasihilah mereka.'
   },
   {
     id: '9',
     doa: 'Doa Penerang Hati',
     ayat: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي',
     latin: 'Rabbisy-syrahli sadri wa yassirli amri wahlul uqdatam-mil-lisani yafqahu qauli',
-    artinya: 'Ya Tuhanku, lapangkanlah dadaku, mudahkanlah urusanku, dan lepaskanlah kekakuan lidahku agar mereka mengerti perkataanku.'
+    artinya: 'Ya Tuhanku, lapangkanlah dadaku, mudahkanlah urusanku, dan lepaskanlah kekakuan lidahku.'
   },
   {
     id: '10',
     doa: 'Doa Kebaikan Dunia Akhirat',
     ayat: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
     latin: 'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina adzaban-nar',
-    artinya: 'Wahai Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, dan peliharalah kami dari seksa api neraka.'
+    artinya: 'Wahai Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat.'
   }
 ];
 
 export default function DoaPage() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredDoas = STATIC_DOAS.filter(d => 
@@ -96,97 +98,106 @@ export default function DoaPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-3xl mx-auto space-y-8 animate-fade-in pb-24">
+      {/* ⚡ FORCE FONT: Memastikan ketepatan baris Arab harian */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+        .quran-render {
+          font-family: 'Amiri', serif !important;
+          direction: rtl !important;
+          text-align: right !important;
+          line-height: 2.5 !important;
+          word-spacing: 2px;
+          -webkit-font-smoothing: antialiased;
+        }
+      `}} />
+
+      <div className="space-y-6 animate-fade-in pb-20 px-1">
         
         {/* Header Section */}
-        <div className="text-center space-y-2 pt-4">
-          <div className="inline-flex p-3 rounded-2xl bg-primary/10 mb-2">
-            <BookOpen className="w-6 h-6 text-primary" />
+        <div className="flex items-center gap-4 text-left">
+          <button 
+            onClick={() => navigate('/')}
+            className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center hover:bg-secondary transition-all active:scale-95"
+          >
+            <ChevronLeft className="w-6 h-6 dark:text-white" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">{t('doa')}</h1>
+            <p className="text-[10px] text-primary font-bold uppercase tracking-widest">Himpunan Doa Harian</p>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t('doa')}</h1>
-          <p className="text-sm text-muted-foreground font-medium uppercase tracking-[0.2em]">
-            Himpunan Doa Pilihan & Harian
-          </p>
         </div>
 
-        {/* Search Bar - Sticky */}
-        <div className="relative sticky top-4 z-20 mx-auto w-full max-w-lg">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <Search className="w-4 h-4 text-muted-foreground" />
+        {/* Hero Banner */}
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] shadow-xl text-white text-center">
+          <div className="relative z-10 flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-3xl font-serif font-bold tracking-wide">اَلدُّعَاءُ هُوَ الْعِبَادَةُ</h2>
+            <p className="opacity-80 text-sm font-medium italic">"Doa itu adalah ibadah"</p>
           </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Cari doa harian..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-14 rounded-full bg-background/80 backdrop-blur-xl border-primary/20 focus:border-primary shadow-xl shadow-primary/5 transition-all"
+            className="pl-11 h-14 rounded-2xl bg-secondary/30 border-none focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>
 
         {/* Doa List */}
-        <div className="grid gap-6">
+        <div className="space-y-4">
           {filteredDoas.length > 0 ? (
             filteredDoas.map((doa) => (
               <div 
                 key={doa.id} 
-                className="group relative overflow-hidden rounded-[2rem] bg-secondary/30 border border-transparent hover:border-primary/20 hover:bg-secondary/50 transition-all duration-500 shadow-sm"
+                className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6 animate-fade-in"
               >
-                {/* Decorative Element */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary/10 transition-colors" />
+                <div className="flex justify-between items-center">
+                  <span className="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tight">
+                    Doa {doa.id}
+                  </span>
+                  <h3 className="font-bold text-sm text-foreground/60 tracking-tight">
+                    {doa.doa}
+                  </h3>
+                </div>
 
-                <div className="p-8 space-y-8">
-                  {/* Title */}
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-[10px] font-bold text-primary italic">
-                      {doa.id}
-                    </span>
-                    <h3 className="font-bold text-xl text-foreground tracking-tight">
-                      {doa.doa}
-                    </h3>
-                  </div>
-                  
-                  {/* Arabic - Focus Center */}
-                  <div className="relative py-4">
-                    <p className="text-4xl leading-[1.8] text-right font-serif dir-rtl text-foreground leading-relaxed antialiased">
-                      {doa.ayat}
+                {/* 📖 Paparan Teks Arab dengan Amiri Force */}
+                <p className="quran-render text-3xl sm:text-4xl text-foreground">
+                  {doa.ayat}
+                </p>
+
+                <div className="space-y-4 pt-4 border-t border-dashed border-primary/10 text-left">
+                  <div className="flex gap-3">
+                    <Languages className="w-4 h-4 text-primary shrink-0 mt-1 opacity-70" />
+                    <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">
+                      {doa.latin}
                     </p>
                   </div>
-
-                  {/* Translation & Latin Section */}
-                  <div className="grid gap-4 pt-6 border-t border-primary/10">
-                    <div className="flex gap-4 group/latin">
-                      <div className="mt-1">
-                        <Languages className="w-4 h-4 text-primary opacity-40 group-hover/latin:opacity-100 transition-opacity" />
-                      </div>
-                      <p className="text-[15px] font-semibold text-primary/80 italic leading-relaxed">
-                        {doa.latin}
-                      </p>
-                    </div>
-
-                    <div className="flex gap-4 group/trans">
-                      <div className="mt-1">
-                        <Globe className="w-4 h-4 text-muted-foreground opacity-40 group-hover/trans:opacity-100 transition-opacity" />
-                      </div>
-                      <p className="text-[15px] text-muted-foreground leading-relaxed font-medium">
-                        {doa.artinya}
-                      </p>
-                    </div>
+                  <div className="flex gap-3">
+                    <Globe className="w-4 h-4 text-muted-foreground shrink-0 mt-1 opacity-70" />
+                    <p className="text-sm text-foreground/80 leading-relaxed font-medium">
+                      {doa.artinya}
+                    </p>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-center py-24 rounded-[3rem] border-2 border-dashed border-muted/20 bg-secondary/10">
-              <p className="text-muted-foreground font-medium italic">Maaf, doa tidak dijumpai dalam koleksi kami.</p>
+            <div className="text-center py-20 bg-secondary/10 rounded-[28px] border border-dashed border-muted/20">
+              <p className="text-sm text-muted-foreground font-medium italic">Doa tidak dijumpai.</p>
             </div>
           )}
         </div>
 
-        {/* Bottom Quote */}
-        <div className="text-center pt-8 opacity-50">
-          <p className="text-xs font-medium uppercase tracking-[0.3em]">Ad-Du'au Huwal 'Ibadah</p>
-          <p className="text-[10px] mt-1">Doa itu adalah ibadah</p>
+        <div className="text-center py-10 opacity-20 text-[10px] font-bold tracking-[0.5em] uppercase dark:text-white">
+          Hujung Senarai
         </div>
-
       </div>
     </MainLayout>
   );
