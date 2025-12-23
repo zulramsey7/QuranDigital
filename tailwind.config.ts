@@ -51,10 +51,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        gold: {
-          DEFAULT: "hsl(var(--gold))",
-          light: "hsl(var(--gold-light))",
-          dark: "hsl(var(--gold-dark))",
+        // TUKAR GOLD KEPADA EMERALD (HIJAU)
+        emerald: {
+          DEFAULT: "#10b981",
+          light: "#34d399",
+          dark: "#059669",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -95,9 +96,10 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
-        "pulse-gold": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(43 74% 52% / 0.4)" },
-          "50%": { boxShadow: "0 0 40px hsl(43 74% 52% / 0.6)" },
+        // KEMASKINI ANIMASI PULSE KEPADA HIJAU
+        "pulse-emerald": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(16, 185, 129, 0.4)" },
+          "50%": { boxShadow: "0 0 40px rgba(16, 185, 129, 0.6)" },
         },
       },
       animation: {
@@ -106,7 +108,7 @@ export default {
         "fade-in": "fade-in 0.5s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
         "float": "float 6s ease-in-out infinite",
-        "pulse-gold": "pulse-gold 2s ease-in-out infinite",
+        "pulse-emerald": "pulse-emerald 2s ease-in-out infinite",
       },
     },
   },

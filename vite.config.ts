@@ -41,10 +41,10 @@ export default defineConfig(({ mode }) => ({
       ],
       manifest: {
         name: "QuranDigital 2025",
-        short_name: "Quran2025",
+        short_name: "JomNgaji",
         description: "Aplikasi Islamik PWA dengan Al-Quran, Waktu Solat, Kiblat, Tasbih dan Doa",
-        theme_color: "#d4af37",
-        background_color: "#121212",
+        theme_color: "#076244ff", // KEMASKINI: Tukar dari kuning #d4af37 ke Hijau Emerald
+        background_color: "#076244ff",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
