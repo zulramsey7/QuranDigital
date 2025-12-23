@@ -18,14 +18,14 @@ const TahlilLengkap = () => {
       title: "2. Al-Fatihah",
       arabic: "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ. ٱلْحَمْدُ لِّلَّهِ رَبِّ ٱلْعَٰلَمِينَ. ٱلرَّحْمَٰنِ ٱلرَّحِيمِ. مَٰلِكِ يَوْمِ ٱلدِّينِ. إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ. ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ. صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ",
       latin: "Bismillaahir-rohmaanir-rohiim. Al-hamdu lillaahi robbil-'aalamiin. Ar-rohmaanir-rohiim. Maaliki yawmid-diin. Iyyaaka na'budu wa iyyaaka nasta'iin. Ihdinas-sirootol-mustaqiim. Sirootol-ladziina an'amta 'alayhim ghoiril-maghdzuubi 'alayhim wa lad-doolliin.",
-      translation: "Dengan nama Allah Yang Maha Pemurah lagi Maha Mengasihani. Segala puji bagi Allah, Tuhan semesta alam. Yang Maha Pemurah lagi Maha Mengasihani. Yang menguasai hari pembalasan. Hanya kepada Engkaulah kami menyembah dan hanya kepada Engkaulah kami memohon pertolongan. Tunjukkanlah kami jalan yang lurus. Iaitu jalan orang-orang yang telah Engkau kurniakan nikmat kepada mereka; bukan jalan orang-orang yang dimurkai ke atas mereka dan bukan pula jalan orang-orang yang sesat.",
+      translation: "Dengan nama Allah Yang Maha Pemurah lagi Maha Mengasihani. Segala puji bagi Allah, Tuhan semesta alam.",
       note: ""
     },
     {
       title: "3. Surah Al-Ikhlas",
       arabic: "قُلْ هُوَ ٱللَّهُ أَحَدٌ. ٱللَّهُ ٱلصَّمدُ. لَمْ يَلِدْ وَلَمْ يُولَدْ. وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
       latin: "Qul huwallaahu ahad. Allaahus-somad. Lam yalid wa lam yuulad. Wa lam yakul-lahuu kufuwan ahad.",
-      translation: "Katakanlah (wahai Muhammad): Dialah Allah Yang Maha Esa. Allah yang menjadi tumpuan sekalian makhluk untuk memohon sebarang hajat. Ia tidak beranak, dan Ia pula tidak diperanakkan. Dan tidak ada sesiapapun yang serupa dengan-Nya.",
+      translation: "Katakanlah (wahai Muhammad): Dialah Allah Yang Maha Esa. Allah yang menjadi tumpuan sekalian makhluk.",
       note: "Dibaca 3 Kali"
     },
     {
@@ -38,8 +38,8 @@ const TahlilLengkap = () => {
     {
       title: "5. Surah Al-Falaq",
       arabic: "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ. مِن شَرِّ مَا خَلَقَ. وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ. وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ. وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
-      latin: "Qul a'uudzu birobbil-falaq. Min syarri maa kholaq. Wa min syarri ghoosiqin idzaa waqob. Wa min syarrin-naffaatsaati fil-'uqod. Wa min syarri haasidin idzaa hasad.",
-      translation: "Katakanlah: Aku berlindung kepada Tuhan yang menguasai subuh. Dari kejahatan makhluk-Nya yang Ia ciptakan. Dari kejahatan malam apabila ia gelap gelita. Dari kejahatan makhluk yang menghembus pada simpulan-simpulan. Dan dari kejahatan orang yang dengki apabila ia melakukan dengkinya.",
+      latin: "Qul a'uudzu birobbil-falaq. Min syarri maa kholaq. Wa min syarri ghoosiqin idzaa waqob.",
+      translation: "Katakanlah: Aku berlindung kepada Tuhan yang menguasai subuh.",
       note: ""
     },
     {
@@ -52,8 +52,8 @@ const TahlilLengkap = () => {
     {
       title: "7. Surah An-Nas",
       arabic: "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ. مَلِكِ ٱلنَّاسِ. إِلَٰهِ ٱلنَّاسِ. مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ. ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ. مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ",
-      latin: "Qul a'uudzu birobbin-naas. Malikin-naas. Ilaahin-naas. Min syarril-waswaasil-khonnaas. Alladzii yuwaswisu fii suduurin-naas. Minal-jinnati wan-naas.",
-      translation: "Katakanlah: Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia. Raja sekalian manusia. Tuhan yang berhak disembah oleh sekalian manusia. Dari kejahatan pembisik yang timbul tenggelam. Yang membisikkan hasutan ke dalam dada manusia. Dari kalangan jin dan juga manusia.",
+      latin: "Qul a'uudzu birobbin-naas. Malikin-naas. Ilaahin-naas. Min syarril-waswaasil-khonnaas.",
+      translation: "Katakanlah: Aku berlindung kepada Tuhan (yang memelihara dan menguasai) manusia.",
       note: ""
     },
     {
@@ -66,85 +66,85 @@ const TahlilLengkap = () => {
     {
       title: "9. Al-Fatihah",
       arabic: "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ. ٱلْحَمْدُ لِّلَّهِ رَبِّ ٱلْعَٰلَمِينَ. ٱلرَّحْمَٰنِ ٱلرَّحِيمِ. مَٰلِكِ يَوْمِ ٱلدِّينِ. إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ. ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ. صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ",
-      latin: "Bismillaahir-rohmaanir-rohiim. Al-hamdu lillaahi robbil-'aalamiin. Ar-rohmaanir-rohiim. Maaliki yawmid-diin. Iyyaaka na'budu wa iyyaaka nasta'iin. Ihdinas-sirootol-mustaqiim. Sirootol-ladziina an'amta 'alayhim ghoiril-maghdzuubi 'alayhim wa lad-doolliin.",
+      latin: "Bismillaahir-rohmaanir-rohiim. Al-hamdu lillaahi robbil-'aalamiin.",
       translation: "Membuka bacaan dengan Al-Fatihah untuk menyambung ke ayat Al-Baqarah.",
       note: ""
     },
     {
       title: "10. Al-Baqarah 1-5",
       arabic: "الٓمٓ. ذَٰلِكَ ٱلْكِتَٰبُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ. ٱلَّذِينَ يُؤْمِنُونَ بِٱلْغَيْبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقْنَٰهُمْ يُنفِقُونَ. وَٱلَّذِينَ يُؤْمِنُونَ بِمَآ أُنزِلَ إِلَيْكَ وَمَآ أُنزِلَ مِن قَبْلِكَ وَبِٱلْءَاخِرَةِ هُمْ يُوقِنُونَ. أُو۟لَٰٓئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُو۟لَٰٓئِكَ هُمُ ٱلْمُفْلِحُونَ",
-      latin: "Alif-laam-miim. Dzaalikal-kitaabu laa royba fiih, hudan lil-muttaqiin. Alladzii yu'minuuna bil-ghoybi wa yuqiimuunas-solaata wa mimmaa rozaqnaahum yunfiquun. Walladzii yu'minuuna bimaa unzila ilaika wa maa unzila min qablika wa bil-aakhiroti hum yuuqinuun. Ulaaika 'alaa hudam-mir-robbihim wa ulaaika humul-muflihuun.",
-      translation: "Alif, Laam, Miim. Kitab Al-Quran ini tidak ada sebarang syak padanya; menjadi petunjuk bagi orang yang bertaqwa. Iaitu orang yang beriman kepada perkara ghaib, mendirikan solat, dan mendermakan sebahagian dari rezeki yang Kami berikan. Dan orang yang beriman kepada kitab yang diturunkan kepadamu dan kitab-kitab sebelumnya, serta yakin akan adanya hari akhirat. Mereka itulah yang mendapat petunjuk dari Tuhan mereka, dan merekalah orang yang beruntung.",
+      latin: "Alif-laam-miim. Dzaalikal-kitaabu laa royba fiih, hudan lil-muttaqiin.",
+      translation: "Alif, Laam, Miim. Kitab Al-Quran ini tidak ada sebarang syak padanya.",
       note: ""
     },
     {
       title: "11. Al-Baqarah 163",
       arabic: "وَإِلَٰهُكُمْ إِلَٰهٌ وَٰحِدٌ ۖ لَّآ إِلَٰهَ إِلَّا هُوَ ٱلرَّحْمَٰنُ ٱلرَّحِيمُ",
       latin: "Wa ilaahukum ilaahun waahidun laa ilaaha illaa huwar-rohmaanur-rohiim.",
-      translation: "Dan Tuhan kamu ialah Tuhan yang satu, tiada Tuhan melainkan Dia, Yang Maha Pemurah lagi Maha Mengasihani.",
+      translation: "Dan Tuhan kamu ialah Tuhan yang satu, tiada Tuhan melainkan Dia.",
       note: ""
     },
     {
       title: "12. Ayat Kursi (Al-Baqarah 255)",
-      arabic: "ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُۥ مَا فِى ٱلسَّمَٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ",
-      latin: "Allaahu laa ilaaha illaa huwal-hayyul-qoyyuum. Laa ta'khudzuhuu sinatuw-wa laa nawm. Lahuu maa fis-samaawaati wa maa fil-ardh. Man dzalladzii yasyfa'u 'indahuu illaa bi-idznih. Ya'lamu maa baina aidiihim wa maa kholfahum. Wa laa yuhiituuna bi syai-im min 'ilmihii illaa bimaa syaa'. Wasi'a kursiyyuhus-samaawaati wal-ardh. Wa laa ya-uuduhuu hifzhuhumaa wa huwal-'aliyyul-'adhiim.",
-      translation: "Allah, tiada Tuhan melainkan Dia, Yang Tetap Hidup, Yang Kekal selama-lamanya. Dia tidak mengantuk dan tidak tidur. Milik-Nya segala yang ada di langit dan di bumi. Tiada sesiapa yang dapat memberi syafaat di sisi-Nya melainkan dengan izin-Nya. Dia mengetahui apa yang ada di hadapan mereka dan di belakang mereka. Mereka tidak mengetahui sesuatu pun dari ilmu Allah melainkan apa yang Allah kehendaki. Luasnya Kursi Allah meliputi langit dan bumi; dan tidak menjadi berat bagi Allah memelihara kedua-duanya. Dan Dialah Yang Maha Tinggi, lagi Maha Agung.",
+      arabic: "ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُۥ مَا fِى ٱلسَّمَٰوَٰتِ وَمَا fِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ",
+      latin: "Allaahu laa ilaaha illaa huwal-hayyul-qoyyuum.",
+      translation: "Allah, tiada Tuhan melainkan Dia, Yang Tetap Hidup, Yang Kekal selama-lamanya.",
       note: ""
     },
     {
       title: "13. Al-Baqarah 284-286",
       arabic: "لِّلَّهِ مَا فِى ٱلسَّمَٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ وَإِن تُبْدُوا۟ مَا فِىٓ أَنفُسِكُمْ أَوْ تُخْفُوهُ يُحَاسِبْكُم بِهِ ٱللَّهُ ۖ ... ءَامَنَ ٱلرَّسُولُ بِمَآ أُنزِلَ إِلَيْهِ مِن رَّبِّهِۦ وَٱلْمُؤْمِنُونَ ۚ ... لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ",
-      latin: "Lillaahi maa fis-samaawaati wa maa fil-ardh... Aamanar-rosuulu bimaa unzila ilaihi mir-robbiihi wal-mu'minuun... Laa yukallifullaahu nafsan illaa wus'ahaa...",
-      translation: "Segala yang ada di langit dan di bumi adalah kepunyaan Allah. Rasulullah telah beriman kepada apa yang diturunkan kepadanya dari Tuhannya, demikian juga orang-orang yang beriman. Allah tidak memberati seseorang melainkan apa yang terdaya olehnya.",
+      latin: "Lillaahi maa fis-samaawaati wa maa fil-ardh...",
+      translation: "Segala yang ada di langit dan di bumi adalah kepunyaan Allah.",
       note: "Pengakhiran Surah Al-Baqarah"
     },
     {
       title: "14. Surah Hud Ayat 73",
       arabic: "ٱرْحَمْنَا يَا أَرْحَمَ الرَّاحِمِينَ. رَحْمَتُ ٱللَّهِ وَبَرَكَٰتُهُۥ عَلَيْكُمْ أَهْلَ ٱلْبَيْتِ ۚ إِنَّهُۥ حَمِيدٌ مَّجِيدٌ",
-      latin: "Irhamnaa yaa arhamar-roohimiin. Rohmatullaahi wa barokaatuhuu 'alaikum ahlal-baiti innahuu hamiidum-majiid.",
-      translation: "Kasihanilah kami wahai Tuhan Yang Maha Mengasihani. Rahmat Allah dan keberkatan-Nya dicurahkan ke atas kamu, wahai ahli rumah ini. Sesungguhnya Allah Maha Terpuji, lagi Maha Mulia.",
+      latin: "Irhamnaa yaa arhamar-roohimiin. Rohmatullaahi wa barokaatuhuu 'alaikum ahlal-baiti.",
+      translation: "Kasihanilah kami wahai Tuhan Yang Maha Mengasihani.",
       note: ""
     },
     {
       title: "15. Surah Al-Ahzab Ayat 33",
       arabic: "إِنَّمَا يُرِيدُ ٱللَّهُ لِيُذْهِبَ عَنكُمُ ٱلرِّجْسَ أَهْلَ ٱلْبَيْتِ وَيُطَهِّرَكُمْ تَطْهِيرًا",
       latin: "Innamaa yuriidullaahu liyudz-hiba 'ankumur-rijsa ahlal-baiti wa yutoh-hirokum tat-hiiroo.",
-      translation: "Sesungguhnya Allah hanyalah bermaksud hendak menghilangkan dosa daripada kamu, wahai ahli keluarga (Nabi), dan hendak membersihkan kamu sebersih-bersihnya.",
+      translation: "Sesungguhnya Allah hanyalah bermaksud hendak menghilangkan dosa daripada kamu.",
       note: ""
     },
     {
       title: "16. Surah Al-Ahzab Ayat 56",
-      arabic: "إِنَّ ٱللَّهَ وَمَلَٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِيِّ ۚ يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا",
-      latin: "Innallaaha wa malaa'ikatahuu yusolluuna 'alan-nabiyyi yaa ayyuhalladziina aamanuu solluu 'alaihi wa sallimuu tasliimaa.",
-      translation: "Sesungguhnya Allah dan malaikat-malaikat-Nya berselawat untuk Nabi; wahai orang-orang yang beriman, berselawatlah kamu untuknya serta ucapkanlah salam sejahtera dengan penghormatan yang sepenuhnya.",
+      arabic: "إِنَّ ٱللَّهَ وَمَلَٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبيِّ ۚ يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا",
+      latin: "Innallaaha wa malaa'ikatahuu yusolluuna 'alan-nabiyyi yaa ayyuhalladziina aamanuu solluu 'alaihi.",
+      translation: "Sesungguhnya Allah dan malaikat-malaikat-Nya berselawat untuk Nabi.",
       note: ""
     },
     {
       title: "17. Selawat Nabi",
       arabic: "ٱللَّهُمَّ صَلِّ أَفْضَلَ صَلَاةٍ عَلَىٰ أَسْعَدِ مَخْلُوقَاتِكَ سَيِّدِنَا مُحَمَّدٍ وَعَلَىٰ ءَالِهِۦ وَصَحْبِهِۦ وَسَلِّمْ عَدَدَ مَعْلُومَاتِكَ",
-      latin: "Allahumma solli afdhola solaatin 'alaa as'adi makhluuqootika sayyidinaa muhammadin wa 'alaa aalihii wa sohbihii wa sallim 'adada ma'luumaatika.",
-      translation: "Ya Allah, limpahkanlah semulia-mulia selawat ke atas sebahagia-bahagia makhluk-Mu, pemimpin kami Muhammad, dan ke atas keluarga serta sahabatnya, dan berilah kesejahteraan sebanyak bilangan perkara yang Engkau ketahui.",
+      latin: "Allahumma solli afdhola solaatin 'alaa as'adi makhluuqootika sayyidinaa muhammadin.",
+      translation: "Ya Allah, limpahkanlah semulia-mulia selawat ke atas sebahagia-bahagia makhluk-Mu.",
       note: ""
     },
     {
       title: "18. Salam untuk Nabi",
       arabic: "وَسَلِّمْ وَرَضِىَ ٱللَّهُ تَعَالَىٰ عَنْ سَادَاتِنَآ أَصْحَٰبِ رَسُولِ ٱللَّهِ أَجْمَعِينَ",
       latin: "Wa sallim wa rodhiyallaahu ta'aalaa 'an saadaatinaa ashaabi rosuulillaahi ajma'iin.",
-      translation: "Semoga Allah Ta'ala meredhai para pemimpin kami, iaitu para sahabat Rasulullah semuanya.",
+      translation: "Semoga Allah Ta'ala meredhai para pemimpin kami, iaitu para sahabat Rasulullah.",
       note: ""
     },
     {
       title: "19. Ali Imran 173 & Al-Anfal 40",
       arabic: "حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ. نِعْمَ ٱلْمَوْلَىٰ وَنِعْمَ ٱلنَّصِيرُ",
       latin: "Hasbunallaahu wa ni'mal-wakiil. Ni'mal-mawlaa wa ni'man-nashiir.",
-      translation: "Cukuplah Allah bagi kami dan Dialah sebaik-baik pengurus. Dialah sebaik-baik Pelindung dan sebaik-baik Penolong.",
+      translation: "Cukuplah Allah bagi kami dan Dialah sebaik-baik pengurus.",
       note: ""
     },
     {
       title: "20. Hauqalah",
       arabic: "وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِٱللَّهِ ٱلْعَلِىِّ ٱلْعَظِيمِ",
       latin: "Wa laa hawla wa laa quwwata illaa billaahil-'aliyyil-'adhiim.",
-      translation: "Tiada daya dan tiada kekuatan melainkan dengan pertolongan Allah Yang Maha Tinggi lagi Maha Agung.",
+      translation: "Tiada daya dan tiada kekuatan melainkan dengan pertolongan Allah.",
       note: ""
     },
     {
@@ -179,48 +179,68 @@ const TahlilLengkap = () => {
 
   return (
     <MainLayout>
-      <div className="space-y-6 animate-fade-in pb-20">
-        <div className="flex items-center gap-4">
+      {/* ⚡ FORCE FONT: Standard Resm Uthmani menggunakan Amiri */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+        .quran-render {
+          font-family: 'Amiri', serif !important;
+          direction: rtl !important;
+          text-align: right !important;
+          line-height: 2.8 !important;
+          word-spacing: 2px;
+          font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1;
+          -webkit-font-smoothing: antialiased;
+        }
+      `}} />
+
+      <div className="space-y-6 animate-fade-in pb-20 px-1">
+        <div className="flex items-center gap-4 text-left">
           <button 
             onClick={() => navigate('/')}
-            className="w-10 h-10 rounded-full bg-secondary/80 flex items-center justify-center hover:bg-secondary transition-all active:scale-95"
+            className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center hover:bg-secondary transition-all active:scale-95"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-6 h-6 dark:text-white" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Tahlil Lengkap</h1>
-            <p className="text-[10px] text-primary font-bold uppercase tracking-widest text-left">Resm Uthmani</p>
+            <h1 className="text-xl font-bold tracking-tight">Tahlil Lengkap</h1>
+            <p className="text-[10px] text-primary font-bold uppercase tracking-widest">Resm Uthmani • Standard</p>
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-primary via-primary/90 to-primary/80 shadow-xl shadow-primary/20 border border-primary/20">
-          <div className="relative z-10 flex flex-col items-center text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-1">
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] shadow-xl text-white text-center">
+          <div className="relative z-10 flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
               <ScrollText className="w-6 h-6 text-white" />
             </div>
-            <h2 className="text-4xl font-serif text-white font-bold tracking-wide">تَهْلِيل لڠكڤ</h2>
-            <p className="text-white text-lg font-bold">Susunan Tradisi Utama</p>
+            <h2 className="text-4xl font-serif font-bold tracking-wide">تَهْلِيل لڠكڤ</h2>
+            <p className="opacity-80 text-sm font-medium italic">Susunan Tradisi Utama</p>
           </div>
         </div>
 
         <div className="space-y-4">
           {tahlilSections.map((section, index) => (
-            <div key={index} className="floating-card p-6 border-none bg-secondary/20 space-y-6 animate-fade-in">
+            <div key={index} className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6 animate-fade-in">
               <div className="flex justify-between items-center">
-                <span className="px-3 py-1 rounded-lg bg-primary/20 text-primary text-[10px] font-bold uppercase">
+                <span className="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tight">
                   {section.title}
                 </span>
                 {section.note && (
-                  <span className="text-[10px] font-medium text-muted-foreground italic">{section.note}</span>
+                  <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-100 italic">
+                    {section.note}
+                  </span>
                 )}
               </div>
-              <p className="text-3xl leading-[4.5rem] text-right font-serif dir-rtl text-foreground whitespace-pre-wrap">
+
+              {/* 📖 Paparan Teks Arab dengan Amiri Force */}
+              <p className="quran-render text-4xl sm:text-5xl text-foreground">
                 {section.arabic}
               </p>
-              <div className="space-y-4 pt-4 border-t border-primary/10 text-left">
+
+              <div className="space-y-4 pt-4 border-t border-dashed border-primary/10 text-left">
                 <div className="flex gap-3">
                   <Languages className="w-4 h-4 text-primary shrink-0 mt-1 opacity-70" />
-                  <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed tracking-wide">
+                  <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">
                     {section.latin}
                   </p>
                 </div>
@@ -234,7 +254,10 @@ const TahlilLengkap = () => {
             </div>
           ))}
         </div>
-        <div className="text-center py-10 opacity-30 text-[10px] font-bold tracking-[0.3em] uppercase">AL-FATIHAH</div>
+        
+        <div className="text-center py-10 opacity-20 text-[10px] font-bold tracking-[0.5em] uppercase dark:text-white">
+          Selesai Tahlil
+        </div>
       </div>
     </MainLayout>
   );
