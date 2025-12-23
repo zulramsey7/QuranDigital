@@ -23,12 +23,9 @@ export default function YasinPage() {
     const fetchYasinData = async () => {
       try {
         setLoading(true);
-
-        // KEMASKINI: Menggunakan fields=text_indopak untuk skrip seperti dalam gambar
+        // Mengambil data Indo-Pak
         const [resIndoPak, resLatin] = await Promise.all([
-          fetch(
-            'https://api.quran.com/api/v4/verses/by_chapter/36?language=ms&words=false&translations=39&fields=text_indopak&per_page=300'
-          ),
+          fetch('https://api.quran.com/api/v4/verses/by_chapter/36?language=ms&fields=text_indopak&translations=39&per_page=300'),
           fetch('https://equran.id/api/v2/surat/36')
         ]);
 
@@ -38,29 +35,33 @@ export default function YasinPage() {
         if (dataIndoPak.verses && dataLatin.code === 200) {
           const latinMap = dataLatin.data.ayat;
 
-          const formattedVerses = dataIndoPak.verses.map((v: any, index: number) => ({
-            nomorAyat: v.verse_number,
-            teksArab: v.text_indopak, // Menggunakan teks skrip IndoPak
-            teksLatin: latinMap[index]?.teksLatin || "",
-            teksTranslation: v.translations[0].text.replace(/<[^>]*>?/gm, ''),
-            audio: `https://everyayah.com/data/Ayman_Sowaid_64kbps/036${String(v.verse_number).padStart(3, '0')}.mp3`
-          }));
+          const formattedVerses = dataIndoPak.verses.map((v: any, index: number) => {
+            // Fungsi untuk menukar nombor rumi ke arab untuk bingkai
+            const arabicNumbers = v.verse_number.toString().replace(/\d/g, (d: string) => "٠١٢٣٤٥٦٧٨٩"[parseInt(d)]);
+            
+            return {
+              nomorAyat: v.verse_number,
+              // Menambah simbol bingkai bunga (U+06DD) di depan nombor arab
+              teksArab: `${v.text_indopak} ﴿${arabicNumbers}﴾`,
+              teksLatin: latinMap[index]?.teksLatin || "",
+              teksTranslation: v.translations[0].text.replace(/<[^>]*>?/gm, ''),
+              audio: `https://everyayah.com/data/Ayman_Sowaid_64kbps/036${String(v.verse_number).padStart(3, '0')}.mp3`
+            };
+          });
 
           setVerses(formattedVerses);
         }
       } catch (error) {
-        console.error("Gagal menggabungkan data API:", error);
+        console.error("Gagal memuatkan data:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchYasinData();
   }, []);
 
   const toggleAudio = (nomorAyat: number, url: string) => {
     if (!audioRef.current) return;
-
     if (isPlaying === nomorAyat) {
       audioRef.current.pause();
       setIsPlaying(null);
@@ -73,7 +74,6 @@ export default function YasinPage() {
 
   return (
     <MainLayout>
-      {/* KEMASKINI: Menggunakan Font IndoPak Majeed untuk rupa 100% seperti mushaf tempatan */}
       <style dangerouslySetInnerHTML={{ __html: `
         @font-face {
           font-family: 'QuranIndoPak';
@@ -84,10 +84,11 @@ export default function YasinPage() {
           font-family: 'QuranIndoPak', serif !important;
           direction: rtl !important;
           text-align: right !important;
-          line-height: 3.2 !important;
+          line-height: 2.8 !important; /* Kekal kemas, tidak terlalu tebal */
           word-spacing: 4px;
           -webkit-font-smoothing: antialiased;
-          font-size: 2.8rem;
+          font-size: 2.5rem;
+          font-weight: 400; /* Mengelakkan tulisan menjadi terlalu tebal */
         }
       `}} />
 
@@ -95,74 +96,56 @@ export default function YasinPage() {
 
       <div className="space-y-6 animate-fade-in pb-20 px-1">
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate('/')}
-            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary transition-all active:scale-95"
-          >
+          <button onClick={() => navigate('/')} className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Surah Yasin</h1>
-            <p className="text-[10px] text-primary font-bold uppercase tracking-widest">
-              Resm Indo-Pak • Mushaf Standard
-            </p>
+            <p className="text-[10px] text-primary font-bold uppercase tracking-widest">Indo-Pak Script • Bingkai Ayat</p>
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10">
-          <div className="relative z-10 flex flex-col items-center text-center space-y-3">
+        {/* Card Header */}
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl">
+          <div className="relative z-10 flex flex-col items-center text-center space-y-3 text-white">
             <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
               <BookOpen className="w-6 h-6 text-emerald-400" />
             </div>
-            <h2 className="text-5xl font-serif text-white font-bold tracking-wider">يس</h2>
+            <h2 className="text-5xl font-serif font-bold">يس</h2>
             <p className="text-emerald-100 text-lg font-bold">Surah Yasin</p>
           </div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center py-20 gap-4">
-            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest text-center">
-              Menyusun Ayat Indo-Pak...
-            </p>
-          </div>
+          <div className="py-20 text-center animate-pulse text-muted-foreground uppercase text-xs font-bold tracking-widest">Memuatkan skrip Indo-Pak...</div>
         ) : (
           verses.map((verse) => (
-            <div key={verse.nomorAyat} className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6 animate-fade-in">
+            <div key={verse.nomorAyat} className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6">
               <div className="flex justify-between items-center">
-                <span className="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                  {verse.nomorAyat}
+                <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  Ayat {verse.nomorAyat}
                 </span>
                 <button
                   onClick={() => toggleAudio(verse.nomorAyat, verse.audio)}
-                  className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm",
-                    isPlaying === verse.nomorAyat
-                      ? "bg-primary text-white"
-                      : "bg-secondary text-muted-foreground"
-                  )}
+                  className={cn("w-9 h-9 rounded-full flex items-center justify-center transition-all", isPlaying === verse.nomorAyat ? "bg-primary text-white" : "bg-secondary text-muted-foreground")}
                 >
-                  {isPlaying === verse.nomorAyat ? <Pause size={18} fill="currentColor" /> : <Volume2 size={18} />}
+                  {isPlaying === verse.nomorAyat ? <Pause size={16} fill="currentColor" /> : <Volume2 size={16} />}
                 </button>
               </div>
 
-              <p className="quran-render text-4xl sm:text-5xl text-foreground">
+              {/* Teks Arab dengan Bingkai Bunga di hujung */}
+              <p className="quran-render text-foreground leading-relaxed">
                 {verse.teksArab}
               </p>
 
-              <div className="space-y-4 pt-4 border-t border-dashed border-primary/10">
-                <div className="flex gap-3 text-left">
-                  <Languages className="w-4 h-4 text-primary mt-1 shrink-0 opacity-70" />
-                  <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">
-                    {verse.teksLatin}
-                  </p>
+              <div className="space-y-3 pt-4 border-t border-dashed border-primary/10">
+                <div className="flex gap-3">
+                  <Languages className="w-4 h-4 text-primary mt-1 shrink-0 opacity-60" />
+                  <p className="text-[13px] font-bold text-primary/90 italic leading-relaxed">{verse.teksLatin}</p>
                 </div>
-                <div className="flex gap-3 text-left">
-                  <Globe className="w-4 h-4 text-muted-foreground mt-1 shrink-0 opacity-70" />
-                  <p className="text-sm text-foreground/80 leading-relaxed font-medium">
-                    {verse.teksTranslation}
-                  </p>
+                <div className="flex gap-3">
+                  <Globe className="w-4 h-4 text-muted-foreground mt-1 shrink-0 opacity-60" />
+                  <p className="text-sm text-foreground/80 leading-relaxed">{verse.teksTranslation}</p>
                 </div>
               </div>
             </div>
