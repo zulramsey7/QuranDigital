@@ -139,7 +139,6 @@ export default function QuranPage() {
             </div>
           </div>
 
-          {/* 🟢 HERO CARD: Warna Hijau Tenang selaras dengan Yasin & Tahlil */}
           <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
             <div className="relative z-10 flex flex-col items-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -194,6 +193,18 @@ export default function QuranPage() {
             <h1 className="text-xl font-bold tracking-tight">{t('quran')}</h1>
             <p className="text-[10px] text-primary font-bold uppercase tracking-widest">Resm Uthmani Standard</p>
           </div>
+        </div>
+
+        {/* 🟢 HERO CARD: Ditambah pada senarai utama surah */}
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
+          <div className="relative z-10 flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-emerald-400" />
+            </div>
+            <h2 className="text-3xl font-serif font-bold tracking-wide">Al-Quranul Karim</h2>
+            <p className="text-emerald-100 text-xs font-medium italic opacity-80">Panduan Hidup & Cahaya Hati</p>
+          </div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
         </div>
 
         {lastRead && (
