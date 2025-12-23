@@ -30,6 +30,8 @@ export default function HomePage() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
 
+  const [lastRead, setLastRead] = useState<{ id: number; name: string } | null>(null);
+
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
@@ -39,6 +41,16 @@ export default function HomePage() {
       setDeferredPrompt(e);
     };
     window.addEventListener('beforeinstallprompt', handler);
+
+    const saved = localStorage.getItem('lastReadSurah');
+    if (saved) {
+      try {
+        setLastRead(JSON.parse(saved));
+      } catch (e) {
+        console.error("Error parsing lastReadSurah", e);
+      }
+    }
+
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
@@ -83,33 +95,28 @@ export default function HomePage() {
   const [dailyZikir] = useState(zikirs[Math.floor(Math.random() * zikirs.length)]);
 
   useEffect(() => {
-    // Tambah check: Jika prayerTimes kosong, jangan jalankan timer
     if (!prayerTimes || prayerTimes.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-      
-      // Memanggil getNextPrayer setiap saat untuk update countdown & trigger alert
       const { prayer, countdown: cd } = getNextPrayer(prayerTimes);
-      
       setCountdown(cd);
-      
       if (prayer) {
         setNextPrayer(t(prayer.nameKey));
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [prayerTimes, t]); // Pastikan prayerTimes ada dalam dependency array
+  }, [prayerTimes, t]);
 
   const features = [
     { label: 'Quran', icon: BookOpen, path: '/quran', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'Sirah', icon: FileText, path: '/sirah', color: 'bg-emerald-500/10 text-emerald-500' },
-    { label: 'Tasbih', icon: CircleDot, path: '/tasbih', color: 'bg-emerald-500/10 text-emerald-500' }, // Tukar ke Emerald
+    { label: 'Tasbih', icon: CircleDot, path: '/tasbih', color: 'bg-emerald-500/10 text-emerald-500' }, 
     { label: 'Doa', icon: Moon, path: '/doa', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'Yasin', icon: LibraryBig, path: '/yasin', color: 'bg-emerald-500/10 text-emerald-500' },
-    { label: 'Tahlil', icon: ScrollText, path: '/tahlil-lengkap', color: 'bg-emerald-500/10 text-emerald-500' }, // Tukar ke Emerald
-    { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-emerald-500/10 text-emerald-500' }, // Tukar ke Teal (ton hijau)
+    { label: 'Tahlil', icon: ScrollText, path: '/tahlil-lengkap', color: 'bg-emerald-500/10 text-emerald-500' }, 
+    { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-emerald-500/10 text-emerald-500' }, 
     { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-emerald-500/10 text-emerald-500', onClick: handleShareApp },
   ];
 
@@ -180,7 +187,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 3. NEW STATS DASHBOARD - UPDATED COLORS */}
+        {/* 3. NEW STATS DASHBOARD */}
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-[24px] flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
@@ -203,15 +210,22 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 4. CONTINUE READING */}
-        <Link to="/quran" className="floating-card p-4 flex items-center justify-between bg-white dark:bg-secondary/20 border-none shadow-sm group">
+        {/* 4. CONTINUE READING (FIXED: Redirect to /quran only to avoid 404) */}
+        <Link 
+          to="/quran" 
+          className="floating-card p-4 flex items-center justify-between bg-white dark:bg-secondary/20 border-none shadow-sm group"
+        >
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <Bookmark className="w-5 h-5 fill-current" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">Teruskan Bacaan</h3>
-              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">Klik untuk sambung surah terakhir</p>
+              <h3 className="font-bold text-sm">
+                {lastRead ? `Sambung ${lastRead.name}` : "Teruskan Bacaan"}
+              </h3>
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+                Klik untuk sambung surah terakhir
+              </p>
             </div>
           </div>
           <Play className="w-4 h-4 text-primary fill-current group-hover:scale-125 transition-transform" />
@@ -239,17 +253,17 @@ export default function HomePage() {
         </div>
 
         {/* 6. ZIKIR HARI INI */}
-<div className="floating-card p-5 bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 border-none text-center">
-  <p className="text-[9px] uppercase font-black text-emerald-500 mb-3 tracking-[0.2em]">
-    Zikir Hari Ini
-  </p>
-  <h4 className="text-2xl font-serif text-foreground mb-1">
-    {dailyZikir.ar}
-  </h4>
-  <p className="text-xs text-muted-foreground font-medium">
-    {dailyZikir.ms}
-  </p>
-</div>
+        <div className="floating-card p-5 bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 border-none text-center">
+          <p className="text-[9px] uppercase font-black text-emerald-500 mb-3 tracking-[0.2em]">
+            Zikir Hari Ini
+          </p>
+          <h4 className="text-2xl font-serif text-foreground mb-1">
+            {dailyZikir.ar}
+          </h4>
+          <p className="text-xs text-muted-foreground font-medium">
+            {dailyZikir.ms}
+          </p>
+        </div>
 
         {/* 7. POPULAR SECTION */}
         <div className="space-y-3">

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, Play, Pause, ChevronLeft, Bookmark, Languages, Globe, BookOpen, Volume2 } from 'lucide-react';
+import { Search, Play, Pause, ChevronLeft, Bookmark, BookOpen, Volume2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
 
 interface Surah {
   number: number;
@@ -34,8 +35,9 @@ export default function QuranPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   
-  const [lastRead, setLastRead] = useState<{ surah: number; ayah: number } | null>(() => {
+  const [lastRead, setLastRead] = useState<{ surah: number; ayah: number; name?: string } | null>(() => {
     const saved = localStorage.getItem('last-read');
     return saved ? JSON.parse(saved) : null;
   });
@@ -54,6 +56,19 @@ export default function QuranPage() {
     };
     fetchSurahs();
   }, []);
+
+  // Fungsi Scroll ke Ayat
+  useEffect(() => {
+    if (!loadingAyahs && ayahs.length > 0 && lastRead && selectedSurah === lastRead.surah) {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`ayah-${lastRead.ayah}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loadingAyahs, ayahs, selectedSurah]);
 
   const fetchSurahDetails = async (surahNumber: number) => {
     setLoadingAyahs(true);
@@ -87,8 +102,25 @@ export default function QuranPage() {
   };
 
   const handleSurahClick = (surahNumber: number) => {
+    const surah = surahs.find(s => s.number === surahNumber);
+    if (surah) {
+      const dataToSave = { id: surah.number, name: surah.englishName };
+      localStorage.setItem('lastReadSurah', JSON.stringify(dataToSave));
+      // JANGAN set Ayat 1 di sini supaya tak auto-hijau
+    }
     setSelectedSurah(surahNumber);
     fetchSurahDetails(surahNumber);
+  };
+
+  const handleSaveBookmark = (ayahNumber: number) => {
+    const surah = surahs.find(s => s.number === selectedSurah);
+    if (surah) {
+      const bookmarkData = { surah: surah.number, ayah: ayahNumber, name: surah.englishName };
+      localStorage.setItem('last-read', JSON.stringify(bookmarkData));
+      localStorage.setItem('lastReadSurah', JSON.stringify({ id: surah.number, name: surah.englishName }));
+      setLastRead(bookmarkData);
+      toast.success(`Tanda buku disimpan: Surah ${surah.englishName} ayat ${ayahNumber}`);
+    }
   };
 
   const toggleAudio = (ayahNumber: number, url: string) => {
@@ -115,7 +147,6 @@ export default function QuranPage() {
       <MainLayout>
         <style dangerouslySetInnerHTML={{ __html: `
           @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-
           .quran-render {
             font-family: 'Amiri', serif !important;
             direction: rtl !important;
@@ -123,7 +154,6 @@ export default function QuranPage() {
             line-height: 2.8 !important;
             word-spacing: 2px;
             font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1;
-            -webkit-font-smoothing: antialiased;
           }
         `}} />
 
@@ -139,7 +169,7 @@ export default function QuranPage() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
+          <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl text-white text-center">
             <div className="relative z-10 flex flex-col items-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-emerald-400" />
@@ -147,34 +177,52 @@ export default function QuranPage() {
               <h2 className="text-5xl font-serif font-bold tracking-wider">{surah?.name}</h2>
               <p className="text-emerald-100 text-sm italic font-medium">{surah?.englishNameTranslation}</p>
             </div>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
           </div>
 
           {loadingAyahs ? (
             <div className="text-center py-20"><div className="animate-spin h-8 w-8 border-b-2 border-primary mx-auto"></div></div>
           ) : (
             <div className="space-y-4">
-              {ayahs.map((ayah) => (
-                <div key={ayah.nomorAyat} className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6">
-                  <div className="flex items-center justify-between">
-                    <span className="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full">{ayah.nomorAyat}</span>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => toggleAudio(ayah.nomorAyat, ayah.audio)} className={cn('w-10 h-10 rounded-full flex items-center justify-center transition-all', playingAyah === ayah.nomorAyat ? 'bg-primary text-white' : 'bg-secondary text-muted-foreground')}>
-                        {playingAyah === ayah.nomorAyat ? <Pause size={18} /> : <Volume2 size={18} />}
-                      </button>
+              {ayahs.map((ayah) => {
+                const isBookmarked = lastRead?.surah === selectedSurah && lastRead?.ayah === ayah.nomorAyat;
+                return (
+                  <div 
+                    key={ayah.nomorAyat} 
+                    id={`ayah-${ayah.nomorAyat}`}
+                    className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full">{ayah.nomorAyat}</span>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => handleSaveBookmark(ayah.nomorAyat)}
+                          className={cn(
+                            "w-10 h-10 rounded-full flex items-center justify-center transition-all",
+                            isBookmarked 
+                            ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
+                            : "bg-white dark:bg-slate-800 text-muted-foreground border border-black/5"
+                          )}
+                        >
+                          <Bookmark size={18} fill={isBookmarked ? "currentColor" : "none"} />
+                        </button>
+
+                        <button onClick={() => toggleAudio(ayah.nomorAyat, ayah.audio)} className={cn('w-10 h-10 rounded-full flex items-center justify-center transition-all', playingAyah === ayah.nomorAyat ? 'bg-primary text-white' : 'bg-secondary text-muted-foreground')}>
+                          {playingAyah === ayah.nomorAyat ? <Pause size={18} /> : <Volume2 size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <p className="quran-render text-4xl sm:text-5xl text-foreground">
+                      {ayah.teksArab}
+                    </p>
+
+                    <div className="space-y-4 pt-4 border-t border-dashed border-primary/10 text-left">
+                      <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">{ayah.teksLatin}</p>
+                      <p className="text-sm text-foreground/80 leading-relaxed">{ayah.teksTranslation}</p>
                     </div>
                   </div>
-
-                  <p className="quran-render text-4xl sm:text-5xl text-foreground">
-                    {ayah.teksArab}
-                  </p>
-
-                  <div className="space-y-4 pt-4 border-t border-dashed border-primary/10 text-left">
-                    <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">{ayah.teksLatin}</p>
-                    <p className="text-sm text-foreground/80 leading-relaxed">{ayah.teksTranslation}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -195,8 +243,7 @@ export default function QuranPage() {
           </div>
         </div>
 
-        {/* 🟢 HERO CARD: Ditambah pada senarai utama surah */}
-        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl text-white text-center">
           <div className="relative z-10 flex flex-col items-center space-y-3">
             <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
               <BookOpen className="w-6 h-6 text-emerald-400" />
@@ -204,7 +251,6 @@ export default function QuranPage() {
             <h2 className="text-3xl font-serif font-bold tracking-wide">Al-Quranul Karim</h2>
             <p className="text-emerald-100 text-xs font-medium italic opacity-80">Panduan Hidup & Cahaya Hati</p>
           </div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
         </div>
 
         {lastRead && (
@@ -215,7 +261,7 @@ export default function QuranPage() {
               </div>  
               <div className="text-left">  
                 <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{t('lastRead')}</p>  
-                <p className="font-bold text-foreground">{surahs.find(s => s.number === lastRead.surah)?.englishName} • Ayat {lastRead.ayah}</p>  
+                <p className="font-bold text-foreground">{surahs.find(s => s.number === lastRead.surah)?.englishName || lastRead.name} • Ayat {lastRead.ayah}</p>  
               </div>  
             </div>  
             <ChevronLeft className="w-5 h-5 text-primary rotate-180" />  
