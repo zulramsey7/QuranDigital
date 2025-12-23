@@ -23,7 +23,6 @@ export default function YasinPage() {
     const fetchYasinData = async () => {
       try {
         setLoading(true);
-        // Mengambil data Indo-Pak
         const [resIndoPak, resLatin] = await Promise.all([
           fetch('https://api.quran.com/api/v4/verses/by_chapter/36?language=ms&fields=text_indopak&translations=39&per_page=300'),
           fetch('https://equran.id/api/v2/surat/36')
@@ -36,12 +35,10 @@ export default function YasinPage() {
           const latinMap = dataLatin.data.ayat;
 
           const formattedVerses = dataIndoPak.verses.map((v: any, index: number) => {
-            // Fungsi untuk menukar nombor rumi ke arab untuk bingkai
             const arabicNumbers = v.verse_number.toString().replace(/\d/g, (d: string) => "٠١٢٣٤٥٦٧٨٩"[parseInt(d)]);
             
             return {
               nomorAyat: v.verse_number,
-              // Menambah simbol bingkai bunga (U+06DD) di depan nombor arab
               teksArab: `${v.text_indopak} ﴿${arabicNumbers}﴾`,
               teksLatin: latinMap[index]?.teksLatin || "",
               teksTranslation: v.translations[0].text.replace(/<[^>]*>?/gm, ''),
@@ -78,17 +75,22 @@ export default function YasinPage() {
         @font-face {
           font-family: 'QuranIndoPak';
           src: url('https://fonts.cdnfonts.com/s/73177/QuranMajeedWeb.woff') format('woff');
+          font-weight: normal;
+          font-style: normal;
         }
 
         .quran-render {
           font-family: 'QuranIndoPak', serif !important;
           direction: rtl !important;
           text-align: right !important;
-          line-height: 2.8 !important; /* Kekal kemas, tidak terlalu tebal */
-          word-spacing: 4px;
+          line-height: 2.6 !important; 
+          word-spacing: 2px;
+          letter-spacing: -0.5px; /* Menjadikan tulisan nampak lebih rapat dan kemas */
           -webkit-font-smoothing: antialiased;
-          font-size: 2.5rem;
-          font-weight: 400; /* Mengelakkan tulisan menjadi terlalu tebal */
+          -moz-osx-font-smoothing: grayscale;
+          font-size: 2.1rem; /* Saiz lebih kecil sedikit */
+          font-weight: 300 !important; /* Ketebalan lebih nipis/halus */
+          opacity: 0.95;
         }
       `}} />
 
@@ -105,7 +107,6 @@ export default function YasinPage() {
           </div>
         </div>
 
-        {/* Card Header */}
         <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl">
           <div className="relative z-10 flex flex-col items-center text-center space-y-3 text-white">
             <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -133,7 +134,6 @@ export default function YasinPage() {
                 </button>
               </div>
 
-              {/* Teks Arab dengan Bingkai Bunga di hujung */}
               <p className="quran-render text-foreground leading-relaxed">
                 {verse.teksArab}
               </p>
