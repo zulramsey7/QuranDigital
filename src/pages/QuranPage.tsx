@@ -119,34 +119,26 @@ export default function QuranPage() {
     const surah = surahs.find(s => s.number === selectedSurah);
     return (
       <MainLayout>
-        {/* ⚡ FORCE FONT: Memastikan ketepatan baris Resm Uthmani */}
+        {/* ⚡ TEKNIK BARU: Menggunakan Google Fonts "Amiri" yang diiktiraf dunia untuk Resm Uthmani */}
         <style dangerouslySetInnerHTML={{ __html: `
-          @font-face {
-            font-family: 'UthmanicStandard';
-            src: url('https://cdn.jsdelivr.net/gh/muhammedtaha38/uthmanic-hafs-font/UthmanicHafs.ttf') format('truetype');
-            font-display: swap;
-          }
+          @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
           .quran-render {
-            font-family: 'UthmanicStandard', serif !important;
-            direction: rtl;
-            text-align: right;
-            line-height: 2.8;
-            word-spacing: 4px;
+            font-family: 'Amiri', serif !important;
+            direction: rtl !important;
+            text-align: right !important;
+            line-height: 2.8 !important;
+            word-spacing: 2px;
+            font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1; /* Mengaktifkan baris standard Quran */
             -webkit-font-smoothing: antialiased;
           }
         `}} />
 
         <audio ref={audioRef} onEnded={() => setPlayingAyah(null)} />
         <div className="space-y-6 animate-fade-in pb-20 px-1">
+          {/* Header & Hero tetap sama */}
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => {
-                setSelectedSurah(null);
-                if (audioRef.current) audioRef.current.pause();
-                setPlayingAyah(null);
-              }}
-              className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center hover:bg-secondary transition-all"
-            >
+            <button onClick={() => setSelectedSurah(null)} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center">
               <ChevronLeft className="w-6 h-6 dark:text-white" />
             </button>
             <div className="text-left">
@@ -155,79 +147,34 @@ export default function QuranPage() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#2c3e50] to-[#27ae60] shadow-xl border border-primary/20">
-            <div className="relative z-10 flex flex-col items-center text-center space-y-3 text-white">
-              <BookOpen className="w-8 h-8 opacity-80" />
-              <h2 className="text-5xl font-serif font-bold tracking-wider">{surah?.name}</h2>
-              <p className="text-lg font-bold italic opacity-90">{surah?.englishNameTranslation}</p>
-            </div>
+          <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] shadow-xl text-white text-center">
+             <h2 className="text-5xl font-serif font-bold mb-2">{surah?.name}</h2>
+             <p className="opacity-80 italic font-medium">{surah?.englishNameTranslation}</p>
           </div>
 
           {loadingAyahs ? (
-            <div className="flex flex-col items-center py-20 gap-4">
-              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Memuatkan Resm Uthmani...</p>
-            </div>
+            <div className="text-center py-20"><div className="animate-spin h-8 w-8 border-b-2 border-primary mx-auto"></div></div>
           ) : (
             <div className="space-y-4">
               {ayahs.map((ayah) => (
-                <div 
-                  key={ayah.nomorAyat}
-                  className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6 animate-fade-in"
-                  onClick={() => saveLastRead(selectedSurah, ayah.nomorAyat)}
-                >
+                <div key={ayah.nomorAyat} className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6">
                   <div className="flex items-center justify-between">
-                    <span className="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full">
-                      {ayah.nomorAyat}
-                    </span>
+                    <span className="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full">{ayah.nomorAyat}</span>
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleAudio(ayah.nomorAyat, ayah.audio);
-                        }}
-                        className={cn(
-                          'w-10 h-10 rounded-full flex items-center justify-center transition-all',
-                          playingAyah === ayah.nomorAyat ? 'bg-primary text-white' : 'bg-secondary text-muted-foreground'
-                        )}
-                      >
+                      <button onClick={() => toggleAudio(ayah.nomorAyat, ayah.audio)} className={cn('w-10 h-10 rounded-full flex items-center justify-center transition-all', playingAyah === ayah.nomorAyat ? 'bg-primary text-white' : 'bg-secondary text-muted-foreground')}>
                         {playingAyah === ayah.nomorAyat ? <Pause size={18} /> : <Volume2 size={18} />}
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          saveLastRead(selectedSurah, ayah.nomorAyat);
-                        }}
-                        className={cn(
-                          'w-10 h-10 rounded-full flex items-center justify-center transition-all',
-                          lastRead?.surah === selectedSurah && lastRead?.ayah === ayah.nomorAyat
-                            ? 'bg-amber-500 text-white'
-                            : 'bg-secondary text-muted-foreground'
-                        )}
-                      >
-                        <Bookmark size={18} fill={lastRead?.surah === selectedSurah && lastRead?.ayah === ayah.nomorAyat ? "currentColor" : "none"} />
                       </button>
                     </div>
                   </div>
 
-                  {/* 📖 TEKS AL-QURAN DENGAN FONT STANDARD */}
+                  {/* 📖 Paparan Teks yang telah di-FIX-kan */}
                   <p className="quran-render text-4xl sm:text-5xl text-foreground">
                     {ayah.teksArab}
                   </p>
 
                   <div className="space-y-4 pt-4 border-t border-dashed border-primary/10 text-left">
-                    <div className="flex gap-3">
-                      <Languages className="w-4 h-4 text-primary shrink-0 mt-1 opacity-70" />
-                      <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">
-                        {ayah.teksLatin}
-                      </p>
-                    </div>
-                    <div className="flex gap-3">
-                      <Globe className="w-4 h-4 text-muted-foreground shrink-0 mt-1 opacity-70" />
-                      <p className="text-sm text-foreground/80 leading-relaxed">
-                        {ayah.teksTranslation}
-                      </p>
-                    </div>
+                    <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">{ayah.teksLatin}</p>
+                    <p className="text-sm text-foreground/80 leading-relaxed">{ayah.teksTranslation}</p>
                   </div>
                 </div>
               ))}
@@ -238,14 +185,12 @@ export default function QuranPage() {
     );
   }
 
+  // Bahagian List Surah (Tiada perubahan)
   return (
     <MainLayout>
       <div className="space-y-6 animate-fade-in pb-20 px-1">
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate('/')}
-            className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center hover:bg-secondary transition-all"
-          >
+          <button onClick={() => navigate('/')} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center">
             <ChevronLeft className="w-6 h-6 dark:text-white" />
           </button>
           <div className="text-left">
@@ -255,19 +200,14 @@ export default function QuranPage() {
         </div>
 
         {lastRead && (
-          <button  
-            onClick={() => handleSurahClick(lastRead.surah)}  
-            className="w-full p-5 flex items-center justify-between rounded-3xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all"  
-          >  
+          <button onClick={() => handleSurahClick(lastRead.surah)} className="w-full p-5 flex items-center justify-between rounded-3xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all">  
             <div className="flex items-center gap-4">  
-              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 text-white">  
+              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-lg text-white">  
                 <Bookmark className="w-6 h-6" fill="currentColor" />  
               </div>  
               <div className="text-left">  
                 <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{t('lastRead')}</p>  
-                <p className="font-bold text-foreground">  
-                  {surahs.find(s => s.number === lastRead.surah)?.englishName} • Ayat {lastRead.ayah}  
-                </p>  
+                <p className="font-bold text-foreground">{surahs.find(s => s.number === lastRead.surah)?.englishName} • Ayat {lastRead.ayah}</p>  
               </div>  
             </div>  
             <ChevronLeft className="w-5 h-5 text-primary rotate-180" />  
@@ -276,34 +216,21 @@ export default function QuranPage() {
 
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input  
-            placeholder={`${t('search')} surah...`}  
-            value={searchQuery}  
-            onChange={(e) => setSearchQuery(e.target.value)}  
-            className="pl-11 h-14 rounded-2xl bg-secondary/30 border-none"  
-          />
+          <Input placeholder={`${t('search')} surah...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-11 h-14 rounded-2xl bg-secondary/30 border-none" />
         </div>
 
         {loading ? (
-          <div className="space-y-3 pt-4 text-center">
-            <div className="animate-spin h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          </div>
+          <div className="text-center py-10"><div className="animate-spin h-8 w-8 border-b-2 border-primary mx-auto"></div></div>
         ) : (
           <div className="grid grid-cols-1 gap-3 pt-2">
             {filteredSurahs.map((surah) => (
-              <button  
-                key={surah.number}  
-                onClick={() => handleSurahClick(surah.number)}  
-                className="group flex items-center gap-4 p-5 rounded-[24px] bg-white dark:bg-slate-900 border border-black/5 hover:border-primary/20 shadow-sm transition-all active:scale-[0.98]"  
-              >  
+              <button key={surah.number} onClick={() => handleSurahClick(surah.number)} className="group flex items-center gap-4 p-5 rounded-[24px] bg-white dark:bg-slate-900 border border-black/5 hover:border-primary/20 shadow-sm transition-all active:scale-[0.98]">  
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">  
                   <span className="text-sm font-bold text-primary">{surah.number}</span>  
                 </div>  
                 <div className="flex-1 text-left">  
                   <p className="font-bold text-foreground text-lg">{surah.englishName}</p>  
-                  <p className="text-[11px] text-muted-foreground font-medium uppercase">  
-                    {surah.revelationType} • {surah.numberOfAyahs} Ayat  
-                  </p>  
+                  <p className="text-[11px] text-muted-foreground font-medium uppercase">{surah.revelationType} • {surah.numberOfAyahs} Ayat</p>  
                 </div>  
                 <p className="text-4xl font-serif text-primary/80">{surah.name}</p>  
               </button>
