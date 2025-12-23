@@ -6,16 +6,29 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Mengunci root dan base path untuk mengelakkan ralat import di Netlify
+  root: "./",
+  base: "/",
   server: {
     host: "::",
     port: 8080,
+  },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+    rollupOptions: {
+      // Memastikan index.html dikesan sebagai entry point utama
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+      },
+    },
   },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: 'auto', // Memastikan Service Worker didaftar secara automatik
+      injectRegister: 'auto',
       includeAssets: [
         "favicon.ico", 
         "robots.txt", 
@@ -56,7 +69,6 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
-        // Menyimpan semua aset statik termasuk gambar sirah anda
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         runtimeCaching: [
           {
