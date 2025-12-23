@@ -24,22 +24,23 @@ export default function YasinPage() {
       try {
         setLoading(true);
 
-        const [resUthmani, resLatin] = await Promise.all([
+        // KEMASKINI: Menggunakan fields=text_indopak untuk skrip seperti dalam gambar
+        const [resIndoPak, resLatin] = await Promise.all([
           fetch(
-            'https://api.quran.com/api/v4/verses/by_chapter/36?language=ms&words=false&translations=39&fields=text_uthmani&per_page=300'
+            'https://api.quran.com/api/v4/verses/by_chapter/36?language=ms&words=false&translations=39&fields=text_indopak&per_page=300'
           ),
           fetch('https://equran.id/api/v2/surat/36')
         ]);
 
-        const dataUthmani = await resUthmani.json();
+        const dataIndoPak = await resIndoPak.json();
         const dataLatin = await resLatin.json();
 
-        if (dataUthmani.verses && dataLatin.code === 200) {
+        if (dataIndoPak.verses && dataLatin.code === 200) {
           const latinMap = dataLatin.data.ayat;
 
-          const formattedVerses = dataUthmani.verses.map((v: any, index: number) => ({
+          const formattedVerses = dataIndoPak.verses.map((v: any, index: number) => ({
             nomorAyat: v.verse_number,
-            teksArab: v.text_uthmani,
+            teksArab: v.text_indopak, // Menggunakan teks skrip IndoPak
             teksLatin: latinMap[index]?.teksLatin || "",
             teksTranslation: v.translations[0].text.replace(/<[^>]*>?/gm, ''),
             audio: `https://everyayah.com/data/Ayman_Sowaid_64kbps/036${String(v.verse_number).padStart(3, '0')}.mp3`
@@ -72,17 +73,21 @@ export default function YasinPage() {
 
   return (
     <MainLayout>
+      {/* KEMASKINI: Menggunakan Font IndoPak Majeed untuk rupa 100% seperti mushaf tempatan */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        @font-face {
+          font-family: 'QuranIndoPak';
+          src: url('https://fonts.cdnfonts.com/s/73177/QuranMajeedWeb.woff') format('woff');
+        }
 
         .quran-render {
-          font-family: 'Amiri', serif !important;
+          font-family: 'QuranIndoPak', serif !important;
           direction: rtl !important;
           text-align: right !important;
-          line-height: 2.8 !important;
-          word-spacing: 2px;
-          font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1;
+          line-height: 3.2 !important;
+          word-spacing: 4px;
           -webkit-font-smoothing: antialiased;
+          font-size: 2.8rem;
         }
       `}} />
 
@@ -99,12 +104,11 @@ export default function YasinPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Surah Yasin</h1>
             <p className="text-[10px] text-primary font-bold uppercase tracking-widest">
-              Resm Uthmani • Standard Font
+              Resm Indo-Pak • Mushaf Standard
             </p>
           </div>
         </div>
 
-        {/* 🟢 CARD ATAS: Ditukar ke warna Hijau Gelap & Tenang */}
         <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10">
           <div className="relative z-10 flex flex-col items-center text-center space-y-3">
             <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -113,7 +117,6 @@ export default function YasinPage() {
             <h2 className="text-5xl font-serif text-white font-bold tracking-wider">يس</h2>
             <p className="text-emerald-100 text-lg font-bold">Surah Yasin</p>
           </div>
-          {/* Efek hiasan cahaya halus */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
         </div>
 
@@ -121,7 +124,7 @@ export default function YasinPage() {
           <div className="flex flex-col items-center py-20 gap-4">
             <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest text-center">
-              Menyusun Ayat Standard...
+              Menyusun Ayat Indo-Pak...
             </p>
           </div>
         ) : (
