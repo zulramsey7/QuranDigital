@@ -15,8 +15,7 @@ import NotFound from "./pages/NotFound";
 import TahlilRingkas from "./pages/TahlilRingkas";
 import TahlilLengkap from "./pages/TahlilLengkap";
 import YasinPage from "./pages/Yasin"; 
-import SirahPage from "./pages/Sirah"; 
-import InstallPWA from "./InstallPWA"; // Import komponen baru anda
+import SirahPage from "./pages/Sirah"; // <--- TAMBAH INI
 
 const queryClient = new QueryClient();
 
@@ -24,27 +23,30 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <TooltipProvider>
-        {/* Notifikasi PWA diletakkan di sini supaya muncul di semua page */}
-        <InstallPWA /> 
-        
         <Toaster />
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Laluan Utama */}
             <Route path="/" element={<HomePage />} />
             <Route path="/quran" element={<QuranPage />} />
             <Route path="/qibla" element={<QiblaPage />} />
+            
+            {/* Laluan /kiblat juga jika HomePage guna /kiblat */}
             <Route path="/kiblat" element={<QiblaPage />} /> 
             <Route path="/doa" element={<DoaPage />} />
             <Route path="/tasbih" element={<TasbihPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/kiblat" element={<QiblaPage />} />
             
+            {/* Laluan Tahlil, Yasin & Sirah */}
             <Route path="/yasin" element={<YasinPage />} />
             <Route path="/tahlil-ringkas" element={<TahlilRingkas />} />
             <Route path="/tahlil-lengkap" element={<TahlilLengkap />} />
-            <Route path="/sirah" element={<SirahPage />} /> 
+            <Route path="/sirah" element={<SirahPage />} /> {/* <--- TAMBAH INI */}
             
+            {/* NotFound MESTI di bawah sekali */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
