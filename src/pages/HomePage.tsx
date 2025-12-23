@@ -83,26 +83,34 @@ export default function HomePage() {
   const [dailyZikir] = useState(zikirs[Math.floor(Math.random() * zikirs.length)]);
 
   useEffect(() => {
+    // Tambah check: Jika prayerTimes kosong, jangan jalankan timer
+    if (!prayerTimes || prayerTimes.length === 0) return;
+
     const interval = setInterval(() => {
       setCurrentTime(new Date());
+      
+      // Memanggil getNextPrayer setiap saat untuk update countdown & trigger alert
       const { prayer, countdown: cd } = getNextPrayer(prayerTimes);
+      
       setCountdown(cd);
+      
       if (prayer) {
         setNextPrayer(t(prayer.nameKey));
       }
     }, 1000);
+
     return () => clearInterval(interval);
-  }, [prayerTimes, t]);
+  }, [prayerTimes, t]); // Pastikan prayerTimes ada dalam dependency array
 
   const features = [
     { label: 'Quran', icon: BookOpen, path: '/quran', color: 'bg-emerald-500/10 text-emerald-500' },
-    { label: 'Sirah', icon: FileText, path: '/sirah', color: 'bg-rose-500/10 text-rose-500' }, // Solat diganti Sirah
-    { label: 'Tasbih', icon: CircleDot, path: '/tasbih', color: 'bg-amber-500/10 text-amber-600' },
-    { label: 'Doa', icon: Moon, path: '/doa', color: 'bg-purple-500/10 text-purple-500' },
-    { label: 'Yasin', icon: LibraryBig, path: '/yasin', color: 'bg-green-600/10 text-green-600' },
-    { label: 'Tahlil', icon: ScrollText, path: '/tahlil-lengkap', color: 'bg-amber-600/10 text-amber-600' },
-    { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-orange-500/10 text-orange-500' },
-    { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-slate-500/10 text-slate-500', onClick: handleShareApp },
+    { label: 'Sirah', icon: FileText, path: '/sirah', color: 'bg-emerald-500/10 text-emerald-500' },
+    { label: 'Tasbih', icon: CircleDot, path: '/tasbih', color: 'bg-emerald-500/10 text-emerald-500' }, // Tukar ke Emerald
+    { label: 'Doa', icon: Moon, path: '/doa', color: 'bg-emerald-500/10 text-emerald-500' },
+    { label: 'Yasin', icon: LibraryBig, path: '/yasin', color: 'bg-emerald-500/10 text-emerald-500' },
+    { label: 'Tahlil', icon: ScrollText, path: '/tahlil-lengkap', color: 'bg-emerald-500/10 text-emerald-500' }, // Tukar ke Emerald
+    { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-emerald-500/10 text-emerald-500' }, // Tukar ke Teal (ton hijau)
+    { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-emerald-500/10 text-emerald-500', onClick: handleShareApp },
   ];
 
   return (
@@ -125,7 +133,7 @@ export default function HomePage() {
         <div className="relative overflow-hidden rounded-[32px] min-h-[280px] shadow-2xl border group bg-slate-950">
           <img 
             src="/masjid-hero.jpg" 
-            className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105"
+            className="absolute inset-0 w-full h-full object-cover object-[center_5%] opacity-40 scale-105"
             alt="Background"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
@@ -172,14 +180,14 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 3. NEW STATS DASHBOARD */}
+        {/* 3. NEW STATS DASHBOARD - UPDATED COLORS */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-orange-500/10 border border-orange-500/20 p-4 rounded-[24px] flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+          <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-[24px] flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
               <Flame className="w-5 h-5 fill-current" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-orange-500 uppercase tracking-tighter leading-none mb-1">Tasbih</p>
+              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-tighter leading-none mb-1">Streak</p>
               <p className="text-lg font-bold leading-none">{dailyStreak} <span className="text-[10px] font-medium text-muted-foreground uppercase">Hari</span></p>
             </div>
           </div>
@@ -231,11 +239,17 @@ export default function HomePage() {
         </div>
 
         {/* 6. ZIKIR HARI INI */}
-        <div className="floating-card p-5 bg-gradient-to-b from-secondary/40 to-secondary/10 border-none text-center">
-          <p className="text-[9px] uppercase font-black text-primary mb-3 tracking-[0.2em]">Zikir Hari Ini</p>
-          <h4 className="text-2xl font-serif text-foreground mb-1">{dailyZikir.ar}</h4>
-          <p className="text-xs text-muted-foreground font-medium">{dailyZikir.ms}</p>
-        </div>
+<div className="floating-card p-5 bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 border-none text-center">
+  <p className="text-[9px] uppercase font-black text-emerald-500 mb-3 tracking-[0.2em]">
+    Zikir Hari Ini
+  </p>
+  <h4 className="text-2xl font-serif text-foreground mb-1">
+    {dailyZikir.ar}
+  </h4>
+  <p className="text-xs text-muted-foreground font-medium">
+    {dailyZikir.ms}
+  </p>
+</div>
 
         {/* 7. POPULAR SECTION */}
         <div className="space-y-3">

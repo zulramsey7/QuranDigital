@@ -4,7 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { useUserStats } from '@/hooks/useUserStats';
-import { CircleDot, ChevronLeft, RotateCcw } from 'lucide-react';
+import { CircleDot, ChevronLeft, RotateCcw, Fingerprint, Sparkles } from 'lucide-react';
 
 export default function TasbihPage() {
   const { t } = useLanguage();
@@ -12,7 +12,7 @@ export default function TasbihPage() {
   const { addZikir } = useUserStats();
 
   const [count, setCount] = useState(0);
-  const [target, setTarget] = useState(33); // Default target 33
+  const [target, setTarget] = useState(33);
   const [selectedZikir, setSelectedZikir] = useState(0);
 
   const zikirList = [
@@ -27,7 +27,6 @@ export default function TasbihPage() {
 
   const handleTap = () => {
     if (isFinished) {
-      // Getar pendek 3 kali jika user cuba tekan selepas habis (tanda kena reset)
       if ('vibrate' in navigator) navigator.vibrate([50, 50, 50]);
       return;
     }
@@ -40,8 +39,7 @@ export default function TasbihPage() {
     setCount(prev => {
       const newCount = prev + 1;
       if (newCount === target && 'vibrate' in navigator) {
-        // Getar panjang (2 saat) sebagai tanda tamat
-        navigator.vibrate(2000);
+        navigator.vibrate(500); // Getar sebagai tanda tamat
       }
       return newCount;
     });
@@ -54,54 +52,73 @@ export default function TasbihPage() {
 
   const changeTarget = (val: number) => {
     setTarget(val);
-    setCount(0); // Reset count bila tukar target
+    setCount(0);
     if ('vibrate' in navigator) navigator.vibrate(50);
   };
 
   return (
     <MainLayout>
-      <div className="space-y-6 animate-fade-in text-center pb-10">
+      <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-24 p-4">
         
-        {/* Header Section */}
-        <div className="flex items-center justify-between px-4 mb-2">
+        {/* HEADER DENGAN BUTANG BACK */}
+        <div className="flex items-center gap-4 text-left py-2">
           <button 
-            onClick={() => navigate(-1)} 
-            className="p-2 rounded-full bg-secondary/20 active:scale-90 transition-all"
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center hover:bg-secondary transition-all active:scale-95"
           >
-            <ChevronLeft className="w-5 h-5 text-foreground" />
+            <ChevronLeft className="w-6 h-6 dark:text-white" />
           </button>
-          <h1 className="text-xl font-bold flex-1 mr-8 tracking-tight">{t('tasbih')}</h1>
+          <div>
+            <h1 className="text-2xl font-black dark:text-white uppercase tracking-tighter">{t('tasbih')}</h1>
+            <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-[0.2em]">Zikir Elektronik</p>
+          </div>
         </div>
 
-        {/* Pilihan Target */}
-        <div className="flex justify-center gap-3 px-4 mb-2">
+        {/* 🟢 HERO CARD (Gaya quran.tsx) */}
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
+          <div className="relative z-10 flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-emerald-400" />
+            </div>
+            <h2 className="text-3xl font-serif font-bold tracking-wide">
+              {zikirList[selectedZikir].arabic}
+            </h2>
+            <p className="text-emerald-100/80 text-xs font-medium italic">
+              "{zikirList[selectedZikir].meaning}"
+            </p>
+          </div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
+        </div>
+
+        {/* TARGET SELECTOR */}
+        <div className="flex justify-center gap-2">
           {targets.map((val) => (
             <button
               key={val}
               onClick={() => changeTarget(val)}
               className={cn(
-                "px-4 py-1.5 rounded-xl text-xs font-black transition-all border",
+                "flex-1 py-3 rounded-2xl text-[10px] font-black transition-all border",
                 target === val 
-                  ? "bg-primary border-primary text-black shadow-lg shadow-primary/20 scale-110" 
-                  : "bg-secondary/10 border-white/5 text-muted-foreground"
+                  ? "bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-900/20" 
+                  : "bg-white dark:bg-slate-900 border-black/5 dark:border-white/5 text-muted-foreground"
               )}
             >
-              TARGET: {val}
+              MATLAMAT: {val}
             </button>
           ))}
         </div>
 
-        {/* Zikir Slider */}
-        <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar px-4">
+        {/* ZIKIR SLIDER */}
+        <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
           {zikirList.map((zikir, index) => (
             <button
               key={index}
               onClick={() => { setSelectedZikir(index); setCount(0); }}
               className={cn(
-                'px-6 py-2 rounded-full whitespace-nowrap transition-all border text-sm font-medium',
+                'px-6 py-3 rounded-2xl whitespace-nowrap transition-all border text-xs font-bold uppercase tracking-tight',
                 selectedZikir === index 
-                  ? 'bg-secondary text-foreground border-primary' 
-                  : 'bg-secondary/20 border-white/10 text-muted-foreground'
+                  ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' 
+                  : 'bg-white dark:bg-slate-900 border-black/5 text-muted-foreground opacity-60'
               )}
             >
               {zikir.transliteration}
@@ -109,90 +126,77 @@ export default function TasbihPage() {
           ))}
         </div>
 
-        {/* Display Card */}
-        <div className={cn(
-          "mx-4 p-8 rounded-[32px] border transition-all duration-500 relative overflow-hidden",
-          isFinished ? "bg-primary/20 border-primary" : "bg-secondary/10 border-primary/20"
-        )}>
-          <div className="absolute top-0 right-0 p-4 opacity-5">
-            <CircleDot className="w-20 h-20 text-primary" />
-          </div>
-          <p className="text-4xl font-arabic text-primary mb-3 leading-relaxed">
-            {zikirList[selectedZikir].arabic}
-          </p>
-          <p className="text-xs text-muted-foreground font-medium">
-            {isFinished ? "ALHAMDULILLAH - SELESAI" : zikirList[selectedZikir].meaning}
-          </p>
-        </div>
-
-        {/* Main Counter Ring */}
-        <div className="py-4 flex flex-col items-center justify-center">
-          <div className="relative w-64 h-64 flex items-center justify-center">
+        {/* MAIN COUNTER DISPLAY */}
+        <div className="relative flex flex-col items-center justify-center py-4">
+          <div className="relative w-72 h-72 flex items-center justify-center">
+            {/* Progress Circle */}
             <svg className="absolute w-full h-full -rotate-90">
               <circle
-                cx="128" cy="128" r="110"
-                stroke="currentColor" strokeWidth="12"
-                fill="transparent" className="text-secondary/20"
+                cx="144" cy="144" r="120"
+                stroke="currentColor" strokeWidth="16"
+                fill="transparent" className="text-secondary dark:text-slate-800"
               />
               <circle
-                cx="128" cy="128" r="110"
-                stroke="currentColor" strokeWidth="12"
+                cx="144" cy="144" r="120"
+                stroke="currentColor" strokeWidth="16"
                 fill="transparent"
-                strokeDasharray={691}
-                strokeDashoffset={691 - (Math.min(count, target) / target) * 691}
+                strokeDasharray={754}
+                strokeDashoffset={754 - (Math.min(count, target) / target) * 754}
                 strokeLinecap="round"
                 className={cn(
-                  "transition-all duration-300",
-                  isFinished ? "text-emerald-500" : "text-primary"
+                  "transition-all duration-500 ease-out",
+                  isFinished ? "text-emerald-500" : "text-emerald-600"
                 )}
               />
             </svg>
-            <div className="flex flex-col items-center">
+            
+            <div className="flex flex-col items-center z-10">
               <span className={cn(
-                "text-8xl font-mono font-bold leading-none transition-colors",
-                isFinished ? "text-emerald-500" : "text-foreground"
+                "text-8xl font-black leading-none transition-all tracking-tighter",
+                isFinished ? "text-emerald-500 scale-110" : "text-foreground dark:text-white"
               )}>
                 {count}
               </span>
-              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-2">
-                / {target}
-              </span>
+              <div className="mt-2 flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full">
+                <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
+                  Sasaran: {target}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Tap Button Section */}
-        <div className="px-10 relative">
+        {/* LARGE TAP BUTTON */}
+        <div className="px-6">
           <button 
             onClick={handleTap} 
             disabled={isFinished}
             className={cn(
-              "w-full aspect-square max-w-[220px] mx-auto rounded-full text-black text-5xl font-black transition-all flex items-center justify-center border-[12px] border-black/10 shadow-2xl",
+              "w-full h-24 rounded-[32px] transition-all flex items-center justify-center gap-4 shadow-xl active:scale-95",
               isFinished 
-                ? "bg-slate-700 grayscale cursor-not-allowed scale-90" 
-                : "bg-gradient-to-br from-primary to-amber-600 active:scale-90 shadow-primary/30"
+                ? "bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-dashed border-slate-300 dark:border-slate-700" 
+                : "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-emerald-500/20"
             )}
           >
-            {isFinished ? "DONE" : "TAP"}
+            {isFinished ? (
+              <span className="font-black uppercase tracking-widest text-sm">Selesai - Sila Reset</span>
+            ) : (
+              <>
+                <Fingerprint className="w-8 h-8 opacity-50" />
+                <span className="text-2xl font-black uppercase tracking-[0.2em]">ZIKIR</span>
+              </>
+            )}
           </button>
-          
-          {isFinished && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-               <div className="bg-black/80 text-primary px-4 py-2 rounded-lg text-xs font-bold animate-bounce border border-primary/20">
-                 Sila Reset
-               </div>
-            </div>
-          )}
         </div>
 
-        {/* Reset Button */}
-        <div className="flex justify-center pt-4">
+        {/* RESET BUTTON */}
+        <div className="flex justify-center">
           <button 
             onClick={handleReset} 
-            className="flex items-center gap-2 px-8 py-3 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 active:scale-95 transition-all text-xs font-black uppercase tracking-[0.2em]"
+            className="flex items-center gap-2 px-10 py-4 rounded-2xl bg-red-500/5 text-red-500 hover:bg-red-500/10 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest border border-red-500/10"
           >
             <RotateCcw className="w-4 h-4" />
-            {t('reset')}
+            Mula Semula
           </button>
         </div>
 
