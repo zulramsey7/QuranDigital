@@ -25,7 +25,6 @@ export default function YasinPage() {
         setLoading(true);
 
         const [resUthmani, resLatin] = await Promise.all([
-          // 🔧 FIX PENTING: tambah per_page=300
           fetch(
             'https://api.quran.com/api/v4/verses/by_chapter/36?language=ms&words=false&translations=39&fields=text_uthmani&per_page=300'
           ),
@@ -73,9 +72,23 @@ export default function YasinPage() {
 
   return (
     <MainLayout>
+      {/* Suntikan Font Resm Uthmani Standard */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @font-face {
+          font-family: 'KFGQPC_Uthmanic';
+          src: url('https://cdn.jsdelivr.net/gh/muhammedtaha38/uthmanic-hafs-font/UthmanicHafs.ttf') format('truetype');
+        }
+        .quran-font {
+          font-family: 'KFGQPC_Uthmanic', serif;
+          direction: rtl;
+          text-align: right;
+          word-spacing: 4px;
+        }
+      `}} />
+
       <audio ref={audioRef} onEnded={() => setIsPlaying(null)} />
 
-      <div className="space-y-6 animate-fade-in pb-20">
+      <div className="space-y-6 animate-fade-in pb-20 px-1">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/')}
@@ -86,7 +99,7 @@ export default function YasinPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Surah Yasin</h1>
             <p className="text-[10px] text-primary font-bold uppercase tracking-widest">
-              Resm Uthmani • Hybrid API
+              Resm Uthmani • Standard Font
             </p>
           </div>
         </div>
@@ -94,7 +107,7 @@ export default function YasinPage() {
         <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-primary via-primary/90 to-primary/80 shadow-xl border border-primary/20">
           <div className="relative z-10 flex flex-col items-center text-center space-y-3">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
+              < BookOpen className="w-6 h-6 text-white" />
             </div>
             <h2 className="text-5xl font-serif text-white font-bold tracking-wider">يس</h2>
             <p className="text-white text-lg font-bold">Surah Yasin</p>
@@ -105,41 +118,46 @@ export default function YasinPage() {
           <div className="flex flex-col items-center py-20 gap-4">
             <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-              Menyusun Resm Uthmani & Latin...
+              Menyusun Ayat Standard...
             </p>
           </div>
         ) : (
           verses.map((verse) => (
-            <div key={verse.nomorAyat} className="floating-card p-6 bg-secondary/20 space-y-6">
+            <div key={verse.nomorAyat} className="floating-card p-6 bg-secondary/20 space-y-6 animate-fade-in">
               <div className="flex justify-between items-center">
-                <span className="w-8 h-8 rounded-lg bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                <span className="w-8 h-8 rounded-lg bg-primary text-black text-xs font-bold flex items-center justify-center shadow-md">
                   {verse.nomorAyat}
                 </span>
                 <button
                   onClick={() => toggleAudio(verse.nomorAyat, verse.audio)}
                   className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center transition-all",
+                    "w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm",
                     isPlaying === verse.nomorAyat
                       ? "bg-primary text-black"
-                      : "bg-background text-muted-foreground border"
+                      : "bg-background text-muted-foreground border border-border/50"
                   )}
                 >
-                  {isPlaying === verse.nomorAyat ? <Pause size={18} /> : <Volume2 size={18} />}
+                  {isPlaying === verse.nomorAyat ? <Pause size={18} fill="currentColor" /> : <Volume2 size={18} />}
                 </button>
               </div>
 
-              <p className="text-3xl leading-[4.5rem] text-right font-serif dir-rtl whitespace-pre-wrap">
+              {/* Paparan Ayat dengan Font Standard Uthmani */}
+              <p className="quran-font text-4xl sm:text-5xl leading-[5rem] sm:leading-[6.5rem] text-foreground whitespace-pre-wrap">
                 {verse.teksArab}
               </p>
 
               <div className="space-y-4 pt-4 border-t border-primary/10">
-                <div className="flex gap-3">
-                  <Languages className="w-4 h-4 text-primary mt-1" />
-                  <p className="text-[14px] font-bold italic">{verse.teksLatin}</p>
+                <div className="flex gap-3 text-left">
+                  <Languages className="w-4 h-4 text-primary mt-1 shrink-0 opacity-70" />
+                  <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">
+                    {verse.teksLatin}
+                  </p>
                 </div>
-                <div className="flex gap-3">
-                  <Globe className="w-4 h-4 text-muted-foreground mt-1" />
-                  <p className="text-sm">{verse.teksTranslation}</p>
+                <div className="flex gap-3 text-left">
+                  <Globe className="w-4 h-4 text-muted-foreground mt-1 shrink-0 opacity-70" />
+                  <p className="text-sm text-foreground/80 leading-relaxed font-medium">
+                    {verse.teksTranslation}
+                  </p>
                 </div>
               </div>
             </div>
