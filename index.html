@@ -14,12 +14,21 @@
     
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
 
+    <script>
+      // SEMAK SESI: Jika sudah ada, sembunyikan splash screen serta-merta sebelum CSS render sepenuhnya
+      if (sessionStorage.getItem('hasSeenSplash')) {
+        document.documentElement.style.setProperty('--splash-display', 'none');
+      }
+    </script>
+
     <style>
+      :root { --splash-display: flex; }
+
       #splash-screen {
         position: fixed;
         inset: 0;
         background: #022c22;
-        display: flex;
+        display: var(--splash-display); /* Guna variable dari skrip di atas */
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -93,7 +102,6 @@
         animation: fade-up 0.8s ease-out forwards 0.3s;
       }
 
-      /* Tribute Wrapper - Dinaikkan ke atas sikit (80px dari bawah) */
       .tribute-wrapper {
         position: absolute;
         bottom: 85px; 
@@ -103,7 +111,7 @@
       }
 
       .tribute-main {
-        color: rgba(255, 255, 255, 0.9); /* Putih bersih */
+        color: rgba(255, 255, 255, 0.9);
         font-size: 12px;
         font-weight: 700;
         letter-spacing: 0.3em;
@@ -112,14 +120,13 @@
       }
 
       .tribute-sub {
-        color: #ffffff; /* Putih bersih */
+        color: #ffffff;
         font-size: 10px;
         font-weight: 400;
         letter-spacing: 0.1em;
         opacity: 0.7;
       }
 
-      /* Animations */
       @keyframes spin { to { transform: rotate(360deg); } }
       
       @keyframes float-main {
@@ -168,11 +175,18 @@
     <script>
       window.addEventListener('load', function() {
         const splash = document.getElementById('splash-screen');
-        // Masa paparan 2.5 saat untuk feel yang lebih tenang (calm)
-        setTimeout(() => {
-          splash.classList.add('fade-out');
-          setTimeout(() => splash.remove(), 800);
-        }, 2500); 
+        
+        // Jika sessionStorage belum ada, jalankan animasi dan set storage
+        if (!sessionStorage.getItem('hasSeenSplash')) {
+          setTimeout(() => {
+            splash.classList.add('fade-out');
+            sessionStorage.setItem('hasSeenSplash', 'true'); // Simpan status
+            setTimeout(() => splash.remove(), 800);
+          }, 2500);
+        } else {
+          // Jika sudah ada, pastikan elemen dibuang terus
+          splash.remove();
+        }
       });
     </script>
   </body>
