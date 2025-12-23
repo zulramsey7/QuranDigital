@@ -72,17 +72,18 @@ export default function YasinPage() {
 
   return (
     <MainLayout>
-      {/* Suntikan Font Resm Uthmani Standard */}
+      {/* ⚡ FORCE FONT: Menggunakan Google Fonts "Amiri" untuk ketepatan baris Resm Uthmani */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @font-face {
-          font-family: 'KFGQPC_Uthmanic';
-          src: url('https://cdn.jsdelivr.net/gh/muhammedtaha38/uthmanic-hafs-font/UthmanicHafs.ttf') format('truetype');
-        }
-        .quran-font {
-          font-family: 'KFGQPC_Uthmanic', serif;
-          direction: rtl;
-          text-align: right;
-          word-spacing: 4px;
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+        .quran-render {
+          font-family: 'Amiri', serif !important;
+          direction: rtl !important;
+          text-align: right !important;
+          line-height: 2.8 !important;
+          word-spacing: 2px;
+          font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1;
+          -webkit-font-smoothing: antialiased;
         }
       `}} />
 
@@ -92,7 +93,7 @@ export default function YasinPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/')}
-            className="w-10 h-10 rounded-full bg-secondary/80 flex items-center justify-center hover:bg-secondary transition-all active:scale-95"
+            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary transition-all active:scale-95"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -104,10 +105,10 @@ export default function YasinPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-primary via-primary/90 to-primary/80 shadow-xl border border-primary/20">
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] shadow-xl border border-primary/20">
           <div className="relative z-10 flex flex-col items-center text-center space-y-3">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-              < BookOpen className="w-6 h-6 text-white" />
+              <BookOpen className="w-6 h-6 text-white" />
             </div>
             <h2 className="text-5xl font-serif text-white font-bold tracking-wider">يس</h2>
             <p className="text-white text-lg font-bold">Surah Yasin</p>
@@ -117,15 +118,15 @@ export default function YasinPage() {
         {loading ? (
           <div className="flex flex-col items-center py-20 gap-4">
             <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest text-center">
               Menyusun Ayat Standard...
             </p>
           </div>
         ) : (
           verses.map((verse) => (
-            <div key={verse.nomorAyat} className="floating-card p-6 bg-secondary/20 space-y-6 animate-fade-in">
+            <div key={verse.nomorAyat} className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6 animate-fade-in">
               <div className="flex justify-between items-center">
-                <span className="w-8 h-8 rounded-lg bg-primary text-black text-xs font-bold flex items-center justify-center shadow-md">
+                <span className="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                   {verse.nomorAyat}
                 </span>
                 <button
@@ -133,20 +134,20 @@ export default function YasinPage() {
                   className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm",
                     isPlaying === verse.nomorAyat
-                      ? "bg-primary text-black"
-                      : "bg-background text-muted-foreground border border-border/50"
+                      ? "bg-primary text-white"
+                      : "bg-secondary text-muted-foreground"
                   )}
                 >
                   {isPlaying === verse.nomorAyat ? <Pause size={18} fill="currentColor" /> : <Volume2 size={18} />}
                 </button>
               </div>
 
-              {/* Paparan Ayat dengan Font Standard Uthmani */}
-              <p className="quran-font text-4xl sm:text-5xl leading-[5rem] sm:leading-[6.5rem] text-foreground whitespace-pre-wrap">
+              {/* 📖 Paparan Ayat dengan Force Font Amiri */}
+              <p className="quran-render text-4xl sm:text-5xl text-foreground">
                 {verse.teksArab}
               </p>
 
-              <div className="space-y-4 pt-4 border-t border-primary/10">
+              <div className="space-y-4 pt-4 border-t border-dashed border-primary/10">
                 <div className="flex gap-3 text-left">
                   <Languages className="w-4 h-4 text-primary mt-1 shrink-0 opacity-70" />
                   <p className="text-[14px] font-bold text-primary/90 italic leading-relaxed">
