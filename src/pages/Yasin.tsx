@@ -72,7 +72,6 @@ export default function YasinPage() {
 
   return (
     <MainLayout>
-      {/* ⚡ FORCE FONT: Menggunakan Google Fonts "Amiri" untuk ketepatan baris Resm Uthmani */}
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -105,14 +104,17 @@ export default function YasinPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] shadow-xl border border-primary/20">
+        {/* 🟢 CARD ATAS: Ditukar ke warna Hijau Gelap & Tenang */}
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10">
           <div className="relative z-10 flex flex-col items-center text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-emerald-400" />
             </div>
             <h2 className="text-5xl font-serif text-white font-bold tracking-wider">يس</h2>
-            <p className="text-white text-lg font-bold">Surah Yasin</p>
+            <p className="text-emerald-100 text-lg font-bold">Surah Yasin</p>
           </div>
+          {/* Efek hiasan cahaya halus */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
         </div>
 
         {loading ? (
@@ -142,7 +144,6 @@ export default function YasinPage() {
                 </button>
               </div>
 
-              {/* 📖 Paparan Ayat dengan Force Font Amiri */}
               <p className="quran-render text-4xl sm:text-5xl text-foreground">
                 {verse.teksArab}
               </p>
