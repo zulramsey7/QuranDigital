@@ -72,7 +72,7 @@ const TahlilLengkap = () => {
     },
     {
       title: "10. Al-Baqarah 1-5",
-      arabic: "الٓمٓ. ذَٰلِكَ ٱلْكِتَٰبُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ. ٱلَّذِينَ يُؤْمِنُونَ بِٱلْغَيْبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقْنَٰهُمْ يُنفِقُونَ. وَٱلَّذِينَ يُؤْمِنُونَ بِمَآ أُنزِلَ إِلَيْكَ وَمَآ أُنزِلَ مِن قَبْلِكَ وَبِٱلْءَاخِرَةِ هُمْ يُوقِنُونَ. أُو۟لَٰٓئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُو۟لَٰٓئِكَ هُمُ ٱلْمُفْلِحُونَ",
+      arabic: "الٓمٓ. ذَٰلِكَ ٱلْكِتَٰبُ Lَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ. ٱلَّذِينَ يُؤْمِنُونَ بِٱلْغَيْبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقْنَٰهُمْ يُنفِقُونَ. وَٱلَّذِينَ يُؤْمِنُونَ بِمَآ أُنزِلَ إِلَيْكَ وَمَآ أُنزِلَ مِن قَبْلِكَ وَبِٱلْءَاخِرَةِ هُمْ يُوقِنُونَ. أُو۟لَٰٓئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُو۟لَٰٓئِكَ هُمُ ٱلْمُفْلِحُونَ",
       latin: "Alif-laam-miim. Dzaalikal-kitaabu laa royba fiih, hudan lil-muttaqiin.",
       translation: "Alif, Laam, Miim. Kitab Al-Quran ini tidak ada sebarang syak padanya.",
       note: ""
@@ -86,7 +86,7 @@ const TahlilLengkap = () => {
     },
     {
       title: "12. Ayat Kursi (Al-Baqarah 255)",
-      arabic: "ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُۥ مَا fِى ٱلسَّمَٰوَٰتِ وَمَا fِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ",
+      arabic: "ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُۥ مَا fِى ٱلسَّمَٰوَٰتِ وَمَا fِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍ مِّنْ عِلْمِهِۦٓ إِلَّا بِإِذْنِهِۦ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ",
       latin: "Allaahu laa ilaaha illaa huwal-hayyul-qoyyuum.",
       translation: "Allah, tiada Tuhan melainkan Dia, Yang Tetap Hidup, Yang Kekal selama-lamanya.",
       note: ""
@@ -179,7 +179,6 @@ const TahlilLengkap = () => {
 
   return (
     <MainLayout>
-      {/* ⚡ FORCE FONT: Standard Resm Uthmani menggunakan Amiri */}
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -208,14 +207,16 @@ const TahlilLengkap = () => {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] shadow-xl text-white text-center">
+        {/* 🟢 CARD ATAS: Ditukar ke warna Hijau Gelap & Tenang (Sama seperti Yasin) */}
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
           <div className="relative z-10 flex flex-col items-center space-y-3">
             <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
-              <ScrollText className="w-6 h-6 text-white" />
+              <ScrollText className="w-6 h-6 text-emerald-400" />
             </div>
             <h2 className="text-4xl font-serif font-bold tracking-wide">تَهْلِيل لڠكڤ</h2>
-            <p className="opacity-80 text-sm font-medium italic">Susunan Tradisi Utama</p>
+            <p className="text-emerald-100 text-sm font-medium italic">Susunan Tradisi Utama</p>
           </div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
         </div>
 
         <div className="space-y-4">
@@ -232,7 +233,6 @@ const TahlilLengkap = () => {
                 )}
               </div>
 
-              {/* 📖 Paparan Teks Arab dengan Amiri Force */}
               <p className="quran-render text-4xl sm:text-5xl text-foreground">
                 {section.arabic}
               </p>
