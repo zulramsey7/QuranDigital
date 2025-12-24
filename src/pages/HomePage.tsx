@@ -123,7 +123,13 @@ export default function HomePage() {
     { label: 'Tahlil-Ringkas', icon: BookAIcon, path: '/tahlil-ringkas', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-emerald-500/10 text-emerald-500' }, 
     { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-emerald-500/10 text-emerald-500', onClick: handleShareApp },
-    { label: 'MUZIK', icon: Muzik, path: '/Muzik', color: 'bg-emerald-500/10 text-emerald-500' },
+    { 
+  label: 'MUZIK', 
+  icon: Music, 
+  path: '/Muzik', 
+  color: 'bg-emerald-500/10 text-emerald-500' 
+},
+
     { label: 'COMING1', icon: LinkIcon, path: '/COMING1', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'COMING2', icon: FishIcon, path: '/COMING2', color: 'bg-emerald-500/10 text-emerald-500' },
   ];
