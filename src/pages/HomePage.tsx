@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import { 
   MapPin, Clock, ChevronRight, BookOpen, Moon, CircleDot, 
   ScrollText, FileText, LibraryBig, Bookmark, 
-  History, Compass, Share2, Star, Play, Download, Flame 
+  History, Compass, Share2, Star, Play, Download, Flame, 
+  BookAIcon,
+  GamepadIcon,
+  LinkIcon,
+  FishIcon
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -115,9 +119,13 @@ export default function HomePage() {
     { label: 'Tasbih', icon: CircleDot, path: '/tasbih', color: 'bg-emerald-500/10 text-emerald-500' }, 
     { label: 'Doa', icon: Moon, path: '/doa', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'Yasin', icon: LibraryBig, path: '/yasin', color: 'bg-emerald-500/10 text-emerald-500' },
-    { label: 'Tahlil', icon: ScrollText, path: '/tahlil-lengkap', color: 'bg-emerald-500/10 text-emerald-500' }, 
+    { label: 'Tahlil-Lengkap', icon: ScrollText, path: '/tahlil-lengkap', color: 'bg-emerald-500/10 text-emerald-500' },
+    { label: 'Tahlil-Ringkas', icon: BookAIcon, path: '/tahlil-ringkas', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-emerald-500/10 text-emerald-500' }, 
     { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-emerald-500/10 text-emerald-500', onClick: handleShareApp },
+    { label: 'COMING', icon: GamepadIcon, path: '/COMING', color: 'bg-emerald-500/10 text-emerald-500' },
+    { label: 'COMING1', icon: LinkIcon, path: '/COMING1', color: 'bg-emerald-500/10 text-emerald-500' },
+    { label: 'COMING2', icon: FishIcon, path: '/COMING2', color: 'bg-emerald-500/10 text-emerald-500' },
   ];
 
   return (
