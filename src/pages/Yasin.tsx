@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, Pause, BookOpen, Volume2, Globe, Languages } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -19,46 +19,44 @@ export default function YasinPage() {
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Fungsi untuk menukar nombor biasa ke nombor Arab
+  const toArabicVariant = (n: number) => {
+    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return n.toString().split('').map(x => arabicDigits[parseInt(x)]).join('');
+  };
+
   useEffect(() => {
     const fetchYasinData = async () => {
       try {
         setLoading(true);
-        const [resIndoPak, resLatin] = await Promise.all([
-          fetch('https://api.quran.com/api/v4/verses/by_chapter/36?language=ms&fields=text_indopak&translations=39&per_page=300'),
-          fetch('https://equran.id/api/v2/surat/36')
-        ]);
+        const response = await fetch('https://equran.id/api/v2/surat/36');
+        const data = await response.json();
 
-        const dataIndoPak = await resIndoPak.json();
-        const dataLatin = await resLatin.json();
-
-        if (dataIndoPak.verses && dataLatin.code === 200) {
-          const latinMap = dataLatin.data.ayat;
-
-          const formattedVerses = dataIndoPak.verses.map((v: any, index: number) => {
-            const arabicNumbers = v.verse_number.toString().replace(/\d/g, (d: string) => "٠١٢٣٤٥٦٧٨٩"[parseInt(d)]);
-            
-            return {
-              nomorAyat: v.verse_number,
-              teksArab: `${v.text_indopak} ﴿${arabicNumbers}﴾`,
-              teksLatin: latinMap[index]?.teksLatin || "",
-              teksTranslation: v.translations[0].text.replace(/<[^>]*>?/gm, ''),
-              audio: `https://everyayah.com/data/Ayman_Sowaid_64kbps/036${String(v.verse_number).padStart(3, '0')}.mp3`
-            };
-          });
+        if (data.code === 200) {
+          const formattedVerses = data.data.ayat.map((v: any) => ({
+            nomorAyat: v.nomorAyat,
+            // Simbol ۝ diikuti dengan nombor dalam format tulisan Arab
+            teksArab: `${v.teksArab} ۝${toArabicVariant(v.nomorAyat)}`,
+            teksLatin: v.teksLatin,
+            teksTranslation: v.teksIndonesia,
+            audio: v.audio['05']
+          }));
 
           setVerses(formattedVerses);
         }
       } catch (error) {
-        console.error("Gagal memuatkan data:", error);
+        console.error("Gagal memuatkan data Yasin:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchYasinData();
   }, []);
 
   const toggleAudio = (nomorAyat: number, url: string) => {
     if (!audioRef.current) return;
+
     if (isPlaying === nomorAyat) {
       audioRef.current.pause();
       setIsPlaying(null);
@@ -72,84 +70,114 @@ export default function YasinPage() {
   return (
     <MainLayout>
       <style dangerouslySetInnerHTML={{ __html: `
-        @font-face {
-          font-family: 'QuranIndoPak';
-          src: url('https://fonts.cdnfonts.com/s/73177/QuranMajeedWeb.woff') format('woff');
-          font-weight: normal;
-          font-style: normal;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap');
 
         .quran-render {
-          font-family: 'QuranIndoPak', serif !important;
+          font-family: 'Scheherazade New', serif !important;
           direction: rtl !important;
           text-align: right !important;
-          line-height: 2.6 !important; 
-          word-spacing: 2px;
-          letter-spacing: -0.5px; /* Menjadikan tulisan nampak lebih rapat dan kemas */
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          font-size: 2.1rem; /* Saiz lebih kecil sedikit */
-          font-weight: 300 !important; /* Ketebalan lebih nipis/halus */
-          opacity: 0.95;
+          line-height: 2.5 !important;
+          font-size: 2.7rem !important;
+          font-weight: 500 !important;
+          word-spacing: 4px;
+          /* cv01 mengaktifkan gaya End of Ayah yang membungkus nombor */
+          font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1, "ss01" 1 !important;
+        }
+
+        @media (max-width: 640px) {
+          .quran-render {
+            font-size: 2.2rem !important;
+            line-height: 2.2 !important;
+          }
         }
       `}} />
 
       <audio ref={audioRef} onEnded={() => setIsPlaying(null)} />
 
-      <div className="space-y-6 animate-fade-in pb-20 px-1">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/')} className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-            <ChevronLeft className="w-6 h-6" />
+      <div className="space-y-6 animate-fade-in pb-20 px-2">
+        {/* Header Section */}
+        <div className="flex items-center gap-4 text-left pt-4">
+          <button
+            onClick={() => navigate('/')}
+            className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center hover:bg-secondary transition-all active:scale-95"
+          >
+            <ChevronLeft className="w-6 h-6 dark:text-white" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Surah Yasin</h1>
-            <p className="text-[10px] text-primary font-bold uppercase tracking-widest">Indo-Pak Script • Bingkai Ayat</p>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Surah Yasin</h1>
+            <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">
+              Resam Biasa • Paparan Jelas
+            </p>
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl">
-          <div className="relative z-10 flex flex-col items-center text-center space-y-3 text-white">
-            <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+        {/* Hero Card */}
+        <div className="relative overflow-hidden rounded-[32px] p-8 bg-gradient-to-br from-[#064e3b] to-[#022c22] shadow-xl border border-white/10 text-white text-center">
+          <div className="relative z-10 flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
               <BookOpen className="w-6 h-6 text-emerald-400" />
             </div>
-            <h2 className="text-5xl font-serif font-bold">يس</h2>
-            <p className="text-emerald-100 text-lg font-bold">Surah Yasin</p>
+            <h2 className="text-5xl font-serif font-bold tracking-wider">يس</h2>
+            <p className="text-emerald-100 text-sm font-medium italic opacity-80 text-center">Jantung Al-Quran</p>
           </div>
         </div>
 
         {loading ? (
-          <div className="py-20 text-center animate-pulse text-muted-foreground uppercase text-xs font-bold tracking-widest">Memuatkan skrip Indo-Pak...</div>
+          <div className="flex flex-col items-center py-20 gap-4">
+            <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
+              Memuatkan Teks Imla'ei...
+            </p>
+          </div>
         ) : (
-          verses.map((verse) => (
-            <div key={verse.nomorAyat} className="p-6 bg-white dark:bg-slate-900 rounded-[28px] border border-black/5 shadow-sm space-y-6">
-              <div className="flex justify-between items-center">
-                <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  Ayat {verse.nomorAyat}
-                </span>
-                <button
-                  onClick={() => toggleAudio(verse.nomorAyat, verse.audio)}
-                  className={cn("w-9 h-9 rounded-full flex items-center justify-center transition-all", isPlaying === verse.nomorAyat ? "bg-primary text-white" : "bg-secondary text-muted-foreground")}
-                >
-                  {isPlaying === verse.nomorAyat ? <Pause size={16} fill="currentColor" /> : <Volume2 size={16} />}
-                </button>
-              </div>
-
-              <p className="quran-render text-foreground leading-relaxed">
-                {verse.teksArab}
-              </p>
-
-              <div className="space-y-3 pt-4 border-t border-dashed border-primary/10">
-                <div className="flex gap-3">
-                  <Languages className="w-4 h-4 text-primary mt-1 shrink-0 opacity-60" />
-                  <p className="text-[13px] font-bold text-primary/90 italic leading-relaxed">{verse.teksLatin}</p>
+          <div className="space-y-4">
+            {verses.map((verse) => (
+              <div 
+                key={verse.nomorAyat} 
+                className={cn(
+                  "p-6 bg-white dark:bg-slate-900 rounded-[28px] border transition-all duration-300 shadow-sm space-y-6",
+                  isPlaying === verse.nomorAyat ? "border-emerald-500/50 bg-emerald-50/30 dark:bg-emerald-500/5" : "border-black/5 dark:border-white/5"
+                )}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tight border border-emerald-100 dark:border-emerald-500/20">
+                    Ayat {verse.nomorAyat}
+                  </span>
+                  <button
+                    onClick={() => toggleAudio(verse.nomorAyat, verse.audio)}
+                    className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95",
+                      isPlaying === verse.nomorAyat
+                        ? "bg-emerald-500 text-white shadow-lg shadow-emerald-200"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                    )}
+                  >
+                    {isPlaying === verse.nomorAyat ? <Pause size={18} fill="currentColor" /> : <Volume2 size={18} />}
+                  </button>
                 </div>
-                <div className="flex gap-3">
-                  <Globe className="w-4 h-4 text-muted-foreground mt-1 shrink-0 opacity-60" />
-                  <p className="text-sm text-foreground/80 leading-relaxed">{verse.teksTranslation}</p>
+
+                {/* Paparan Teks Arab dengan Simbol ۝ yang membungkus nombor */}
+                <p className="quran-render text-slate-800 dark:text-slate-100">
+                  {verse.teksArab}
+                </p>
+
+                <div className="space-y-4 pt-4 border-t border-dashed border-black/5 dark:border-white/5 text-left">
+                  <div className="flex gap-3">
+                    <Languages className="w-4 h-4 text-emerald-600 shrink-0 mt-1 opacity-70" />
+                    <p className="text-[14px] font-bold text-emerald-900 dark:text-emerald-400 italic leading-relaxed">
+                      {verse.teksLatin}
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Globe className="w-4 h-4 text-slate-400 shrink-0 mt-1 opacity-70" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                      {verse.teksTranslation}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </MainLayout>
