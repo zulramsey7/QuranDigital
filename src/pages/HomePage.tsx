@@ -7,6 +7,7 @@ import {
   GamepadIcon,
   LinkIcon,
   FishIcon
+  Music
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
