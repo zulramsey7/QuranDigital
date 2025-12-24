@@ -16,7 +16,8 @@ import TahlilRingkas from "./pages/TahlilRingkas";
 import TahlilLengkap from "./pages/TahlilLengkap";
 import YasinPage from "./pages/Yasin"; 
 import SirahPage from "./pages/Sirah"; 
-import InstallPWA from "./InstallPWA"; // Import komponen baru anda
+import MuzikPage from "./pages/Muzik"; // <--- TAMBAH INI
+import InstallPWA from "./InstallPWA"; 
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,6 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <TooltipProvider>
-        {/* Notifikasi PWA diletakkan di sini supaya muncul di semua page */}
         <InstallPWA /> 
         
         <Toaster />
@@ -44,6 +44,7 @@ const App = () => (
             <Route path="/tahlil-ringkas" element={<TahlilRingkas />} />
             <Route path="/tahlil-lengkap" element={<TahlilLengkap />} />
             <Route path="/sirah" element={<SirahPage />} /> 
+            <Route path="/MUZIK" element={<MuzikPage />} /> {/* <--- TAMBAH INI */}
             
             <Route path="*" element={<NotFound />} />
           </Routes>
