@@ -6,8 +6,8 @@ import {
   BookAIcon,
   GamepadIcon,
   LinkIcon,
-  FishIcon
-  Music
+  FishIcon,
+  Music // Pastikan Music ada di sini
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -114,6 +114,7 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, [prayerTimes, t]);
 
+  // FEATURE GRID DATA
   const features = [
     { label: 'Quran', icon: BookOpen, path: '/quran', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'Sirah', icon: FileText, path: '/sirah', color: 'bg-emerald-500/10 text-emerald-500' },
@@ -124,13 +125,7 @@ export default function HomePage() {
     { label: 'Tahlil-Ringkas', icon: BookAIcon, path: '/tahlil-ringkas', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'Kiblat', icon: Compass, path: '/kiblat', color: 'bg-emerald-500/10 text-emerald-500' }, 
     { label: 'Kongsi', icon: Share2, path: '#', color: 'bg-emerald-500/10 text-emerald-500', onClick: handleShareApp },
-    { 
-  label: 'MUZIK', 
-  icon: Music, 
-  path: '/Muzik', 
-  color: 'bg-emerald-500/10 text-emerald-500' 
-},
-
+    { label: 'MUZIK', icon: Music, path: '/MUZIK', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'COMING1', icon: LinkIcon, path: '/COMING1', color: 'bg-emerald-500/10 text-emerald-500' },
     { label: 'COMING2', icon: FishIcon, path: '/COMING2', color: 'bg-emerald-500/10 text-emerald-500' },
   ];
@@ -225,7 +220,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 4. CONTINUE READING (FIXED: Redirect to /quran only to avoid 404) */}
+        {/* 4. CONTINUE READING */}
         <Link 
           to="/quran" 
           className="floating-card p-4 flex items-center justify-between bg-white dark:bg-secondary/20 border-none shadow-sm group"
