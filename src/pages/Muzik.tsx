@@ -23,7 +23,6 @@ const MuzikPage = () => {
   const navigate = useNavigate();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // --- STATES ---
   const [activeTab, setActiveTab] = useState<'terapi' | 'pagi' | 'fokus' | 'fav'>('terapi');
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -40,39 +39,60 @@ const MuzikPage = () => {
     { id: 'f2', title: "Rain & Quran Therapy", artist: "Nature Deen", url: "https://actions.google.com/sounds/v1/water/rain_on_roof.ogg", duration: "05:00", category: 'fokus' },
   ];
 
-  // 1. Load Data Awal
+  // --- 1. MEDIA SESSION API (Untuk Background Play) ---
+  useEffect(() => {
+    if ('mediaSession' in navigator && currentTrack) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentTrack.title,
+        artist: currentTrack.artist,
+        album: 'JomNgaji Audio Hub',
+        artwork: [
+          { src: 'https://cdn-icons-png.flaticon.com/512/3659/3659784.png', sizes: '512x512', type: 'image/png' }
+        ]
+      });
+
+      navigator.mediaSession.setActionHandler('play', () => {
+        audioRef.current?.play();
+        setIsPlaying(true);
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        audioRef.current?.pause();
+        setIsPlaying(false);
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => playNext(-1));
+      navigator.mediaSession.setActionHandler('nexttrack', () => playNext(1));
+    }
+  }, [currentTrack]);
+
+  // --- 2. AUDIO RECOVERY & PERSISTENCE ---
   useEffect(() => {
     const savedFavs = localStorage.getItem('muzik_favs');
     const lastTrack = localStorage.getItem('muzik_last_track');
     if (savedFavs) setIsLiked(JSON.parse(savedFavs));
     if (lastTrack) {
-      const parsedTrack = JSON.parse(lastTrack);
-      setCurrentTrack(parsedTrack);
-      // Sediakan audio tapi jangan mainkan terus
-      if (audioRef.current) audioRef.current.src = parsedTrack.url;
+      const parsed = JSON.parse(lastTrack);
+      setCurrentTrack(parsed);
+      if (audioRef.current) audioRef.current.src = parsed.url;
     }
   }, []);
 
-  // 2. Simpan Kegemaran
   useEffect(() => {
     localStorage.setItem('muzik_favs', JSON.stringify(isLiked));
   }, [isLiked]);
 
-  // 3. Logic Timer (Padam jika habis)
   useEffect(() => {
     if (timeLeft === null) return;
     if (timeLeft <= 0) {
       audioRef.current?.pause();
       setIsPlaying(false);
       setTimeLeft(null);
-      toast.info("Timer tamat.");
       return;
     }
     const timer = setInterval(() => setTimeLeft(prev => (prev ? prev - 1 : 0)), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // --- FUNCTIONS ---
+  // --- 3. FUNCTIONS ---
   const handlePlay = (track: Track) => {
     if (!audioRef.current) return;
 
@@ -92,34 +112,22 @@ const MuzikPage = () => {
     }
   };
 
+  const playNext = (direction: number) => {
+    const idx = tracks.findIndex(t => t.id === currentTrack?.id);
+    let nextIdx = idx + direction;
+    if (nextIdx < 0) nextIdx = tracks.length - 1;
+    if (nextIdx >= tracks.length) nextIdx = 0;
+    handlePlay(tracks[nextIdx]);
+  };
+
   const handleLike = (id: string) => {
-    setIsLiked(prev => {
-      const isExist = prev.includes(id);
-      if (isExist) {
-        toast.info("Dikeluarkan dari koleksi");
-        return prev.filter(item => item !== id);
-      } else {
-        toast.success("Ditambah ke koleksi");
-        return [...prev, id];
-      }
-    });
+    setIsLiked(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    toast.success("Koleksi dikemaskini");
   };
 
   const toggleTimer = () => {
-    if (timeLeft !== null) {
-      setTimeLeft(null);
-      toast.info("Timer dibatalkan");
-    } else {
-      setTimeLeft(30 * 60); // Default 30 minit
-      toast.success("Timer diset 30 minit");
-    }
-  };
-
-  const changeSpeed = () => {
-    const speeds = [1, 1.25, 1.5, 0.75];
-    const nextSpeed = speeds[(speeds.indexOf(playbackSpeed) + 1) % speeds.length];
-    setPlaybackSpeed(nextSpeed);
-    if (audioRef.current) audioRef.current.playbackRate = nextSpeed;
+    if (timeLeft !== null) { setTimeLeft(null); toast.info("Timer dibatalkan"); }
+    else { setTimeLeft(30 * 60); toast.success("Timer diset 30 minit"); }
   };
 
   const filteredTracks = activeTab === 'fav' 
@@ -129,10 +137,13 @@ const MuzikPage = () => {
   return (
     <MainLayout>
       <div className="space-y-6 animate-fade-in pb-32 max-w-md mx-auto px-2">
-        <audio ref={audioRef} onEnded={() => {
-          const idx = tracks.findIndex(t => t.id === currentTrack?.id);
-          handlePlay(tracks[(idx + 1) % tracks.length]);
-        }} />
+        <audio 
+          ref={audioRef} 
+          preload="auto"
+          onEnded={() => playNext(1)}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+        />
 
         {/* Header */}
         <div className="flex items-center justify-between pt-4">
@@ -143,7 +154,12 @@ const MuzikPage = () => {
             <h1 className="text-xl font-bold dark:text-white">Audio Hub</h1>
           </div>
           <div className="flex gap-2">
-             <button onClick={changeSpeed} className="px-3 h-9 rounded-xl bg-secondary/50 flex items-center gap-2 text-[10px] font-bold">
+             <button onClick={() => {
+                const s = [1, 1.5, 2, 0.75];
+                const n = s[(s.indexOf(playbackSpeed) + 1) % s.length];
+                setPlaybackSpeed(n);
+                if (audioRef.current) audioRef.current.playbackRate = n;
+             }} className="px-3 h-9 rounded-xl bg-secondary/50 flex items-center gap-2 text-[10px] font-bold dark:text-white">
                <Gauge className="w-3 h-3" /> {playbackSpeed}x
              </button>
              <button onClick={toggleTimer} className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all", timeLeft ? "bg-primary text-black" : "bg-secondary/50")}>
@@ -153,7 +169,8 @@ const MuzikPage = () => {
         </div>
 
         {/* Player Card */}
-        <div className={cn("relative overflow-hidden rounded-[40px] p-8 shadow-2xl border border-white/5 transition-colors duration-500", activeTab === 'terapi' ? "bg-slate-950" : "bg-emerald-950")}>
+        <div className={cn("relative overflow-hidden rounded-[40px] p-8 shadow-2xl border border-white/5 transition-colors duration-500", 
+          activeTab === 'terapi' ? "bg-slate-950" : activeTab === 'pagi' ? "bg-emerald-950" : "bg-indigo-950")}>
           <div className="absolute top-[-20px] right-[-20px] opacity-10">
             <Disc className={cn("w-48 h-48 text-white", isPlaying && "animate-spin-slow")} />
           </div>
@@ -172,23 +189,21 @@ const MuzikPage = () => {
                <button onClick={() => currentTrack && handlePlay(currentTrack)} className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-black shadow-xl hover:scale-105 active:scale-95 transition-all">
                  {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
                </button>
-               <button onClick={() => toast.success("Pautan disalin")} className="p-3 text-white/40"><Share2 className="w-6 h-6" /></button>
+               <button onClick={() => toast.success("Info disalin")} className="p-3 text-white/40"><Share2 className="w-6 h-6" /></button>
             </div>
             {timeLeft !== null && (
-              <div className="bg-primary/20 px-4 py-1 rounded-full border border-primary/20">
-                <p className="text-[10px] text-primary font-mono font-bold tracking-widest">
-                  OFF IN: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
-                </p>
-              </div>
+              <p className="text-[10px] text-primary font-mono font-bold bg-primary/10 px-4 py-1 rounded-full">
+                OFF IN: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+              </p>
             )}
           </div>
         </div>
 
         {/* Tab Menu */}
-        <div className="flex gap-1 p-1 bg-secondary/30 rounded-3xl border border-black/5">
+        <div className="flex gap-1 p-1 bg-secondary/30 rounded-3xl border border-black/5 overflow-x-auto no-scrollbar">
           {['terapi', 'pagi', 'fokus', 'fav'].map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab as any)} className={cn(
-              "flex-1 py-3 rounded-2xl text-[10px] font-black uppercase transition-all",
+              "flex-1 py-3 px-4 rounded-2xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
               activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-emerald-600" : "text-muted-foreground opacity-60"
             )}>
               {tab}
@@ -198,31 +213,26 @@ const MuzikPage = () => {
 
         {/* List */}
         <div className="px-2 space-y-3">
-          {filteredTracks.length > 0 ? filteredTracks.map((track) => (
+          {filteredTracks.map((track) => (
             <div key={track.id} onClick={() => handlePlay(track)} className={cn(
               "flex items-center justify-between p-4 rounded-[28px] border transition-all cursor-pointer",
               currentTrack?.id === track.id ? "bg-primary/10 border-primary/30" : "bg-white dark:bg-slate-900 border-black/5"
             )}>
               <div className="flex items-center gap-4 text-left">
                 <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", currentTrack?.id === track.id ? "bg-primary text-black" : "bg-secondary")}>
-                  {currentTrack?.id === track.id && isPlaying ? <div className="flex gap-0.5"><div className="w-1 h-3 bg-black animate-bounce" /></div> : <Music className="w-4 h-4" />}
+                  {currentTrack?.id === track.id && isPlaying ? <div className="flex gap-0.5"><div className="w-0.5 h-3 bg-black animate-bounce" /></div> : <Music className="w-4 h-4" />}
                 </div>
                 <div>
                   <h4 className="font-bold text-sm leading-tight dark:text-white">{track.title}</h4>
                   <p className="text-[10px] text-muted-foreground uppercase">{track.artist}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                {isLiked.includes(track.id) && <Heart className="w-3 h-3 text-red-500 fill-current" />}
-                <span className="text-[10px] font-mono text-muted-foreground">{track.duration}</span>
-              </div>
+              <Heart className={cn("w-4 h-4", isLiked.includes(track.id) ? "text-red-500 fill-current" : "text-muted-foreground/20")} />
             </div>
-          )) : (
-            <div className="py-20 text-center opacity-20"><Info className="mx-auto mb-2" /><p className="text-[10px] font-bold uppercase">Tiada Lagu</p></div>
-          )}
+          ))}
         </div>
       </div>
-      <style dangerouslySetInnerHTML={{ __html: `.animate-spin-slow { animation: spin 15s linear infinite; } @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }` }} />
+      <style dangerouslySetInnerHTML={{ __html: `.animate-spin-slow { animation: spin 15s linear infinite; } @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .no-scrollbar::-webkit-scrollbar { display: none; }` }} />
     </MainLayout>
   );
 };
