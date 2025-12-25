@@ -6,7 +6,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  // Mengunci root dan base path untuk mengelakkan ralat import di Netlify
+  // Mengunci root dan base path untuk mengelakkan ralat import di Netlify/Vercel
   root: "./",
   base: "/",
   server: {
@@ -30,7 +30,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       injectRegister: 'auto',
       includeAssets: [
-        "favicon.ico", 
+        "favicon.ico",
+        "masjid-hero.jpg",
         "robots.txt", 
         "sirah1.png", 
         "sirah2.png", 
@@ -43,8 +44,8 @@ export default defineConfig(({ mode }) => ({
         name: "QuranDigital 2025",
         short_name: "JomNgaji",
         description: "Aplikasi Islamik PWA dengan Al-Quran, Waktu Solat, Kiblat, Tasbih dan Doa",
-        theme_color: "#076244ff", // KEMASKINI: Tukar dari kuning #d4af37 ke Hijau Emerald
-        background_color: "#ffffffff",
+        theme_color: "#076244ff", 
+        background_color: "#ffffff",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
@@ -69,8 +70,27 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
+        // KEMASKINI: mp3 dibuang dari sini untuk mengelakkan ralat saiz fail 2MB semasa build
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        
         runtimeCaching: [
+          {
+            // Menangani fail audio secara dinamik (On-Demand)
+            urlPattern: /\.(?:mp3|wav|ogg)$/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "jomngaji-audio-v1",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // Simpan selama 30 hari
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+              // Membolehkan range requests (penting untuk seek audio mp3)
+              rangeRequests: true, 
+            },
+          },
           {
             urlPattern: /^https:\/\/api\.aladhan\.com\/.*/i,
             handler: "CacheFirst",
