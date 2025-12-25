@@ -19,7 +19,7 @@ interface Track {
   artist: string;
   url: string;
   duration: string;
-  category: 'terapi' | 'pagi' | 'fokus' | 'fav';
+  category: 'nasyid' | 'sholawat' | 'zikir' | 'fav'; // Tukar di sini
 }
 
 const MuzikPage = () => {
@@ -28,7 +28,7 @@ const MuzikPage = () => {
 
   const [tracks] = useState<Track[]>(musicData as Track[]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<'terapi' | 'pagi' | 'fokus' | 'fav'>('terapi');
+  const [activeTab, setActiveTab] = useState<'nasyid' | 'sholawat' | 'zikir' | 'fav'>('nasyid');
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLiked, setIsLiked] = useState<string[]>([]);
@@ -197,10 +197,22 @@ const MuzikPage = () => {
 
         {/* Header */}
         <div className="flex items-center justify-between pt-6">
-          <button onClick={() => navigate('/')} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center border border-black/5 active:scale-90 transition-all">
-            <ChevronLeft className="w-6 h-6 dark:text-white" />
-          </button>
+          {/* Bahagian Kiri: Butang Back + Tajuk */}
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => navigate('/')} 
+              className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center border border-black/5 active:scale-90 transition-all"
+            >
+              <ChevronLeft className="w-6 h-6 dark:text-white" />
+            </button>
+            
+            <div className="flex flex-col">
+              <span className="text-sm font-black dark:text-white uppercase tracking-tight">Audio</span>
+              <span className="text-[10px] text-primary font-bold uppercase leading-none">Koleksi</span>
+            </div>
+          </div>
           
+          {/* Bahagian Kanan: Controls (Kekalkan yang asal) */}
           <div className="flex gap-2">
              <button onClick={() => {
                 const speeds = [1, 1.5, 2];
@@ -258,8 +270,13 @@ const MuzikPage = () => {
         </div>
 
         {/* Player Card */}
-        <div className={cn("relative overflow-hidden rounded-[40px] p-8 shadow-2xl transition-all duration-700", 
-          activeTab === 'terapi' ? "bg-slate-950" : activeTab === 'pagi' ? "bg-emerald-950" : "bg-indigo-950")}>
+        <div className={cn(
+  "relative overflow-hidden rounded-[40px] p-8 shadow-2xl transition-all duration-700", 
+  activeTab === 'nasyid' ? "bg-slate-950" : 
+  activeTab === 'sholawat' ? "bg-emerald-950" : 
+  activeTab === 'zikir' ? "bg-indigo-950" : 
+  "bg-rose-950" // Warna untuk tab 'fav'
+)}>
           
           <div className="relative z-10 flex flex-col items-center text-center space-y-6">
             <div className={cn("w-28 h-28 rounded-[40px] flex items-center justify-center backdrop-blur-3xl border transition-all duration-700", 
@@ -307,16 +324,21 @@ const MuzikPage = () => {
           </div>
         </div>
 
-        <div className="flex gap-1.5 p-1.5 bg-secondary/20 rounded-2xl overflow-x-auto no-scrollbar border border-white/5">
-          {['terapi', 'pagi', 'fokus', 'fav'].map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab as any)} className={cn(
-              "flex-1 py-3 px-5 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
-              activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-primary" : "text-muted-foreground opacity-50"
-            )}>
-              {tab}
-            </button>
-          ))}
-        </div>
+        {/* Bahagian Tab Buttons yang perlu diganti */}
+<div className="flex gap-1.5 p-1.5 bg-secondary/20 rounded-2xl overflow-x-auto no-scrollbar border border-white/5">
+  {['nasyid', 'sholawat', 'zikir', 'fav'].map((tab) => (
+    <button 
+      key={tab} 
+      onClick={() => setActiveTab(tab as any)} 
+      className={cn(
+        "flex-1 py-3 px-5 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
+        activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-primary" : "text-muted-foreground opacity-50"
+      )}
+    >
+      {tab}
+    </button>
+  ))}
+</div>
 
         <div className="space-y-3">
           {filteredTracks.map((track) => (
