@@ -1,0 +1,18 @@
+[
+  {
+    "id": "n1",
+    "title": "Asmaul Husna",
+    "artist": "Koleksi Zikir",
+    "url": "/audio/AsmaulHusna.mp3",
+    "duration": "03:42",
+    "category": "pagi"
+  },
+  {
+    "id": "n2",
+    "title": "Selawat Tafrijiyah",
+    "artist": "Koleksi Zikir",
+    "url": "/audio/SelawatTafrijiyah.mp3",
+    "duration": "05:11",
+    "category": "pagi"
+  }
+]
