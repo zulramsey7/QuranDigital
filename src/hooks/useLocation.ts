@@ -18,7 +18,11 @@ export function useLocation() {
   const [location, setLocation] = useState<LocationData>(() => {
     const saved = localStorage.getItem('user-location');
     if (saved) {
-      return JSON.parse(saved);
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return DEFAULT_LOCATION;
+      }
     }
     return DEFAULT_LOCATION;
   });
@@ -33,12 +37,13 @@ export function useLocation() {
     }
 
     setLoading(true);
+    
+    // Gunakan getCurrentPosition dengan opsyen yang lebih pantas
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
         
         try {
-          // Reverse geocoding to get city name
           const response = await fetch(
             `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
           );
@@ -47,33 +52,36 @@ export function useLocation() {
           const newLocation = {
             latitude,
             longitude,
-            city: data.city || data.locality || 'Unknown',
-            country: data.countryName || 'Unknown'
+            city: data.city || data.locality || 'Lokasi Semasa',
+            country: data.countryName || 'Malaysia'
           };
           
           setLocation(newLocation);
           localStorage.setItem('user-location', JSON.stringify(newLocation));
           setError(null);
         } catch {
-          // Use coordinates without city name
-          const newLocation = {
+          const fallbackLocation = {
             latitude,
             longitude,
-            city: 'Current Location',
-            country: ''
+            city: 'Lokasi Semasa',
+            country: 'Malaysia'
           };
-          setLocation(newLocation);
-          localStorage.setItem('user-location', JSON.stringify(newLocation));
+          setLocation(fallbackLocation);
+          localStorage.setItem('user-location', JSON.stringify(fallbackLocation));
+        } finally {
+          setLoading(false);
         }
-        
-        setLoading(false);
       },
       (err) => {
         console.error('Location error:', err);
-        setError('Unable to get location');
+        setError('Gagal mendapatkan lokasi. Menggunakan lokasi lalai.');
         setLoading(false);
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { 
+        enableHighAccuracy: true, // Lebih tepat untuk dapatkan Zon JAKIM
+        timeout: 15000, 
+        maximumAge: 1000 * 60 * 10 // Simpan cache selama 10 minit sahaja
+      }
     );
   };
 
@@ -83,13 +91,11 @@ export function useLocation() {
     localStorage.setItem('user-location', JSON.stringify(newLocation));
   };
 
+  // Logik Auto-Run
   useEffect(() => {
-    const saved = localStorage.getItem('user-location');
-    if (!saved) {
-      detectLocation();
-    } else {
-      setLoading(false);
-    }
+    // Setiap kali aplikasi dibuka, cuba dapatkan lokasi baru 
+    // supaya Zon JAKIM sentiasa dikemaskini mengikut pergerakan pengguna
+    detectLocation();
   }, []);
 
   return { location, loading, error, detectLocation, setManualLocation };
