@@ -1,14 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { 
   ChevronLeft, Music, Play, Pause, 
-  Headphones, CloudRain, Sun, Moon, 
-  Heart, Share2, ListMusic, Disc, 
-  Timer, Gauge, Info
+  Heart, Disc, 
+  Timer, Gauge, Search, Repeat, Repeat1, SkipForward,
+  Clock, CloudOff, DownloadCloud,
+  Volume2, VolumeX 
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+
+import musicData from "@/data/audioData.json";
 
 interface Track {
   id: string;
@@ -23,62 +26,105 @@ const MuzikPage = () => {
   const navigate = useNavigate();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const [tracks] = useState<Track[]>(musicData as Track[]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<'terapi' | 'pagi' | 'fokus' | 'fav'>('terapi');
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLiked, setIsLiked] = useState<string[]>([]);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [repeatMode, setRepeatMode] = useState<'none' | 'one' | 'all'>('all');
+  
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [showTimerMenu, setShowTimerMenu] = useState(false);
+  const [showVolumeMenu, setShowVolumeMenu] = useState(false); 
+  
+  const [cachedTracks, setCachedTracks] = useState<string[]>([]);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
 
-  const tracks: Track[] = [
-    { id: 't1', title: "Zikir Munajat Penenang Hati", artist: "Zikir Terapi", url: "https://server8.mp3quran.net/afs/001.mp3", duration: "01:30", category: 'terapi' },
-    { id: 't2', title: "Hasbi Rabbi Jallallah", artist: "Munajat Modern", url: "https://www.islamcan.com/audio/nasheeds/dua-nasheed.mp3", duration: "04:15", category: 'terapi' },
-    { id: 'p1', title: "Selawat Badar (Acoustic)", artist: "Gema Wahyu", url: "https://www.islamcan.com/audio/nasheeds/assubhu-bada.mp3", duration: "03:45", category: 'pagi' },
-    { id: 'p2', title: "Morning Dhikr (Lo-fi)", artist: "Daily Deen", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", duration: "06:12", category: 'pagi' },
-    { id: 'f1', title: "Quran Focus: Ar-Rahman", artist: "Deep Focus", url: "https://server8.mp3quran.net/afs/055.mp3", duration: "10:00", category: 'fokus' },
-    { id: 'f2', title: "Rain & Quran Therapy", artist: "Nature Deen", url: "https://actions.google.com/sounds/v1/water/rain_on_roof.ogg", duration: "05:00", category: 'fokus' },
-  ];
+  const filteredTracks = useMemo(() => {
+    return tracks.filter(track => {
+      const matchesSearch = track.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            track.artist.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTab = activeTab === 'fav' ? isLiked.includes(track.id) : track.category === activeTab;
+      return matchesSearch && matchesTab;
+    });
+  }, [tracks, searchQuery, activeTab, isLiked]);
 
-  // --- 1. MEDIA SESSION API (Untuk Background Play) ---
+  // KEMASKINI: Logik semakan cache yang lebih tepat untuk PWA
   useEffect(() => {
-    if ('mediaSession' in navigator && currentTrack) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: currentTrack.title,
-        artist: currentTrack.artist,
-        album: 'JomNgaji Audio Hub',
-        artwork: [
-          { src: 'https://cdn-icons-png.flaticon.com/512/3659/3659784.png', sizes: '512x512', type: 'image/png' }
-        ]
-      });
+    const checkCache = async () => {
+      if ('caches' in window) {
+        try {
+          const cache = await caches.open('jomngaji-audio-v1');
+          const keys = await cache.keys();
+          // Simpan pathname sahaja untuk memudahkan perbandingan (e.g., /audio/file.mp3)
+          const paths = keys.map(request => new URL(request.url).pathname);
+          setCachedTracks(paths);
+        } catch (error) {
+          console.error("Cache access error:", error);
+        }
+      }
+    };
+    checkCache();
 
-      navigator.mediaSession.setActionHandler('play', () => {
-        audioRef.current?.play();
-        setIsPlaying(true);
-      });
-      navigator.mediaSession.setActionHandler('pause', () => {
-        audioRef.current?.pause();
-        setIsPlaying(false);
-      });
-      navigator.mediaSession.setActionHandler('previoustrack', () => playNext(-1));
-      navigator.mediaSession.setActionHandler('nexttrack', () => playNext(1));
-    }
-  }, [currentTrack]);
-
-  // --- 2. AUDIO RECOVERY & PERSISTENCE ---
-  useEffect(() => {
-    const savedFavs = localStorage.getItem('muzik_favs');
     const lastTrack = localStorage.getItem('muzik_last_track');
+    if (lastTrack) setCurrentTrack(JSON.parse(lastTrack));
+    else if (tracks.length > 0) setCurrentTrack(tracks[0]);
+    
+    const savedFavs = localStorage.getItem('muzik_favs');
     if (savedFavs) setIsLiked(JSON.parse(savedFavs));
-    if (lastTrack) {
-      const parsed = JSON.parse(lastTrack);
-      setCurrentTrack(parsed);
-      if (audioRef.current) audioRef.current.src = parsed.url;
+
+    const savedVolume = localStorage.getItem('muzik_volume');
+    if (savedVolume) {
+      const vol = parseFloat(savedVolume);
+      setVolume(vol);
+      if (audioRef.current) audioRef.current.volume = vol;
     }
-  }, []);
+  }, [tracks]);
 
   useEffect(() => {
     localStorage.setItem('muzik_favs', JSON.stringify(isLiked));
   }, [isLiked]);
+
+  const handleVolumeChange = (val: number) => {
+    setVolume(val);
+    if (audioRef.current) {
+      audioRef.current.volume = val;
+      audioRef.current.muted = val === 0;
+    }
+    setIsMuted(val === 0);
+    localStorage.setItem('muzik_volume', val.toString());
+  };
+
+  // KEMASKINI: Logik toggle offline yang selari dengan VitePWA
+  const toggleOffline = async (track: Track) => {
+    if (!('caches' in window)) {
+      toast.error("Browser anda tidak menyokong fungsi offline.");
+      return;
+    }
+
+    const cache = await caches.open('jomngaji-audio-v1');
+    const isCached = cachedTracks.some(path => path === track.url);
+
+    if (isCached) {
+      await cache.delete(track.url);
+      setCachedTracks(prev => prev.filter(path => path !== track.url));
+      toast.info("Dibuang daripada storan offline.");
+    } else {
+      toast.promise(cache.add(track.url), {
+        loading: 'Menyimpan untuk offline...',
+        success: () => {
+          setCachedTracks(prev => [...prev, track.url]);
+          return 'Tersedia offline!';
+        },
+        error: 'Gagal muat turun. Sila semak internet.'
+      });
+    }
+  };
 
   useEffect(() => {
     if (timeLeft === null) return;
@@ -92,147 +138,236 @@ const MuzikPage = () => {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // --- 3. FUNCTIONS ---
-  const handlePlay = (track: Track) => {
-    if (!audioRef.current) return;
-
-    if (currentTrack?.id === track.id) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch(() => toast.error("Ralat audio"));
-      }
-      setIsPlaying(!isPlaying);
+  const playNextTrack = () => {
+    if (!currentTrack) return;
+    const currentIndex = filteredTracks.findIndex(t => t.id === currentTrack.id);
+    if (repeatMode === 'one' && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    } else if (currentIndex !== -1 && currentIndex < filteredTracks.length - 1) {
+      handlePlay(filteredTracks[currentIndex + 1]);
+    } else if (repeatMode === 'all' && filteredTracks.length > 0) {
+      handlePlay(filteredTracks[0]);
     } else {
-      setCurrentTrack(track);
-      localStorage.setItem('muzik_last_track', JSON.stringify(track));
-      audioRef.current.src = track.url;
-      audioRef.current.playbackRate = playbackSpeed;
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => toast.error("Fail dimuatkan"));
+      setIsPlaying(false);
     }
   };
 
-  const playNext = (direction: number) => {
-    const idx = tracks.findIndex(t => t.id === currentTrack?.id);
-    let nextIdx = idx + direction;
-    if (nextIdx < 0) nextIdx = tracks.length - 1;
-    if (nextIdx >= tracks.length) nextIdx = 0;
-    handlePlay(tracks[nextIdx]);
+  // KEMASKINI: Tambah Error Handling pada Playback
+  const handlePlay = async (track: Track) => {
+    if (!audioRef.current) return;
+    try {
+      if (currentTrack?.id === track.id && audioRef.current.src.includes(track.url)) {
+        if (isPlaying) {
+          audioRef.current.pause();
+        } else {
+          await audioRef.current.play();
+        }
+      } else {
+        setCurrentTrack(track);
+        localStorage.setItem('muzik_last_track', JSON.stringify(track));
+        audioRef.current.src = track.url;
+        audioRef.current.playbackRate = playbackSpeed;
+        await audioRef.current.play();
+      }
+    } catch (err) {
+      console.error("Playback error:", err);
+      setIsPlaying(false);
+      toast.error("Gagal memainkan audio. Sila muat turun untuk kegunaan offline.");
+    }
   };
 
-  const handleLike = (id: string) => {
-    setIsLiked(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-    toast.success("Koleksi dikemaskini");
+  const formatTime = (time: number) => {
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
-
-  const toggleTimer = () => {
-    if (timeLeft !== null) { setTimeLeft(null); toast.info("Timer dibatalkan"); }
-    else { setTimeLeft(30 * 60); toast.success("Timer diset 30 minit"); }
-  };
-
-  const filteredTracks = activeTab === 'fav' 
-    ? tracks.filter(t => isLiked.includes(t.id))
-    : tracks.filter(t => t.category === activeTab);
 
   return (
     <MainLayout>
-      <div className="space-y-6 animate-fade-in pb-32 max-w-md mx-auto px-2">
+      <div className="min-h-screen space-y-6 animate-fade-in pb-32 max-w-md mx-auto px-4 relative">
         <audio 
           ref={audioRef} 
-          preload="auto"
-          onEnded={() => playNext(1)}
+          onEnded={playNextTrack} 
+          onTimeUpdate={() => audioRef.current && setCurrentTime(audioRef.current.currentTime)}
+          onLoadedMetadata={() => audioRef.current && setDuration(audioRef.current.duration)}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
         />
 
         {/* Header */}
-        <div className="flex items-center justify-between pt-4">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/')} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center border border-black/5">
-              <ChevronLeft className="w-6 h-6 dark:text-white" />
-            </button>
-            <h1 className="text-xl font-bold dark:text-white">Audio Hub</h1>
-          </div>
+        <div className="flex items-center justify-between pt-6">
+          <button onClick={() => navigate('/')} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center border border-black/5 active:scale-90 transition-all">
+            <ChevronLeft className="w-6 h-6 dark:text-white" />
+          </button>
+          
           <div className="flex gap-2">
              <button onClick={() => {
-                const s = [1, 1.5, 2, 0.75];
-                const n = s[(s.indexOf(playbackSpeed) + 1) % s.length];
-                setPlaybackSpeed(n);
-                if (audioRef.current) audioRef.current.playbackRate = n;
-             }} className="px-3 h-9 rounded-xl bg-secondary/50 flex items-center gap-2 text-[10px] font-bold dark:text-white">
-               <Gauge className="w-3 h-3" /> {playbackSpeed}x
+                const speeds = [1, 1.5, 2];
+                const next = speeds[(speeds.indexOf(playbackSpeed) + 1) % speeds.length];
+                setPlaybackSpeed(next);
+                if (audioRef.current) audioRef.current.playbackRate = next;
+             }} className="px-3 h-10 rounded-xl bg-secondary/50 flex items-center gap-2 text-[10px] font-black dark:text-white uppercase border border-white/5">
+               <Gauge className="w-3 h-3 text-primary" /> {playbackSpeed}x
              </button>
-             <button onClick={toggleTimer} className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all", timeLeft ? "bg-primary text-black" : "bg-secondary/50")}>
+
+             <button onClick={() => { setShowVolumeMenu(!showVolumeMenu); setShowTimerMenu(false); }} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-secondary/50")}>
+               {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+             </button>
+
+             <button onClick={() => { setShowTimerMenu(!showTimerMenu); setShowVolumeMenu(false); }} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all", timeLeft ? "bg-primary text-black" : "bg-secondary/50")}>
                <Timer className="w-4 h-4" />
              </button>
           </div>
         </div>
 
-        {/* Player Card */}
-        <div className={cn("relative overflow-hidden rounded-[40px] p-8 shadow-2xl border border-white/5 transition-colors duration-500", 
-          activeTab === 'terapi' ? "bg-slate-950" : activeTab === 'pagi' ? "bg-emerald-950" : "bg-indigo-950")}>
-          <div className="absolute top-[-20px] right-[-20px] opacity-10">
-            <Disc className={cn("w-48 h-48 text-white", isPlaying && "animate-spin-slow")} />
+        {/* Volume Popover */}
+        {showVolumeMenu && (
+          <div className="absolute top-20 right-16 bg-white dark:bg-slate-900 border border-black/5 shadow-2xl rounded-2xl p-4 z-50 w-12 flex flex-col items-center gap-4 animate-in slide-in-from-top-2">
+            <div className="h-32 w-1.5 bg-secondary/30 rounded-full relative overflow-hidden">
+               <input 
+                  type="range" min="0" max="1" step="0.05" value={isMuted ? 0 : volume}
+                  onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                  className="absolute -rotate-90 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-1 bg-transparent appearance-none cursor-pointer accent-primary"
+               />
+            </div>
+            <button onClick={() => setIsMuted(!isMuted)} className="text-primary"><Volume2 className="w-4 h-4" /></button>
           </div>
-          <div className="relative z-10 flex flex-col items-center text-center space-y-5">
-            <div className="w-20 h-20 rounded-[30px] bg-white/10 flex items-center justify-center backdrop-blur-3xl border border-white/10 shadow-inner">
-              <Headphones className="w-10 h-10 text-primary" />
+        )}
+
+        {/* Timer Popover */}
+        {showTimerMenu && (
+          <div className="absolute top-20 right-4 bg-white dark:bg-slate-900 border border-black/5 shadow-2xl rounded-2xl p-2 z-50 w-32 animate-in slide-in-from-top-2">
+            {[15, 30, 60].map(mins => (
+              <button key={mins} onClick={() => { setTimeLeft(mins * 60); setShowTimerMenu(false); }}
+                className="w-full text-left px-3 py-2 text-xs font-bold hover:bg-primary/10 rounded-lg dark:text-white uppercase">
+                {mins} Minit
+              </button>
+            ))}
+            <button onClick={() => { setTimeLeft(null); setShowTimerMenu(false); }} className="w-full text-left px-3 py-2 text-xs font-bold text-red-500">BATAL</button>
+          </div>
+        )}
+
+        <div className="relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <input 
+            type="text" placeholder="Cari ketenangan..." 
+            className="w-full h-12 pl-12 pr-4 rounded-2xl bg-secondary/30 border border-transparent focus:border-primary/30 outline-none text-sm dark:text-white"
+            value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        {/* Player Card */}
+        <div className={cn("relative overflow-hidden rounded-[40px] p-8 shadow-2xl transition-all duration-700", 
+          activeTab === 'terapi' ? "bg-slate-950" : activeTab === 'pagi' ? "bg-emerald-950" : "bg-indigo-950")}>
+          
+          <div className="relative z-10 flex flex-col items-center text-center space-y-6">
+            <div className={cn("w-28 h-28 rounded-[40px] flex items-center justify-center backdrop-blur-3xl border transition-all duration-700", 
+              isPlaying ? "bg-primary/20 border-primary/40 rotate-[15deg] scale-110 shadow-2xl shadow-primary/20" : "bg-white/10 border-white/10")}>
+              <Disc className={cn("w-14 h-14 text-primary transition-all duration-1000", isPlaying && "animate-spin-slow")} />
             </div>
-            <div className="min-h-[60px]">
-              <h2 className="text-xl font-bold text-white px-4 leading-tight">{currentTrack?.title || "Sila Pilih Alunan"}</h2>
-              <p className="text-sm text-primary/80 font-medium mt-1 uppercase tracking-widest">{currentTrack?.artist || "Sedia"}</p>
+            
+            <div className="min-h-[80px]">
+              <h2 className="text-2xl font-bold text-white tracking-tight">{currentTrack?.title || "Sedia"}</h2>
+              <div className="flex items-center justify-center gap-2 mt-2">
+                <p className="text-[10px] text-primary/70 font-black tracking-[0.2em] uppercase">{currentTrack?.artist || "Pilih Track"}</p>
+                {currentTrack && cachedTracks.some(path => path === currentTrack.url) && (
+                  <div className="px-1.5 py-0.5 bg-primary/20 rounded text-[8px] text-primary font-bold tracking-widest uppercase">OFFLINE</div>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-6">
-               <button onClick={() => currentTrack && handleLike(currentTrack.id)} className={cn("p-3 transition-all", isLiked.includes(currentTrack?.id || '') ? "text-red-500 scale-125" : "text-white/40")}>
-                 <Heart className={cn("w-6 h-6", isLiked.includes(currentTrack?.id || '') && "fill-current")} />
+
+            <div className="w-full space-y-3">
+              <input 
+                type="range" min="0" max={duration || 0} value={currentTime} 
+                onChange={(e) => { if(audioRef.current) audioRef.current.currentTime = Number(e.target.value); }}
+                className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+              <div className="flex justify-between text-[10px] text-white/40 font-mono font-bold">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-8">
+               <button onClick={() => setRepeatMode(repeatMode === 'all' ? 'one' : repeatMode === 'one' ? 'none' : 'all')} 
+                       className={cn("p-2 transition-colors", repeatMode !== 'none' ? "text-primary" : "text-white/20")}>
+                 {repeatMode === 'one' ? <Repeat1 className="w-6 h-6" /> : <Repeat className="w-6 h-6" />}
                </button>
-               <button onClick={() => currentTrack && handlePlay(currentTrack)} className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-black shadow-xl hover:scale-105 active:scale-95 transition-all">
-                 {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
+               
+               <button onClick={() => currentTrack && handlePlay(currentTrack)} 
+                       className="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-black shadow-xl hover:scale-105 active:scale-95 transition-all">
+                 {isPlaying ? <Pause className="w-10 h-10 fill-current" /> : <Play className="w-10 h-10 fill-current ml-1" />}
                </button>
-               <button onClick={() => toast.success("Info disalin")} className="p-3 text-white/40"><Share2 className="w-6 h-6" /></button>
+               
+               <button onClick={playNextTrack} className="p-2 text-white/20 hover:text-white transition-colors">
+                 <SkipForward className="w-7 h-7 fill-current" />
+               </button>
             </div>
-            {timeLeft !== null && (
-              <p className="text-[10px] text-primary font-mono font-bold bg-primary/10 px-4 py-1 rounded-full">
-                OFF IN: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
-              </p>
-            )}
           </div>
         </div>
 
-        {/* Tab Menu */}
-        <div className="flex gap-1 p-1 bg-secondary/30 rounded-3xl border border-black/5 overflow-x-auto no-scrollbar">
+        <div className="flex gap-1.5 p-1.5 bg-secondary/20 rounded-2xl overflow-x-auto no-scrollbar border border-white/5">
           {['terapi', 'pagi', 'fokus', 'fav'].map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab as any)} className={cn(
-              "flex-1 py-3 px-4 rounded-2xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
-              activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-emerald-600" : "text-muted-foreground opacity-60"
+              "flex-1 py-3 px-5 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
+              activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-primary" : "text-muted-foreground opacity-50"
             )}>
               {tab}
             </button>
           ))}
         </div>
 
-        {/* List */}
-        <div className="px-2 space-y-3">
+        <div className="space-y-3">
           {filteredTracks.map((track) => (
             <div key={track.id} onClick={() => handlePlay(track)} className={cn(
-              "flex items-center justify-between p-4 rounded-[28px] border transition-all cursor-pointer",
-              currentTrack?.id === track.id ? "bg-primary/10 border-primary/30" : "bg-white dark:bg-slate-900 border-black/5"
+              "flex items-center justify-between p-4 rounded-[28px] border transition-all cursor-pointer group active:scale-[0.98]",
+              currentTrack?.id === track.id ? "bg-primary/10 border-primary/30" : "bg-white dark:bg-slate-900/50 border-black/5"
             )}>
-              <div className="flex items-center gap-4 text-left">
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", currentTrack?.id === track.id ? "bg-primary text-black" : "bg-secondary")}>
-                  {currentTrack?.id === track.id && isPlaying ? <div className="flex gap-0.5"><div className="w-0.5 h-3 bg-black animate-bounce" /></div> : <Music className="w-4 h-4" />}
+              <div className="flex items-center gap-4">
+                <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-all", 
+                  currentTrack?.id === track.id ? "bg-primary text-black" : "bg-secondary")}>
+                  <Music className="w-5 h-5" />
                 </div>
-                <div>
-                  <h4 className="font-bold text-sm leading-tight dark:text-white">{track.title}</h4>
-                  <p className="text-[10px] text-muted-foreground uppercase">{track.artist}</p>
+                <div className="text-left">
+                  <h4 className="font-bold text-sm leading-tight dark:text-white group-hover:text-primary transition-colors">{track.title}</h4>
+                  <p className="text-[10px] text-muted-foreground uppercase mt-1 font-bold">{track.artist} • {track.duration}</p>
                 </div>
               </div>
-              <Heart className={cn("w-4 h-4", isLiked.includes(track.id) ? "text-red-500 fill-current" : "text-muted-foreground/20")} />
+              
+              <div className="flex items-center gap-3">
+                <button onClick={(e) => { e.stopPropagation(); toggleOffline(track); }} className="p-2 text-muted-foreground/20 hover:text-primary transition-colors">
+                  {cachedTracks.some(path => path === track.url) ? <CloudOff className="w-4 h-4 text-primary" /> : <DownloadCloud className="w-4 h-4" />}
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); setIsLiked(prev => prev.includes(track.id) ? prev.filter(i => i !== track.id) : [...prev, track.id]); }}>
+                  <Heart className={cn("w-5 h-5 transition-all", isLiked.includes(track.id) ? "text-red-500 fill-current" : "text-muted-foreground/10")} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
-      <style dangerouslySetInnerHTML={{ __html: `.animate-spin-slow { animation: spin 15s linear infinite; } @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .no-scrollbar::-webkit-scrollbar { display: none; }` }} />
+      
+      <style dangerouslySetInnerHTML={{ __html: `
+        .animate-spin-slow { animation: spin 12s linear infinite; } 
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } 
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* KEMASKINI: Cross-browser slider support */
+        input[type='range'] {
+          -webkit-appearance: none;
+          background: transparent;
+        }
+        input[type='range']::-webkit-slider-thumb {
+          -webkit-appearance: none; width: 14px; height: 14px;
+          background: #CCFF00; border-radius: 50%;
+          cursor: pointer; box-shadow: 0 0 10px rgba(204, 255, 0, 0.8);
+          margin-top: -6px;
+        }
+        input[type='range']::-webkit-slider-runnable-track {
+          width: 100%; height: 2px; cursor: pointer; background: rgba(255,255,255,0.1);
+        }
+      ` }} />
     </MainLayout>
   );
 };

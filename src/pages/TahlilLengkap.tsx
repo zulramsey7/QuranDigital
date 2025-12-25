@@ -279,7 +279,7 @@ const TahlilLengkap = () => {
               <ScrollText className="w-6 h-6 text-emerald-400" />
             </div>
             <h2 className="text-4xl font-serif font-bold tracking-wide">تَهْلِيل لڠكڤ</h2>
-            <p className="text-emerald-100 text-sm font-medium italic opacity-80">Panduan Bacaan Tradisional</p>
+            <p className="text-emerald-100 text-sm font-medium italic opacity-80">Panduan Bacaan Tahlil Lengkap</p>
           </div>
         </div>
 
