@@ -5,7 +5,7 @@
     "artist": "Koleksi Zikir",
     "url": "/audio/AsmaulHusna.mp3",
     "duration": "03:42",
-    "category": "pagi"
+    "category": "sholawat"
   },
   {
     "id": "n2",
@@ -13,6 +13,6 @@
     "artist": "Koleksi Zikir",
     "url": "/audio/SelawatTafrijiyah.mp3",
     "duration": "05:11",
-    "category": "pagi"
+    "category": "sholawat"
   }
 ]
