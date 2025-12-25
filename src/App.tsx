@@ -15,7 +15,7 @@ import NotFound from "./pages/NotFound";
 import TahlilRingkas from "./pages/TahlilRingkas";
 import TahlilLengkap from "./pages/TahlilLengkap";
 import YasinPage from "./pages/Yasin"; 
-import SirahPage from "./pages/Sirah"; 
+import SirahPage from "./pages/Sirah";
 import MuzikPage from "./pages/Muzik"; // <--- TAMBAH INI
 import InstallPWA from "./InstallPWA"; 
 
