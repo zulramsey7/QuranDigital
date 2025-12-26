@@ -16,5 +16,47 @@
     "ms": "Dan bersabarlah menunggu ketetapan Tuhanmu, kerana sesungguhnya kamu berada dalam pengawasan Kami.", 
     "ref": "Surah At-Tur: 48", 
     "img": "/backgrounds/bg3.jpg" 
+  },
+  { 
+    "ar": "إِنَّ رَبِّي قَرِيبٌ مُّجِيبٌ", 
+    "ms": "Sesungguhnya Tuhanku itu sangat dekat, lagi Maha Memperkenankan doa.", 
+    "ref": "Surah Hud: 61", 
+    "img": "/backgrounds/bg1.jpg" 
+  },
+  { 
+    "ar": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ", 
+    "ms": "Ketahuilah, hanya dengan mengingati Allah hati akan menjadi tenang.", 
+    "ref": "Surah Ar-Ra'd: 28", 
+    "img": "/backgrounds/bg2.jpg" 
+  },
+  { 
+    "ar": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ", 
+    "ms": "Dan sesiapa yang bertawakal kepada Allah, nescaya Allah akan mencukupkan keperluannya.", 
+    "ref": "Surah At-Talaq: 3", 
+    "img": "/backgrounds/bg3.jpg" 
+  },
+  { 
+    "ar": "إِنَّ مَعِيَ رَبِّي سَيَهْدِينِ", 
+    "ms": "Sesungguhnya Tuhanku bersamaku, Dia akan memberi petunjuk kepadaku.", 
+    "ref": "Surah Ash-Shu'ara: 62", 
+    "img": "/backgrounds/bg1.jpg" 
+  },
+  { 
+    "ar": "قُل لَّن يُصِيبَنَا إِلَّا مَا كَتَبَ اللَّهُ لَنَا", 
+    "ms": "Katakanlah: Tidak sekali-kali akan menimpa kami melainkan apa yang telah ditetapkan Allah.", 
+    "ref": "Surah At-Taubah: 51", 
+    "img": "/backgrounds/bg2.jpg" 
+  },
+  { 
+    "ar": "لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا", 
+    "ms": "Janganlah engkau berdukacita, sesungguhnya Allah bersama kita.", 
+    "ref": "Surah At-Taubah: 40", 
+    "img": "/backgrounds/bg3.jpg" 
+  },
+  { 
+    "ar": "وَتَوَكَّلْ عَلَى الْحَيِّ الَّذِي لَا يَمُوتُ", 
+    "ms": "Dan bertawakallah kepada Allah Yang Hidup, yang tidak akan mati.", 
+    "ref": "Surah Al-Furqan: 58", 
+    "img": "/backgrounds/bg1.jpg" 
   }
 ]
