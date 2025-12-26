@@ -1,40 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
-
-interface PrayerTimes {
-  Fajr: string;
-  Sunrise: string;
-  Dhuhr: string;
-  Asr: string;
-  Maghrib: string;
-  Isha: string;
-}
-
-interface PrayerTimesResponse {
-  code: number;
-  status: string;
-  data: {
-    timings: PrayerTimes;
-    date: {
-      readable: string;
-      hijri: {
-        date: string;
-        month: { en: string; ar: string };
-        year: string;
-        day: string;
-      };
-      gregorian: {
-        date: string;
-        month: { en: string };
-        year: string;
-        day: string;
-      };
-    };
-    meta: {
-      timezone: string;
-    };
-  };
-}
+import { dapatkanZonTerdekat } from '../data/zonMapping';
 
 export interface PrayerInfo {
   name: string;
@@ -54,65 +20,73 @@ export function usePrayerTimes(latitude: number, longitude: number) {
     const fetchPrayerTimes = async () => {
       try {
         setLoading(true);
-        const today = new Date();
-        const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+        const zon = dapatkanZonTerdekat(latitude, longitude);
+        const response = await fetch(`https://api.waktusolat.app/v2/solat/${zon}`);
         
-        const response = await fetch(
-          `https://api.aladhan.com/v1/timings/${dateStr}?latitude=${latitude}&longitude=${longitude}&method=3`
-        );
+        if (!response.ok) throw new Error('Pelayan tidak merespon');
+        const data = await response.json();
         
-        if (!response.ok) throw new Error('Failed to fetch prayer times');
-        
-        const data: PrayerTimesResponse = await response.json();
-        const timings = data.data.timings;
-        
+        if (!data?.prayers?.[0]) throw new Error('Data tidak lengkap');
+
+        const timings = data.prayers[0];
+
+        const processTime = (timestamp: number) => {
+          const dateObj = new Date(timestamp * 1000); 
+          const timeString = dateObj.toLocaleTimeString('en-GB', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: false 
+          });
+          return { timeString, dateObj };
+        };
+
         const prayerList: PrayerInfo[] = [
-          { name: 'Fajr', nameKey: 'fajr', time: timings.Fajr, timestamp: parseTime(timings.Fajr) },
-          { name: 'Sunrise', nameKey: 'sunrise', time: timings.Sunrise, timestamp: parseTime(timings.Sunrise) },
-          { name: 'Dhuhr', nameKey: 'dhuhr', time: timings.Dhuhr, timestamp: parseTime(timings.Dhuhr) },
-          { name: 'Asr', nameKey: 'asr', time: timings.Asr, timestamp: parseTime(timings.Asr) },
-          { name: 'Maghrib', nameKey: 'maghrib', time: timings.Maghrib, timestamp: parseTime(timings.Maghrib) },
-          { name: 'Isha', nameKey: 'isha', time: timings.Isha, timestamp: parseTime(timings.Isha) },
+          { name: 'Subuh', nameKey: 'fajr', time: processTime(timings.fajr).timeString, timestamp: processTime(timings.fajr).dateObj },
+          { name: 'Syuruk', nameKey: 'sunrise', time: processTime(timings.syuruk).timeString, timestamp: processTime(timings.syuruk).dateObj },
+          { name: 'Zuhur', nameKey: 'dhuhr', time: processTime(timings.dhuhr).timeString, timestamp: processTime(timings.dhuhr).dateObj },
+          { name: 'Asar', nameKey: 'asr', time: processTime(timings.asr).timeString, timestamp: processTime(timings.asr).dateObj },
+          { name: 'Maghrib', nameKey: 'maghrib', time: processTime(timings.maghrib).timeString, timestamp: processTime(timings.maghrib).dateObj },
+          { name: 'Isyak', nameKey: 'isha', time: processTime(timings.isha).timeString, timestamp: processTime(timings.isha).dateObj },
         ];
         
         setPrayerTimes(prayerList);
-        const hijri = data.data.date.hijri;
-        setHijriDate(`${hijri.day} ${hijri.month.en} ${hijri.year}H`);
-        setGregorianDate(data.data.date.readable);
+        
+        if (timings.hijri) {
+          const hijriParts = timings.hijri.split('-');
+          setHijriDate(`${hijriParts[2]}-${hijriParts[1]}-${hijriParts[0]}H`);
+        }
+
+        const today = new Date();
+        setGregorianDate(today.toLocaleDateString('ms-MY', { 
+          day: 'numeric', month: 'long', year: 'numeric' 
+        }));
+        
         setError(null);
       } catch (err) {
-        setError('Failed to load prayer times');
+        setError('Gagal muat waktu solat');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    if (latitude && longitude) {
-      fetchPrayerTimes();
-    }
+    if (latitude && longitude) fetchPrayerTimes();
   }, [latitude, longitude]);
 
   return { prayerTimes, hijriDate, gregorianDate, loading, error };
 }
 
-// Menukar string "HH:mm" kepada objek Date yang betul
-function parseTime(timeStr: string): Date {
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  return date;
-}
+/**
+ * LOGIK NOTIFIKASI & AUDIO
+ */
 
-// Logik utama untuk pengiraan baki masa dan notifikasi Azan
 export function getNextPrayer(prayers: PrayerInfo[]): { prayer: PrayerInfo | null; countdown: string } {
-  if (!prayers || prayers.length === 0) return { prayer: null, countdown: '--:--:--' };
+  if (!prayers || prayers.length === 0) return { prayer: null, countdown: '00:00:00' };
 
   const now = new Date();
   let targetPrayer: PrayerInfo | null = null;
   let diff = 0;
 
-  // 1. Cari solat seterusnya untuk hari ini
   for (const prayer of prayers) {
     if (prayer.timestamp > now) {
       targetPrayer = prayer;
@@ -121,7 +95,6 @@ export function getNextPrayer(prayers: PrayerInfo[]): { prayer: PrayerInfo | nul
     }
   }
 
-  // 2. Jika semua solat hari ini dah lepas (selepas Isyak), ambil Fajr esok
   if (!targetPrayer) {
     targetPrayer = prayers[0];
     const tomorrowFajr = new Date(prayers[0].timestamp);
@@ -129,10 +102,12 @@ export function getNextPrayer(prayers: PrayerInfo[]): { prayer: PrayerInfo | nul
     diff = tomorrowFajr.getTime() - now.getTime();
   }
 
-  // 3. AZAN ALERT: Jika baki masa kurang 1 saat (Waktu Azan Tiba)
-  // Kita guna range 0-1000ms untuk trigger sekali sahaja
+  // Trigger azan jika baki masa kurang dari 1 saat (tepat pada waktunya)
   if (diff > 0 && diff <= 1000) {
-    triggerAzanAlert(targetPrayer.name);
+    // Kecualikan Syuruk daripada bunyi azan jika mahu
+    if (targetPrayer.nameKey !== 'sunrise') {
+      triggerAzanAlert(targetPrayer.name);
+    }
   }
 
   return {
@@ -141,23 +116,29 @@ export function getNextPrayer(prayers: PrayerInfo[]): { prayer: PrayerInfo | nul
   };
 }
 
-// Fungsi Notifikasi & Getaran
 function triggerAzanAlert(prayerName: string) {
-  // Bunyi Notifikasi (Sistem default browser toast)
+  // 1. Notifikasi Visual
   toast.success(`Waktu Azan ${prayerName} telah tiba!`, {
     description: `Marilah menuju kejayaan.`,
-    duration: 10000, // Papar selama 10 saat
+    duration: 15000,
   });
 
-  // Getaran telefon (jika disokong)
+  // 2. Bunyi Azan (Mainkan dari folder public/audio/)
+  const azan = new Audio('/audio/azan.mp3');
+  azan.volume = 0.8; // Laraskan volume (0.0 hingga 1.0)
+  
+  azan.play().catch(error => {
+    console.log("Audio play blocked: Perlukan interaksi user kali pertama.");
+  });
+
+  // 3. Getaran Phone
   if ("vibrate" in navigator) {
     navigator.vibrate([500, 200, 500, 200, 500]);
   }
 }
 
-// Helper untuk format masa HH:mm:ss
 function formatCountdown(ms: number): string {
-  if (ms < 0) return "00:00:00";
+  if (ms <= 0) return "00:00:00";
   const hours = Math.floor(ms / (1000 * 60 * 60));
   const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((ms % (1000 * 60)) / 1000);
