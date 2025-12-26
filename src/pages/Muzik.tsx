@@ -19,7 +19,7 @@ interface Track {
   artist: string;
   url: string;
   duration: string;
-  category: 'nasyid' | 'sholawat' | 'zikir' | 'fav'; // Tukar di sini
+  category: 'nasyid' | 'sholawat' | 'zikir' | 'fav';
 }
 
 const MuzikPage = () => {
@@ -45,6 +45,17 @@ const MuzikPage = () => {
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
 
+  // LOGIK BARU: Auto-Close Volume Menu selepas 3 saat
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showVolumeMenu) {
+      timer = setTimeout(() => {
+        setShowVolumeMenu(false);
+      }, 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [showVolumeMenu, volume, isMuted]);
+
   const filteredTracks = useMemo(() => {
     return tracks.filter(track => {
       const matchesSearch = track.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -54,14 +65,12 @@ const MuzikPage = () => {
     });
   }, [tracks, searchQuery, activeTab, isLiked]);
 
-  // KEMASKINI: Logik semakan cache yang lebih tepat untuk PWA
   useEffect(() => {
     const checkCache = async () => {
       if ('caches' in window) {
         try {
           const cache = await caches.open('jomngaji-audio-v1');
           const keys = await cache.keys();
-          // Simpan pathname sahaja untuk memudahkan perbandingan (e.g., /audio/file.mp3)
           const paths = keys.map(request => new URL(request.url).pathname);
           setCachedTracks(paths);
         } catch (error) {
@@ -100,16 +109,13 @@ const MuzikPage = () => {
     localStorage.setItem('muzik_volume', val.toString());
   };
 
-  // KEMASKINI: Logik toggle offline yang selari dengan VitePWA
   const toggleOffline = async (track: Track) => {
     if (!('caches' in window)) {
       toast.error("Browser anda tidak menyokong fungsi offline.");
       return;
     }
-
     const cache = await caches.open('jomngaji-audio-v1');
     const isCached = cachedTracks.some(path => path === track.url);
-
     if (isCached) {
       await cache.delete(track.url);
       setCachedTracks(prev => prev.filter(path => path !== track.url));
@@ -153,7 +159,6 @@ const MuzikPage = () => {
     }
   };
 
-  // KEMASKINI: Tambah Error Handling pada Playback
   const handlePlay = async (track: Track) => {
     if (!audioRef.current) return;
     try {
@@ -173,7 +178,7 @@ const MuzikPage = () => {
     } catch (err) {
       console.error("Playback error:", err);
       setIsPlaying(false);
-      toast.error("Gagal memainkan audio. Sila muat turun untuk kegunaan offline.");
+      toast.error("Gagal memainkan audio.");
     }
   };
 
@@ -197,22 +202,16 @@ const MuzikPage = () => {
 
         {/* Header */}
         <div className="flex items-center justify-between pt-6">
-          {/* Bahagian Kiri: Butang Back + Tajuk */}
           <div className="flex items-center gap-3">
-            <button 
-              onClick={() => navigate('/')} 
-              className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center border border-black/5 active:scale-90 transition-all"
-            >
+            <button onClick={() => navigate('/')} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center border border-black/5 active:scale-90 transition-all">
               <ChevronLeft className="w-6 h-6 dark:text-white" />
             </button>
-            
             <div className="flex flex-col">
               <span className="text-sm font-black dark:text-white uppercase tracking-tight">Audio</span>
               <span className="text-[10px] text-primary font-bold uppercase leading-none">Koleksi</span>
             </div>
           </div>
           
-          {/* Bahagian Kanan: Controls (Kekalkan yang asal) */}
           <div className="flex gap-2">
              <button onClick={() => {
                 const speeds = [1, 1.5, 2];
@@ -223,7 +222,7 @@ const MuzikPage = () => {
                <Gauge className="w-3 h-3 text-primary" /> {playbackSpeed}x
              </button>
 
-             <button onClick={() => { setShowVolumeMenu(!showVolumeMenu); setShowTimerMenu(false); }} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-secondary/50")}>
+             <button onClick={() => { setShowVolumeMenu(!showVolumeMenu); setShowTimerMenu(false); }} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-secondary/50", showVolumeMenu && "bg-primary text-black")}>
                {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
              </button>
 
@@ -233,18 +232,28 @@ const MuzikPage = () => {
           </div>
         </div>
 
-        {/* Volume Popover */}
+        {/* KEMASKINI: Volume Popover Mesra Mobile */}
         {showVolumeMenu && (
-          <div className="absolute top-20 right-16 bg-white dark:bg-slate-900 border border-black/5 shadow-2xl rounded-2xl p-4 z-50 w-12 flex flex-col items-center gap-4 animate-in slide-in-from-top-2">
-            <div className="h-32 w-1.5 bg-secondary/30 rounded-full relative overflow-hidden">
-               <input 
-                  type="range" min="0" max="1" step="0.05" value={isMuted ? 0 : volume}
+          <>
+            <div className="fixed inset-0 z-40 bg-transparent" onClick={() => setShowVolumeMenu(false)} />
+            <div className="absolute top-20 right-14 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-black/5 shadow-2xl rounded-[32px] p-5 z-50 w-16 flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-200">
+              <div className="h-44 w-10 bg-secondary/20 rounded-2xl relative flex items-center justify-center overflow-hidden">
+                <input 
+                  type="range" min="0" max="1" step="0.01" 
+                  value={isMuted ? 0 : volume}
                   onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                  className="absolute -rotate-90 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-1 bg-transparent appearance-none cursor-pointer accent-primary"
-               />
+                  className="volume-slider-vertical"
+                />
+                <div 
+                  className="absolute bottom-0 left-0 w-full bg-primary pointer-events-none transition-all duration-150"
+                  style={{ height: `${(isMuted ? 0 : volume) * 100}%` }}
+                />
+              </div>
+              <button onClick={() => setIsMuted(!isMuted)} className="p-3 bg-primary/10 rounded-full text-primary active:scale-90 transition-transform">
+                {isMuted || volume === 0 ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
+              </button>
             </div>
-            <button onClick={() => setIsMuted(!isMuted)} className="text-primary"><Volume2 className="w-4 h-4" /></button>
-          </div>
+          </>
         )}
 
         {/* Timer Popover */}
@@ -271,13 +280,11 @@ const MuzikPage = () => {
 
         {/* Player Card */}
         <div className={cn(
-  "relative overflow-hidden rounded-[40px] p-8 shadow-2xl transition-all duration-700", 
-  activeTab === 'nasyid' ? "bg-slate-950" : 
-  activeTab === 'sholawat' ? "bg-emerald-950" : 
-  activeTab === 'zikir' ? "bg-indigo-950" : 
-  "bg-rose-950" // Warna untuk tab 'fav'
-)}>
-          
+          "relative overflow-hidden rounded-[40px] p-8 shadow-2xl transition-all duration-700", 
+          activeTab === 'nasyid' ? "bg-slate-950" : 
+          activeTab === 'sholawat' ? "bg-emerald-950" : 
+          activeTab === 'zikir' ? "bg-indigo-950" : "bg-rose-950"
+        )}>
           <div className="relative z-10 flex flex-col items-center text-center space-y-6">
             <div className={cn("w-28 h-28 rounded-[40px] flex items-center justify-center backdrop-blur-3xl border transition-all duration-700", 
               isPlaying ? "bg-primary/20 border-primary/40 rotate-[15deg] scale-110 shadow-2xl shadow-primary/20" : "bg-white/10 border-white/10")}>
@@ -324,21 +331,16 @@ const MuzikPage = () => {
           </div>
         </div>
 
-        {/* Bahagian Tab Buttons yang perlu diganti */}
-<div className="flex gap-1.5 p-1.5 bg-secondary/20 rounded-2xl overflow-x-auto no-scrollbar border border-white/5">
-  {['nasyid', 'sholawat', 'zikir', 'fav'].map((tab) => (
-    <button 
-      key={tab} 
-      onClick={() => setActiveTab(tab as any)} 
-      className={cn(
-        "flex-1 py-3 px-5 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
-        activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-primary" : "text-muted-foreground opacity-50"
-      )}
-    >
-      {tab}
-    </button>
-  ))}
-</div>
+        {/* Tab Buttons */}
+        <div className="flex gap-1.5 p-1.5 bg-secondary/20 rounded-2xl overflow-x-auto no-scrollbar border border-white/5">
+          {['nasyid', 'sholawat', 'zikir', 'fav'].map((tab) => (
+            <button key={tab} onClick={() => setActiveTab(tab as any)} 
+              className={cn("flex-1 py-3 px-5 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
+                activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-primary" : "text-muted-foreground opacity-50")}>
+              {tab}
+            </button>
+          ))}
+        </div>
 
         <div className="space-y-3">
           {filteredTracks.map((track) => (
@@ -356,7 +358,6 @@ const MuzikPage = () => {
                   <p className="text-[10px] text-muted-foreground uppercase mt-1 font-bold">{track.artist} • {track.duration}</p>
                 </div>
               </div>
-              
               <div className="flex items-center gap-3">
                 <button onClick={(e) => { e.stopPropagation(); toggleOffline(track); }} className="p-2 text-muted-foreground/20 hover:text-primary transition-colors">
                   {cachedTracks.some(path => path === track.url) ? <CloudOff className="w-4 h-4 text-primary" /> : <DownloadCloud className="w-4 h-4" />}
@@ -375,18 +376,30 @@ const MuzikPage = () => {
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* KEMASKINI: Cross-browser slider support */
-        input[type='range'] {
-          -webkit-appearance: none;
-          background: transparent;
+        .volume-slider-vertical {
+          -webkit-appearance: none; appearance: none;
+          width: 176px; height: 50px;
+          background: transparent; transform: rotate(-90deg);
+          cursor: pointer; z-index: 10; outline: none; margin: 0;
         }
-        input[type='range']::-webkit-slider-thumb {
+        .volume-slider-vertical::-webkit-slider-thumb {
+          -webkit-appearance: none; height: 50px; width: 30px;
+          background: transparent; border: none;
+        }
+        .volume-slider-vertical::-moz-range-thumb {
+          width: 30px; height: 50px; background: transparent; border: none;
+        }
+
+        input[type='range']:not(.volume-slider-vertical) {
+          -webkit-appearance: none; background: transparent;
+        }
+        input[type='range']:not(.volume-slider-vertical)::-webkit-slider-thumb {
           -webkit-appearance: none; width: 14px; height: 14px;
           background: #CCFF00; border-radius: 50%;
           cursor: pointer; box-shadow: 0 0 10px rgba(204, 255, 0, 0.8);
           margin-top: -6px;
         }
-        input[type='range']::-webkit-slider-runnable-track {
+        input[type='range']:not(.volume-slider-vertical)::-webkit-slider-runnable-track {
           width: 100%; height: 2px; cursor: pointer; background: rgba(255,255,255,0.1);
         }
       ` }} />
