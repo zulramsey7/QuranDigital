@@ -1,3 +1,4 @@
+Berikut adalah fail doa.tsx yang telah dikemaskini dengan meletakkan Doa Selamat pada bahagian paling atas (ID: 0). Saya juga telah melaraskan ID doa-doa yang lain agar kekal tersusun.
 import { useState } from 'react';
 import { Languages, Globe, Search, BookOpen, ChevronLeft } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -14,6 +15,13 @@ interface Doa {
 }
 
 const STATIC_DOAS: Doa[] = [
+  {
+    id: '0',
+    doa: 'Doa Selamat',
+    ayat: 'اَللّٰهُمَّ اِنَّا نَسْئَلُكَ سَلَامَةً فِى الدِّيْنِ وَعَافِيَةً فِى الْجَسَدِ وَزِيَادَةً فِى الْعِلْمِ وَبَرَكَةً فِى الرِّزْقِ وَتَوْبَةً قَبْلَ الْمَوْتِ وَرَحْمَةً عِنْدَ الْمَوْتِ وَمَغْفِرَةً بَعْدَ الْمَوْتِ. اَللّٰهُمَّ هَوِّنْ عَلَيْنَا فِى سَكَرَاتِ الْمَوْتِ وَالنَّجَاةَ مِنَ النَّارِ وَالْعَفْوَ عِنْدَ الْحِسَابِ',
+    latin: "Allahumma inna nas-aluka salamatan fiddin, wa 'afiyatan fil jasad, wa ziyadatan fil 'ilm, wa barakatan fir-rizq, wa taubatan qablal maut, wa rahmatan 'indal maut, wa maghfiratan ba'dal maut. Allahumma hawwin 'alaina fi sakaratil maut, wannajata minannari wal 'afwa 'indal hisab.",
+    artinya: 'Ya Allah, sesungguhnya kami memohon kepada-Mu keselamatan dalam agama, kesihatan jasad, tambahan ilmu, keberkatan rezeki, taubat sebelum mati, rahmat ketika mati, dan keampunan selepas mati. Ya Allah, mudahkanlah kami dalam sakaratul maut, lepaskanlah kami dari api neraka dan berilah kemaafan ketika hari perhitungan.'
+  },
   {
     id: '1',
     doa: 'Doa Sebelum Makan',
@@ -169,7 +177,7 @@ export default function DoaPage() {
               >
                 <div className="flex justify-between items-center">
                   <span className="bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tight border border-emerald-100 dark:border-emerald-500/20">
-                    Doa {doa.id}
+                    {doa.id === '0' ? 'Pilihan' : `Doa ${doa.id}`}
                   </span>
                   <h3 className="font-bold text-sm text-slate-400 dark:text-slate-500 tracking-tight">
                     {doa.doa}
@@ -211,3 +219,4 @@ export default function DoaPage() {
     </MainLayout>
   );
 }
+
