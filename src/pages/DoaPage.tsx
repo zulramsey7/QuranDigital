@@ -17,7 +17,8 @@ const STATIC_DOAS: Doa[] = [
   {
     id: '0',
     doa: 'Doa Selamat',
-    ayat: 'اَللّٰهُمَّ اِنَّا نَسْئَلُكَ سَلَامَةً فِى الدِّيْنِ وَعَافِيَةً فِى الْجَسَدِ وَزِيَادَةً فِى الْعِلْمِ وَبَرَكَةً فِى الرِّزْقِ وَتَوْبَةً قَبْلَ الْمَوْتِ وَرَحْمَةً عِنْدَ الْمَوْتِ وَمَغْفِرَةً بَعْدَ الْمَوْتِ ۖ اَللّٰهُمَّ هَوِّنْ عَلَيْنَا فِى سَكَرَاتِ الْمَوْتِ وَالنَّجَاةَ مِنَ النَّارِ وَالْعَفْوَ عِنْدَ الْحِسَابِ',
+    // Titik dan simbol waqaf dibuang untuk mengelakkan ralat rendering
+    ayat: 'اَللّٰهُمَّ اِنَّا نَسْئَلُكَ سَلَامَةً فِى الدِّيْنِ وَعَافِيَةً فِى الْجَسَدِ وَزِيَادَةً فِى الْعِلْمِ وَبَرَكَةً فِى الرِّزْقِ وَتَوْبَةً قَبْلَ الْمَوْتِ وَرَحْمَةً عِنْدَ الْمَوْتِ وَمَغْفِرَةً بَعْدَ الْمَوْتِ اَللّٰهُمَّ هَوِّنْ عَلَيْنَا فِى سَكَرَاتِ الْمَوْتِ وَالنَّجَاةَ مِنَ النَّارِ وَالْعَفْوَ عِنْدَ الْحِسَابِ',
     latin: "Allahumma inna nas-aluka salamatan fiddin, wa 'afiyatan fil jasad, wa ziyadatan fil 'ilm, wa barakatan fir-rizq, wa taubatan qablal maut, wa rahmatan 'indal maut, wa maghfiratan ba'dal maut. Allahumma hawwin 'alaina fi sakaratil maut, wannajata minannari wal 'afwa 'indal hisab.",
     artinya: 'Ya Allah, sesungguhnya kami memohon kepada-Mu keselamatan dalam agama, kesihatan jasad, tambahan ilmu, keberkatan rezeki, taubat sebelum mati, rahmat ketika mati, dan keampunan selepas mati. Ya Allah, mudahkanlah kami dalam sakaratul maut, lepaskanlah kami dari api neraka dan berilah kemaafan ketika hari perhitungan.'
   },
@@ -116,7 +117,6 @@ export default function DoaPage() {
           font-size: 2.7rem !important;
           font-weight: 500 !important;
           word-spacing: 4px;
-          font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1, "ss01" 1 !important;
         }
 
         @media (max-width: 640px) {
@@ -183,7 +183,6 @@ export default function DoaPage() {
                   </h3>
                 </div>
 
-                {/* Paparan Teks Arab (Rasm Imla'ei) */}
                 <p className="quran-render text-slate-800 dark:text-slate-100">
                   {doa.ayat}
                 </p>
