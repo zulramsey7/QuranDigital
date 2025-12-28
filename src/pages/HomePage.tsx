@@ -163,7 +163,7 @@ export default function HomePage() {
 
         {/* 2. MAIN PRAYER CARD */}
         <div className="relative overflow-hidden rounded-[32px] min-h-[280px] shadow-2xl border group bg-slate-950">
-          <img src="/masjid-hero.jpg" className="absolute inset-0 w-full h-full object-cover object-[center_5%] opacity-40 scale-105" alt="Bg" />
+          <img src="/masjid-hero2.jpg" className="absolute inset-0 w-full h-full object-cover object-[center_5%] opacity-40 scale-105" alt="Bg" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
           <div className="absolute inset-0 p-6 flex flex-col justify-between">
             <div className="flex justify-between items-start">
