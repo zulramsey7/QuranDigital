@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { toast } from "sonner";
 import { dapatkanZonTerdekat } from '../data/zonMapping';
 
+const WAKTUSOLAT_API_BASE_URL = 'https://api.waktusolat.app/v2';
+
 export interface PrayerInfo {
   name: string;
   nameKey: string;
@@ -24,12 +26,7 @@ export function usePrayerTimes(latitude: number, longitude: number) {
       try {
         setLoading(true);
         const zon = dapatkanZonTerdekat(latitude, longitude);
-        const response = await fetch(`https://api.waktusolat.app/v2/solat/${zon}`);
-        if (!response.ok) throw new Error('Pelayan tidak merespon');
-        const data = await response.json();
-        
-        if (!data?.prayers?.[0]) throw new Error('Data tidak lengkap');
-        const timings = data.prayers[0];
+        const timings = await fetchPrayerTimesByZon(zon);
 
         const processTime = (timestamp: number) => ({
           timeString: new Date(timestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
@@ -99,6 +96,32 @@ export function usePrayerTimes(latitude: number, longitude: number) {
   }, [prayerTimes]);
 
   return { prayerTimes, hijriDate, gregorianDate, loading, error };
+}
+
+interface WaktuSolatApiTimings {
+  fajr: number;
+  syuruk: number;
+  dhuhr: number;
+  asr: number;
+  maghrib: number;
+  isha: number;
+  hijri?: string;
+}
+
+interface WaktuSolatApiResponse {
+  prayers: WaktuSolatApiTimings[];
+}
+
+async function fetchPrayerTimesByZon(zon: string): Promise<WaktuSolatApiTimings> {
+  const response = await fetch(`${WAKTUSOLAT_API_BASE_URL}/solat/${zon}`);
+  if (!response.ok) {
+    throw new Error('Pelayan tidak merespon');
+  }
+  const data: WaktuSolatApiResponse = await response.json();
+  if (!data?.prayers?.[0]) {
+    throw new Error('Data tidak lengkap');
+  }
+  return data.prayers[0];
 }
 
 // Helper functions (Kekal sama tetapi triggerAzanAlert dipanggil secara internal)
