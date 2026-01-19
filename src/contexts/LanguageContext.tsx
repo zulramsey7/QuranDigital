@@ -43,6 +43,8 @@ const translations: Translations = {
   search: { ms: 'Cari', en: 'Search' },
   bookmark: { ms: 'Penanda Buku', en: 'Bookmark' },
   lastRead: { ms: 'Bacaan Terakhir', en: 'Last Read' },
+  continueReadingTitle: { ms: 'Teruskan Bacaan', en: 'Continue Reading' },
+  continueReadingSubtitle: { ms: 'Klik untuk sambung surah terakhir', en: 'Tap to resume your last surah' },
   
   // Doa & Zikir
   dailyDoa: { ms: 'Doa Harian', en: 'Daily Duas' },
@@ -71,6 +73,8 @@ const translations: Translations = {
   fontSize: { ms: 'Saiz Tulisan', en: 'Font Size' },
   notifications: { ms: 'Notifikasi', en: 'Notifications' },
   azanNotification: { ms: 'Notifikasi Azan', en: 'Azan Notification' },
+  installAppTitle: { ms: 'Pasang Aplikasi', en: 'Install App' },
+  installAppSubtitle: { ms: 'Akses lebih pantas & jimat data', en: 'Faster access with less data' },
   
   // Common
   loading: { ms: 'Memuatkan...', en: 'Loading...' },
@@ -86,6 +90,9 @@ const translations: Translations = {
   qiblaDirection: { ms: 'Arah Kiblat', en: 'Qibla Direction' },
   distanceToKaaba: { ms: 'Jarak ke Kaabah', en: 'Distance to Kaaba' },
   calibrate: { ms: 'Kalibrasi', en: 'Calibrate' },
+  autoQuoteTitle: { ms: 'Ayat Deep Automatik', en: 'Auto Deep Verse' },
+  shareQuoteGenerating: { ms: 'Menjana...', en: 'Generating...' },
+  shareQuoteCTA: { ms: 'Kongsi Ayat Hari Ini', en: "Share Today's Verse" },
 };
 
 interface LanguageContextType {
