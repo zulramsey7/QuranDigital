@@ -249,7 +249,7 @@ const MuzikPage = () => {
                   style={{ height: `${(isMuted ? 0 : volume) * 100}%` }}
                 />
               </div>
-              <button onClick={() => setIsMuted(!isMuted)} className="p-3 bg-primary/10 rounded-full text-primary active:scale-90 transition-transform">
+              <button onClick={() => setIsMuted(!isMuted)} aria-label={isMuted ? "Bunyikan" : "Senyapkan"} className="p-3 bg-primary/10 rounded-full text-primary active:scale-90 transition-transform">
                 {isMuted || volume === 0 ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
               </button>
             </div>
@@ -334,7 +334,7 @@ const MuzikPage = () => {
         {/* Tab Buttons */}
         <div className="flex gap-1.5 p-1.5 bg-secondary/20 rounded-2xl overflow-x-auto no-scrollbar border border-white/5">
           {['nasyid', 'sholawat', 'zikir', 'fav'].map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab as any)} 
+            <button key={tab} onClick={() => setActiveTab(tab as Track['category'] | 'fav')} 
               className={cn("flex-1 py-3 px-5 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
                 activeTab === tab ? "bg-white dark:bg-slate-800 shadow-md text-primary" : "text-muted-foreground opacity-50")}>
               {tab}

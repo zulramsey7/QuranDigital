@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { BookmarksDialog } from '@/components/Bookmarks';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePrayerTimes, getNextPrayer } from '@/hooks/usePrayerTimes';
 import { useLocation } from '@/hooks/useLocation';
@@ -18,8 +19,13 @@ import { toast } from "sonner";
 // 1. IMPORT DATA DARI JSON
 import DEEP_QUOTES from '@/data/quotes.json';
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+}
+
 export default function HomePage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { location } = useLocation();
   const { dailyStreak, totalZikirToday } = useUserStats(); 
   
@@ -31,7 +37,7 @@ export default function HomePage() {
   const [countdown, setCountdown] = useState('--:--:--');
   const [nextPrayer, setNextPrayer] = useState<string>('');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [lastRead, setLastRead] = useState<{ id: number; name: string } | null>(null);
 
@@ -46,14 +52,10 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    // Tukar ayat setiap kali refresh (Initial Load)
     handleRandomize();
-
-    // Timer: Tukar ayat secara automatik setiap 5 minit
     const timer = setInterval(() => {
       handleRandomize();
-    }, 300000); 
-
+    }, 300000);
     return () => clearInterval(timer);
   }, []);
 
@@ -87,13 +89,20 @@ export default function HomePage() {
   // --- LOGIC ASAL (PWA, SHARE, ZIKIR, TIME) ---
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) setIsInstalled(true);
-    const handler = (e: any) => { e.preventDefault(); setDeferredPrompt(e); };
-    window.addEventListener('beforeinstallprompt', handler);
+    const handler = (e: BeforeInstallPromptEvent) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler as EventListener);
     const saved = localStorage.getItem('lastReadSurah');
     if (saved) {
-      try { setLastRead(JSON.parse(saved)); } catch (e) { console.error(e); }
+      try {
+        setLastRead(JSON.parse(saved));
+      } catch (e) {
+        console.error(e);
+      }
     }
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler as EventListener);
   }, []);
 
   const handleInstallApp = async () => {
@@ -155,9 +164,12 @@ export default function HomePage() {
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="text-[11px] font-bold text-primary uppercase tracking-wider">QuranDigital 2025</span>
           </div>
-          <div className="text-right">
-             <p className="text-[10px] font-bold text-primary uppercase tracking-tight">{hijriDate}</p>
-             <p className="text-[9px] text-muted-foreground font-medium">{gregorianDate}</p>
+          <div className="flex items-center gap-3">
+            <BookmarksDialog />
+            <div className="text-right">
+              <p className="text-[10px] font-bold text-primary uppercase tracking-tight">{hijriDate}</p>
+              <p className="text-[9px] text-muted-foreground font-medium">{gregorianDate}</p>
+            </div>
           </div>
         </div>
 
@@ -212,7 +224,18 @@ export default function HomePage() {
         <Link to="/quran" className="floating-card p-4 flex items-center justify-between bg-white dark:bg-secondary/20 border-none shadow-sm group">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Bookmark className="w-5 h-5 fill-current" /></div>
-            <div><h3 className="font-bold text-sm">{lastRead ? `Sambung ${lastRead.name}` : "Teruskan Bacaan"}</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">Klik untuk sambung surah terakhir</p></div>
+            <div>
+              <h3 className="font-bold text-sm">
+                {lastRead
+                  ? language === 'ms'
+                    ? `Sambung ${lastRead.name}`
+                    : `Resume ${lastRead.name}`
+                  : t('continueReadingTitle')}
+              </h3>
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+                {t('continueReadingSubtitle')}
+              </p>
+            </div>
           </div>
           <Play className="w-4 h-4 text-primary fill-current group-hover:scale-125 transition-transform" />
         </Link>
@@ -244,7 +267,9 @@ export default function HomePage() {
         {/* 7. POPULAR / AYAT DEEP GENERATOR (MODERN 21:9) */}
         <div className="space-y-4">
           <div className="flex justify-between items-center px-1">
-            <h2 className="text-[11px] font-black text-foreground uppercase tracking-[0.2em]">Ayat Deep Automatik</h2>
+            <h2 className="text-[11px] font-black text-foreground uppercase tracking-[0.2em]">
+              {t('autoQuoteTitle')}
+            </h2>
             <div className="flex gap-2">
                <span className="text-[8px] bg-primary/10 text-primary px-2 py-1 rounded-md font-bold animate-pulse">AUTO-ROTATE</span>
                <button onClick={handleRandomize} className="p-2 bg-secondary rounded-full active:scale-90 transition-transform">
@@ -260,7 +285,7 @@ export default function HomePage() {
             <img 
               src={quote.img} 
               className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000" 
-              alt="Background" 
+              alt="" 
               key={quote.img} 
             />
             <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
@@ -270,7 +295,7 @@ export default function HomePage() {
                <img 
                  src="/favicon.ico" 
                  className="w-5 h-5 object-contain" 
-                 alt="Logo" 
+                 alt="Logo QuranDigital" 
                />
                <span className="text-[7px] font-black text-white uppercase tracking-[0.2em] drop-shadow-md">
                  JomNgaji
@@ -305,7 +330,7 @@ export default function HomePage() {
             className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all font-bold uppercase tracking-widest text-[10px] disabled:opacity-50"
           >
             <Share2 className="w-3.5 h-3.5" />
-            {isGenerating ? "Menjana..." : "Kongsi Ayat Hari Ini"}
+            {isGenerating ? t('shareQuoteGenerating') : t('shareQuoteCTA')}
           </button>
         </div>
 
@@ -317,8 +342,10 @@ export default function HomePage() {
                 <Download className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <h3 className="font-bold text-sm text-primary">Pasang Aplikasi</h3>
-                <p className="text-[10px] text-muted-foreground uppercase font-medium">Akses lebih pantas & jimat data</p>
+                <h3 className="font-bold text-sm text-primary">{t('installAppTitle')}</h3>
+                <p className="text-[10px] text-muted-foreground uppercase font-medium">
+                  {t('installAppSubtitle')}
+                </p>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />

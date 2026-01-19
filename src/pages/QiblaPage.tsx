@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -20,6 +20,7 @@ export default function QiblaPage() {
   const [qiblaDirection, setQiblaDirection] = useState<number>(0);
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sensorSupported, setSensorSupported] = useState(true);
 
   // Kira arah Kiblat
   useEffect(() => {
@@ -52,39 +53,58 @@ export default function QiblaPage() {
     return Math.round(R * c);
   };
 
-  const requestOrientationPermission = async () => {
-    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+  type OrientationPermissionState = "granted" | "denied" | "default";
+
+  const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
+    if (event.alpha !== null) {
+      let compassHeading = event.alpha;
+      const webkitEvent = event as DeviceOrientationEvent & { webkitCompassHeading?: number };
+      if (typeof webkitEvent.webkitCompassHeading === 'number') {
+        compassHeading = webkitEvent.webkitCompassHeading;
+      }
+      setHeading(compassHeading);
+      setError(null);
+    }
+  }, []);
+
+  const requestOrientationPermission = useCallback(async () => {
+    if (typeof window === 'undefined' || typeof window.DeviceOrientationEvent === 'undefined') {
+      setSensorSupported(false);
+      setError('Peranti ini tidak menyokong sensor kompas. Anda masih boleh guna sudut kiblat yang dipaparkan.');
+      return;
+    }
+
+    const DeviceOrientationEventWithPermission =
+      DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+        requestPermission?: () => Promise<OrientationPermissionState>;
+      };
+
+    const hasRequestPermission =
+      typeof DeviceOrientationEventWithPermission.requestPermission === 'function';
+
+    if (hasRequestPermission) {
       try {
-        const permission = await (DeviceOrientationEvent as any).requestPermission();
+        const permission = await DeviceOrientationEventWithPermission.requestPermission?.();
         if (permission === 'granted') {
           setPermissionGranted(true);
           window.addEventListener('deviceorientation', handleOrientation);
+          setError(null);
         } else {
-          setError('Izin akses kompas ditolak');
+          setError('Izin akses kompas ditolak. Sila benarkan akses sensor pergerakan dalam tetapan pelayar.');
         }
       } catch (err) {
-        setError('Ralat sensor kompas');
+        setError('Ralat sensor kompas. Cuba tekan butang kalibrasi sekali lagi.');
       }
     } else {
       setPermissionGranted(true);
       window.addEventListener('deviceorientation', handleOrientation);
+      setError(null);
     }
-  };
-
-  const handleOrientation = (event: DeviceOrientationEvent) => {
-    if (event.alpha !== null) {
-      let compassHeading = event.alpha;
-      if ((event as any).webkitCompassHeading) {
-        compassHeading = (event as any).webkitCompassHeading;
-      }
-      setHeading(compassHeading);
-    }
-  };
+  }, [handleOrientation]);
 
   useEffect(() => {
-    requestOrientationPermission();
     return () => window.removeEventListener('deviceorientation', handleOrientation);
-  }, []);
+  }, [handleOrientation]);
 
   const getCompassRotation = () => {
     if (heading === null) return qiblaDirection;
@@ -156,6 +176,24 @@ export default function QiblaPage() {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-4 h-4 rounded-full bg-emerald-500 shadow-lg border-2 border-white dark:border-slate-900 z-20" />
             </div>
+          </div>
+
+          <div className="mt-4 space-y-1 text-center">
+            {!sensorSupported && (
+              <p className="text-[10px] font-bold uppercase text-amber-600 dark:text-amber-400">
+                Sensor kompas tidak disokong. Rujuk sudut kiblat dan peta sebagai panduan.
+              </p>
+            )}
+            {!permissionGranted && sensorSupported && !error && (
+              <p className="text-[10px] font-bold uppercase text-muted-foreground">
+                Tekan "Kalibrasi Kompas" untuk mengaktifkan sensor pergerakan peranti.
+              </p>
+            )}
+            {error && (
+              <p className="text-[10px] font-bold uppercase text-red-500">
+                {error}
+              </p>
+            )}
           </div>
 
           <div className="mt-8 grid grid-cols-2 gap-3 w-full">

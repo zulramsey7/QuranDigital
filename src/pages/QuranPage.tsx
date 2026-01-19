@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, Play, Pause, ChevronLeft, Bookmark, BookOpen, Volume2, Languages, Globe } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useBookmarks } from '@/contexts/BookmarkContext';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from "sonner";
 
 interface Surah {
@@ -24,9 +25,70 @@ interface Ayah {
   audio: string;
 }
 
+const QURAN_API_BASE_URL = 'https://api.alquran.cloud/v1';
+const EQURAN_API_BASE_URL = 'https://equran.id/api/v2';
+
+const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+
+const toArabicVariant = (n: number) => {
+  return n
+    .toString()
+    .split('')
+    .map((x) => arabicDigits[parseInt(x)])
+    .join('');
+};
+
+interface EquranAyah {
+  nomorAyat: number;
+  teksArab: string;
+  teksLatin: string;
+  teksIndonesia: string;
+  audio: Record<string, string>;
+}
+
+interface EquranSurahResponse {
+  code: number;
+  data: {
+    ayat: EquranAyah[];
+  };
+}
+
+interface SurahListResponse {
+  data: Surah[];
+}
+
+async function fetchSurahList(): Promise<Surah[]> {
+  const response = await fetch(`${QURAN_API_BASE_URL}/surah`);
+  if (!response.ok) {
+    throw new Error('Gagal memuatkan senarai surah');
+  }
+  const data: SurahListResponse = await response.json();
+  return data.data;
+}
+
+async function fetchSurahAyahs(surahNumber: number): Promise<Ayah[]> {
+  const response = await fetch(`${EQURAN_API_BASE_URL}/surat/${surahNumber}`);
+  if (!response.ok) {
+    throw new Error('Gagal memuatkan ayat surah');
+  }
+  const data: EquranSurahResponse = await response.json();
+  if (data.code !== 200 || !data.data?.ayat) {
+    throw new Error('Data ayat tidak lengkap');
+  }
+  return data.data.ayat.map((v) => ({
+    nomorAyat: v.nomorAyat,
+    teksArab: `${v.teksArab} ۝${toArabicVariant(v.nomorAyat)}`,
+    teksLatin: v.teksLatin,
+    teksTranslation: v.teksIndonesia,
+    audio: v.audio['05'],
+  }));
+}
+
 export default function QuranPage() {
   const { t } = useLanguage();
+  const { addBookmark, removeBookmark, isBookmarked, bookmarks } = useBookmarks();
   const navigate = useNavigate();
+  const location = useLocation();
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [selectedSurah, setSelectedSurah] = useState<number | null>(null);
   const [ayahs, setAyahs] = useState<Ayah[]>([]);
@@ -41,20 +103,14 @@ export default function QuranPage() {
     return saved ? JSON.parse(saved) : null;
   });
 
-  // Fungsi penukaran nombor Arab untuk dalam simbol ۝
-  const toArabicVariant = (n: number) => {
-    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return n.toString().split('').map(x => arabicDigits[parseInt(x)]).join('');
-  };
-
   useEffect(() => {
     const fetchSurahs = async () => {
       try {
-        const response = await fetch('https://api.alquran.cloud/v1/surah');
-        const data = await response.json();
-        setSurahs(data.data);
+        const data = await fetchSurahList();
+        setSurahs(data);
       } catch (error) {
         console.error('Error fetching surahs:', error);
+        toast.error("Gagal memuatkan senarai surah.");
       } finally {
         setLoading(false);
       }
@@ -65,21 +121,8 @@ export default function QuranPage() {
   const fetchSurahDetails = async (surahNumber: number) => {
     setLoadingAyahs(true);
     try {
-      // Mengambil data dari equran.id untuk Teks Imla'ei & Terjemahan MS/ID
-      const response = await fetch(`https://equran.id/api/v2/surat/${surahNumber}`);
-      const data = await response.json();
-
-      if (data.code === 200) {
-        const formattedAyahs = data.data.ayat.map((v: any) => ({
-          nomorAyat: v.nomorAyat,
-          // Gabungkan Teks Arab + Simbol ۝ + Nombor Arab
-          teksArab: `${v.teksArab} ۝${toArabicVariant(v.nomorAyat)}`,
-          teksLatin: v.teksLatin,
-          teksTranslation: v.teksIndonesia,
-          audio: v.audio['05']
-        }));
-        setAyahs(formattedAyahs);
-      }
+      const formattedAyahs = await fetchSurahAyahs(surahNumber);
+      setAyahs(formattedAyahs);
     } catch (error) {
       console.error('Error fetching surah details:', error);
       toast.error("Gagal memuatkan ayat.");
@@ -94,13 +137,37 @@ export default function QuranPage() {
     window.scrollTo(0, 0);
   };
 
-  const handleSaveBookmark = (ayahNumber: number) => {
+  const handleSaveBookmark = (ayahNumber: number, ayahText: string) => {
     const surah = surahs.find(s => s.number === selectedSurah);
     if (surah) {
-      const bookmarkData = { surah: surah.number, ayah: ayahNumber, name: surah.englishName };
-      localStorage.setItem('last-read', JSON.stringify(bookmarkData));
-      setLastRead(bookmarkData);
-      toast.success(`Tanda buku disimpan: ${surah.englishName} ayat ${ayahNumber}`);
+      const title = `${surah.englishName} Ayat ${ayahNumber}`;
+      const alreadyBookmarked = isBookmarked(title);
+
+      if (alreadyBookmarked) {
+        // Cari ID bookmark untuk dibuang
+        const bookmarkToRemove = bookmarks.find(b => b.title === title);
+        if (bookmarkToRemove) {
+          removeBookmark(bookmarkToRemove.id);
+          toast.info("Tanda buku dibuang");
+        }
+      } else {
+        // Tambah bookmark baru
+        addBookmark({
+          type: 'ayat',
+          title: title,
+          content: ayahText, // Simpan teks ringkas atau terjemahan
+          metadata: {
+            surah: surah.number,
+            ayah: ayahNumber
+          }
+        });
+        toast.success("Tanda buku disimpan");
+      }
+
+      // Sentiasa update last-read untuk fungsi 'Sambung Bacaan' di Home
+      const lastReadData = { surah: surah.number, ayah: ayahNumber, name: surah.englishName };
+      localStorage.setItem('last-read', JSON.stringify(lastReadData));
+      setLastRead(lastReadData);
     }
   };
 
@@ -145,7 +212,7 @@ export default function QuranPage() {
         <audio ref={audioRef} onEnded={() => setPlayingAyah(null)} />
         <div className="space-y-6 animate-fade-in pb-20 px-2">
           <div className="flex items-center gap-4 pt-4">
-            <button onClick={() => setSelectedSurah(null)} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center active:scale-95 transition-all">
+            <button onClick={() => setSelectedSurah(null)} aria-label="Kembali ke Senarai Surah" className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-black/5 flex items-center justify-center active:scale-95 transition-all">
               <ChevronLeft className="w-6 h-6 dark:text-white" />
             </button>
             <div className="text-left">
@@ -172,7 +239,9 @@ export default function QuranPage() {
           ) : (
             <div className="space-y-4">
               {ayahs.map((ayah) => {
-                const isBookmarked = lastRead?.surah === selectedSurah && lastRead?.ayah === ayah.nomorAyat;
+                const surahName = surahs.find(s => s.number === selectedSurah)?.englishName || '';
+                const bookmarkTitle = `${surahName} Ayat ${ayah.nomorAyat}`;
+                const isBookmarkedAyat = isBookmarked(bookmarkTitle);
                 const isPlaying = playingAyah === ayah.nomorAyat;
                 return (
                   <div 
@@ -189,13 +258,14 @@ export default function QuranPage() {
                       </span>
                       <div className="flex items-center gap-2">
                         <button 
-                          onClick={() => handleSaveBookmark(ayah.nomorAyat)}
+                          onClick={() => handleSaveBookmark(ayah.nomorAyat, ayah.teksTranslation)}
+                          aria-label={isBookmarkedAyat ? "Buang Tanda Buku" : "Simpan Tanda Buku"}
                           className={cn(
                             "w-10 h-10 rounded-full flex items-center justify-center transition-all",
-                            isBookmarked ? "bg-emerald-500 text-white shadow-lg" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                            isBookmarkedAyat ? "bg-emerald-500 text-white shadow-lg" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
                           )}
                         >
-                          <Bookmark size={18} fill={isBookmarked ? "currentColor" : "none"} />
+                          <Bookmark size={18} fill={isBookmarkedAyat ? "currentColor" : "none"} />
                         </button>
                         <button 
                           onClick={() => toggleAudio(ayah.nomorAyat, ayah.audio)} 
@@ -254,7 +324,7 @@ export default function QuranPage() {
         </div>
 
         {lastRead && (
-          <button onClick={() => handleSurahClick(lastRead.surah)} className="w-full p-5 flex items-center justify-between rounded-3xl border border-emerald-100 bg-emerald-50/50 dark:bg-emerald-500/5 dark:border-emerald-500/20 hover:bg-emerald-100 transition-all">  
+          <button onClick={() => handleSurahClick(lastRead.surah)} aria-label="Sambung Bacaan Terakhir" className="w-full p-5 flex items-center justify-between rounded-3xl border border-emerald-100 bg-emerald-50/50 dark:bg-emerald-500/5 dark:border-emerald-500/20 hover:bg-emerald-100 transition-all">  
             <div className="flex items-center gap-4">  
               <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg text-white">  
                 <Bookmark className="w-6 h-6" fill="currentColor" />  

@@ -33,7 +33,13 @@ export default function YasinPage() {
         const data = await response.json();
 
         if (data.code === 200) {
-          const formattedVerses = data.data.ayat.map((v: any) => ({
+          const formattedVerses = data.data.ayat.map((v: {
+            nomorAyat: number;
+            teksArab: string;
+            teksLatin: string;
+            teksIndonesia: string;
+            audio: Record<string, string>;
+          }) => ({
             nomorAyat: v.nomorAyat,
             // Simbol ۝ diikuti dengan nombor dalam format tulisan Arab
             teksArab: `${v.teksArab} ۝${toArabicVariant(v.nomorAyat)}`,

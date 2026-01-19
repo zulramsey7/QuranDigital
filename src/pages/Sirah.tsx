@@ -59,10 +59,21 @@ const sirahData = {
 export default function SirahPage() {
   const [view, setView] = useState<'menu' | 'nabawiyah' | 'paraNabi'>('menu');
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStory, setSelectedStory] = useState<any>(null);
+  type SirahStory = {
+    id: number;
+    title: string;
+    content?: string;
+    color: string;
+    icon: React.ReactNode;
+    isNovel?: boolean;
+    scenes?: { img: string; text: string }[];
+  };
+
+  const [selectedStory, setSelectedStory] = useState<SirahStory | null>(null);
   const [currentScene, setCurrentScene] = useState(0);
 
-  const filterData = (data: any[]) => data.filter(s => s.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filterData = (data: SirahStory[]) =>
+    data.filter((s) => s.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <MainLayout>
