@@ -173,6 +173,13 @@ const TahlilRingkas = () => {
       latin: "Bismillaahir-rahmaanir-rahiim. Al-hamdu lillaahi rabbil-'aalamiin. Ar-rahmaanir-rahiim. Maaliki yawmid-diin. Iyyaaka na'budu wa iyyaaka nasta'iin. Ihdinas-shiraatal-mustaqiim. Shiraatal-ladziina an'amta 'alayhim ghairil-maghdzuubi 'alayhim wa lad-daalliin.",
       translation: "Membaca Al-Fatihah sebagai penutup sebelum memulakan doa tahlil.",
       note: ""
+    },
+    {
+      title: "23. Doa Tahlil Ringkas",
+      arabic: "اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ. حَمْدًا شَاكِرِينَ حَمْدًا نَاعِمِينَ. يَا رَبَّنَا لَكَ الْحَمْدُ كَمَا يَنْبَغِي لِجَلَالِ وَجْهِكَ وَعَظِيمِ سُلْطَانِكَ. اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ. اللَّهُمَّ تَقَبَّلْ وَأَوْصِلْ ثَوَابَ مَا قَرَأْنَاهُ هَدِيَّةً وَاصِلَةً إِلَى حَضْرَةِ حَبِيبِنَا مُحَمَّدٍ ﷺ وَإِلَى أَرْوَاحِ أَمْوَاتِنَا وَأَمْوَاتِ الْمُسْلِمِينَ أَجْمَعِينَ. اللَّهُمَّ اغْفِرْ لَهُمْ وَارْحَمْهُمْ وَعَافِهِمْ وَاعْفُ عَنْهُمْ. رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ. وَصَلَّى اللهُ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ وَسَلَّمَ. وَالْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ.",
+      latin: "Al-hamdu lillaahi rabbil-'aalamiin. Hamdan syaakiriin hamdan naa'imiin. Yaa rabbanaa lakal-hamdu kamaa yanbaghii lijalaali wajhika wa 'azhiimi sulthaanik. Allaahumma shalli wa sallim 'alaa sayyidinaa Muhammadin wa 'alaa aalihi wa shahbihi ajma'iin. Allaahumma taqabbal wa aushil tsawaaba maa qara'naahu hadiyyatan waashilatan ilaa hadhrati habiibinaa Muhammadin SAW wa ilaa arwaahi amwaatinaa wa amwaatil-muslimiina ajma'iin. Allaahummaghfir lahum warhamhum wa 'aafihim wa'fu 'anhum. Rabbanaa aatinaa fid-dunyaa hasanah wa fil-aakhirati hasanah wa qinaa 'adzaaban-naar. Wa shallallaahu 'alaa sayyidinaa Muhammadin wa 'alaa aalihi wa shahbihi wa sallam. Wal-hamdu lillaahi rabbil-'aalamiin.",
+      translation: "Segala puji bagi Allah Tuhan semesta alam. Pujian orang yang bersyukur dan orang yang beroleh nikmat. Wahai Tuhan kami, bagi-Mu segala puji sebagaimana layak bagi keagungan wajah-Mu dan kebesaran kekuasaan-Mu. Ya Allah, sampaikanlah pahala bacaan kami kepada Nabi Muhammad SAW dan kepada roh-roh keluarga kami serta kaum muslimin sekalian. Ya Allah, ampunilah mereka, rahmatilah mereka, dan maafkanlah mereka. Wahai Tuhan kami, berikanlah kami kebaikan di dunia dan akhirat, serta lindungilah kami dari azab neraka.",
+      note: "Boleh dibaca ringkas"
     }
   ];
 

@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { BookmarksDialog } from '@/components/Bookmarks';
+import { ShareDrawer } from '@/components/ShareDrawer';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePrayerTimes, getNextPrayer } from '@/hooks/usePrayerTimes';
 import { useLocation } from '@/hooks/useLocation';
@@ -242,8 +243,22 @@ export default function HomePage() {
 
         {/* 5. FEATURE GRID */}
         <div className="grid grid-cols-4 gap-4">
-          {features.map((item, i) => (
-            item.onClick ? (
+          {features.map((item, i) => {
+            // SPECIAL CASE: KONGSI (SHARE)
+            if (item.label === 'Kongsi') {
+              return (
+                <ShareDrawer key={i}>
+                  <button className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
+                    <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm border border-black/5 dark:border-white/5', item.color)}>
+                      <item.icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">{item.label}</span>
+                  </button>
+                </ShareDrawer>
+              );
+            }
+
+            return item.onClick ? (
               <button key={i} onClick={item.onClick} className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
                 <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm border border-black/5 dark:border-white/5', item.color)}><item.icon className="w-6 h-6" /></div>
                 <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">{item.label}</span>
@@ -253,8 +268,8 @@ export default function HomePage() {
                 <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm border border-black/5 dark:border-white/5', item.color)}><item.icon className="w-6 h-6" /></div>
                 <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">{item.label}</span>
               </Link>
-            )
-          ))}
+            );
+          })}
         </div>
 
         {/* 6. ZIKIR HARI INI */}

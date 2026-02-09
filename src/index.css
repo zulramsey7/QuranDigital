@@ -192,6 +192,32 @@
     display: none;
   }
 
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.slate.300') transparent;
+  }
+  
+  .dark .custom-scrollbar {
+    scrollbar-color: theme('colors.slate.700') transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: theme('colors.slate.300');
+    border-radius: 20px;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: theme('colors.slate.700');
+  }
+
   .safe-bottom {
     padding-bottom: max(env(safe-area-inset-bottom), 100px);
   }

@@ -56,24 +56,51 @@ export default function QiblaPage() {
   type OrientationPermissionState = "granted" | "denied" | "default";
 
   const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
-    if (event.alpha !== null) {
-      let compassHeading = event.alpha;
-      const webkitEvent = event as DeviceOrientationEvent & { webkitCompassHeading?: number };
-      if (typeof webkitEvent.webkitCompassHeading === 'number') {
-        compassHeading = webkitEvent.webkitCompassHeading;
+    let compassHeading = null;
+
+    // iOS & WebKit-based browsers
+    const webkitEvent = event as DeviceOrientationEvent & { webkitCompassHeading?: number };
+    if (typeof webkitEvent.webkitCompassHeading === 'number') {
+      compassHeading = webkitEvent.webkitCompassHeading;
+    } 
+    // Android & Non-WebKit browsers
+    else if (event.alpha !== null) {
+      // Check if the event is absolute (reliable compass data)
+      if ('absolute' in event && (event as any).absolute === true) {
+        // alpha is typically counter-clockwise (0=North, 90=West)
+        // Convert to clockwise heading (0=North, 90=East)
+        compassHeading = 360 - event.alpha;
+      } else {
+        // Fallback for devices that don't report absolute: true
+        // This might be relative to initial position, but it's the best guess
+        compassHeading = 360 - event.alpha;
       }
+    }
+
+    if (compassHeading !== null) {
+      // Normalize to 0-360
+      compassHeading = (compassHeading + 360) % 360;
       setHeading(compassHeading);
       setError(null);
     }
   }, []);
 
+  // Handler khusus untuk Android yang menyokong deviceorientationabsolute
+  const handleAbsoluteOrientation = useCallback((event: DeviceOrientationEvent) => {
+    if (event.alpha !== null) {
+       // alpha is counter-clockwise
+       const compassHeading = (360 - event.alpha) % 360;
+       setHeading(compassHeading);
+       setError(null);
+    }
+  }, []);
+
   const requestOrientationPermission = useCallback(async () => {
-    if (typeof window === 'undefined' || typeof window.DeviceOrientationEvent === 'undefined') {
-      setSensorSupported(false);
-      setError('Peranti ini tidak menyokong sensor kompas. Anda masih boleh guna sudut kiblat yang dipaparkan.');
+    if (typeof window === 'undefined') {
       return;
     }
 
+    // iOS 13+ requires permission
     const DeviceOrientationEventWithPermission =
       DeviceOrientationEvent as typeof DeviceOrientationEvent & {
         requestPermission?: () => Promise<OrientationPermissionState>;
@@ -96,15 +123,27 @@ export default function QiblaPage() {
         setError('Ralat sensor kompas. Cuba tekan butang kalibrasi sekali lagi.');
       }
     } else {
+      // Non-iOS devices
       setPermissionGranted(true);
-      window.addEventListener('deviceorientation', handleOrientation);
+      // Try deviceorientationabsolute first (more accurate for compass)
+      if ('ondeviceorientationabsolute' in window) {
+        window.addEventListener('deviceorientationabsolute', handleAbsoluteOrientation as EventListener);
+      } else {
+        (window as Window).addEventListener('deviceorientation', handleOrientation);
+      }
       setError(null);
     }
-  }, [handleOrientation]);
+  }, [handleOrientation, handleAbsoluteOrientation]);
 
   useEffect(() => {
-    return () => window.removeEventListener('deviceorientation', handleOrientation);
-  }, [handleOrientation]);
+    // Cleanup listeners
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation);
+      if ('ondeviceorientationabsolute' in window) {
+        window.removeEventListener('deviceorientationabsolute', handleAbsoluteOrientation as EventListener);
+      }
+    };
+  }, [handleOrientation, handleAbsoluteOrientation]);
 
   const getCompassRotation = () => {
     if (heading === null) return qiblaDirection;
@@ -201,9 +240,11 @@ export default function QiblaPage() {
               <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Sudut Kiblat</p>
               <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">{Math.round(qiblaDirection)}°</p>
             </div>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-black/5 text-center shadow-sm">
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Jarak Kaabah</p>
-              <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">{calculateDistance().toLocaleString()} km</p>
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-[28px] border border-black/5 text-center shadow-sm">
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Arah Peranti</p>
+              <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
+                {heading !== null ? Math.round(heading) + '°' : '---'}
+              </p>
             </div>
           </div>
         </div>
