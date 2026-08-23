@@ -1,73 +1,189 @@
-# Welcome to your Lovable project
+# QuranDigital 2025 - JomNgaji
 
-## Project info
+🕌 Aplikasi Islamik Progressive Web App (PWA) yang lengkap dengan Al-Quran, Waktu Solat, Kiblat, Tasbih, Doa, Sirah Nabawiyah, dan banyak lagi.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## ✨ Fitur Utama
 
-## How can I edit this code?
+### 📖 Al-Quran Digital
+- Teks Al-Quran lengkap 114 surah
+- Terjemahan Bahasa Melayu
+- Bookmark ayat kegemaran
+- Antaramuka yang mudah dibaca
 
-There are several ways of editing your application.
+### 🕐 Waktu Solat
+- Waktu solat automatik berdasarkan lokasi
+- Notifikasi waktu solat
+- Sokongan pelbagai zon waktu di Malaysia
 
-**Use Lovable**
+### 🧭 Arah Kiblat
+- Kompas digital untuk menentukan arah Kiblat
+- Kiraan jarak ke Makkah
+- Kalibrasi sensor kompas
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### 📿 Tasbih Digital
+- Tasbih digital dengan counter
+- Reset mudah
+- Rekod bilangan zikir
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🤲 Doa & Zikir
+- Koleksi doa harian
+- Zikir pagi dan petang
+- Doa selepas solat
 
-**Use your preferred IDE**
+### 📚 Sirah Nabawiyah
+- Kisah hidup Nabi Muhammad SAW
+- 25 Kisah Para Nabi AS
+- Timeline interaktif
+- Hikmah dan pengajaran
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🎵 Nasyid & Muzik
+- Koleksi nasyid Islamik
+- Audio player dengan kontrol lengkap
+- Sokongan offline caching
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🌙 Tahlil & Yasin
+- Teks lengkap Surah Yasin
+- Tahlil Lengkap dan Ringkas
+- Mudah untuk bacaan harian
 
-Follow these steps:
+### ⚙️ Tetapan
+- Bahasa: Bahasa Melayu / English
+- Tema: Light / Dark / System
+- Saiz fon boleh laras
+- Lokasi automatik
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🛠️ Teknologi
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Project ini dibina dengan teknologi moden:
 
-# Step 3: Install the necessary dependencies.
-npm i
+- **Framework**: React 18 dengan TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn-ui (Radix UI)
+- **Icons**: Lucide React
+- **Routing**: React Router DOM
+- **State Management**: React Context API
+- **Data Fetching**: TanStack React Query
+- **Forms**: React Hook Form dengan Zod
+- **PWA**: Vite PWA Plugin
+- **Linting**: ESLint dengan TypeScript ESLint
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 📦 Installation
+
+### Prasyarat
+- Node.js (v18 atau lebih tinggi)
+- npm atau yarn
+
+### Langkah Installation
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd QuranDigital-main
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Server development akan berjalan di `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🚀 Build untuk Production
 
-**Use GitHub Codespaces**
+```bash
+# Build project
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Preview production build
+npm run preview
+```
 
-## What technologies are used for this project?
+## 📱 PWA Features
 
-This project is built with:
+Aplikasi ini adalah Progressive Web App dengan:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Offline Support** - Boleh diakses tanpa internet
+- **Installable** - Boleh di-install ke desktop/mobile
+- **Fast Loading** - Optimasi loading dengan caching strategy
+- **Push Notifications** - Notifikasi waktu solat (coming soon)
 
-## How can I deploy this project?
+## 🧪 Testing & Linting
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```bash
+# Run ESLint
+npm run lint
 
-## Can I connect a custom domain to my Lovable project?
+# Type checking
+npx tsc --noEmit
+```
 
-Yes, you can!
+## 📁 Project Structure
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```
+src/
+├── components/          # React components
+│   ├── layout/         # Layout components (MainLayout, Navigation)
+│   └── ui/             # shadcn-ui components
+├── contexts/           # React contexts (Theme, Language, Bookmark)
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions
+├── pages/              # Page components
+│   ├── HomePage.tsx
+│   ├── QuranPage.tsx
+│   ├── DoaPage.tsx
+│   ├── QiblaPage.tsx
+│   ├── Sirah.tsx
+│   ├── Muzik.tsx
+│   ├── TasbihPage.tsx
+│   └── ...
+├── data/               # Static data files
+├── App.tsx             # Main App component
+└── main.tsx            # Entry point
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🔌 API Endpoints
+
+Aplikasi ini menggunakan beberapa API eksternal:
+
+- **Waktu Solat**: `https://api.waktusolat.app/`
+- **Al-Quran**: `https://api.alquran.cloud/` dan `https://equran.id/api/`
+
+## 🌐 Deployment
+
+Project boleh di-deploy ke pelbagai platform:
+
+- **Netlify** - Drag & drop atau Git integration
+- **Vercel** - Git integration dengan auto-deploy
+- **GitHub Pages** - Static hosting
+- **Self-hosted** - Build ke folder `dist` dan host di server sendiri
+
+## 🤝 Contribution
+
+Contributions are welcome! Sila:
+
+1. Fork repository
+2. Create branch untuk feature (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📄 License
+
+Project ini adalah open-source. Sila rujuk LICENSE file untuk details.
+
+## 🙏 Credits
+
+- Quran data dari [eQuran.id](https://equran.id/)
+- Waktu solat data dari [WaktuSolat.app](https://waktusolat.app/)
+- UI components dari [shadcn-ui](https://ui.shadcn.com/)
+- Icons dari [Lucide](https://lucide.dev/)
+
+## 📞 Support
+
+Untuk bugs atau suggestions, sila open issue di repository.
+
+---
+
+Dibuat dengan ❤️ untuk umat Islam
