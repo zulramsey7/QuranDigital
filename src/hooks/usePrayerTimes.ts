@@ -44,8 +44,15 @@ export function usePrayerTimes(latitude: number, longitude: number) {
         
         setPrayerTimes(prayerList);
         if (timings.hijri) {
-          const [y, m, d] = timings.hijri.split('-');
-          setHijriDate(`${d}-${m}-${y}H`);
+          // Handle different hijri date formats from API
+          const hijriStr = timings.hijri;
+          if (hijriStr.includes('-')) {
+            const [y, m, d] = hijriStr.split('-');
+            setHijriDate(`${d}-${m}-${y}H`);
+          } else {
+            // Fallback for other formats
+            setHijriDate(hijriStr);
+          }
         }
         setGregorianDate(new Date().toLocaleDateString('ms-MY', { day: 'numeric', month: 'long', year: 'numeric' }));
         setError(null);
@@ -110,28 +117,49 @@ interface WaktuSolatApiTimings {
   maghrib: number;
   isha: number;
   hijri?: string;
+  date?: string;
+}
+
+interface AlternativePrayerTime {
+  imsak?: string;
+  fajr?: string;
+  syuruk?: string;
+  dhuhr?: string;
+  asr?: string;
+  maghrib?: string;
+  isha?: string;
+  hijri?: string;
+  date?: string;
 }
 
 interface WaktuSolatApiResponse {
-  prayers: WaktuSolatApiTimings[];
+  prayers?: WaktuSolatApiTimings[];
+  prayerTime?: AlternativePrayerTime[];
+  status?: string;
+  serverTime?: string;
+  periodType?: string;
+  zone?: string;
 }
 
 async function fetchPrayerTimesByZon(zon: string): Promise<WaktuSolatApiTimings> {
   const CACHE_KEY = `prayer_times_${zon}`;
   const cached = localStorage.getItem(CACHE_KEY);
 
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // Months are 0-indexed
+
   if (cached) {
     try {
-      const { data, timestamp } = JSON.parse(cached);
-      // Cache valid for 24 hours (prayer times might have slight adjustments or we want to ensure hijri date sync)
-      // Actually API v2 returns data for the whole year sometimes, but let's be safe with 1 week or until month changes
+      const { data, timestamp, year, month } = JSON.parse(cached);
       const cacheDate = new Date(timestamp);
-      const now = new Date();
-      
-      // Invalid if different month (zones might change or data updates)
+
+      // Cache valid if same year and month, and data is for current year
       if (
-        Array.isArray(data) && 
-        cacheDate.getMonth() === now.getMonth() && 
+        Array.isArray(data) &&
+        year === currentYear &&
+        month === currentMonth &&
+        cacheDate.getMonth() === now.getMonth() &&
         cacheDate.getFullYear() === now.getFullYear()
       ) {
          return getTodayPrayer(data);
@@ -141,25 +169,70 @@ async function fetchPrayerTimesByZon(zon: string): Promise<WaktuSolatApiTimings>
     }
   }
 
-  const response = await fetch(`${WAKTUSOLAT_API_BASE_URL}/solat/${zon}`);
+  // Fetch data for current year and month to ensure 2026 data is used
+  console.log(`Fetching prayer times for zone: ${zon}, year: ${currentYear}, month: ${currentMonth}`);
+  const response = await fetch(
+    `${WAKTUSOLAT_API_BASE_URL}/solat/${zon}?year=${currentYear}&month=${currentMonth}`
+  );
+
   if (!response.ok) {
-    throw new Error('Pelayan tidak merespon');
+    throw new Error(`Pelayan tidak merespon: ${response.status}`);
   }
+
   const data: WaktuSolatApiResponse = await response.json();
-  if (!data?.prayers?.[0]) {
-    throw new Error('Data tidak lengkap');
+  console.log('API Response:', data);
+
+  // Handle different response formats from API
+  let prayerData = data.prayers;
+  if (!prayerData || prayerData.length === 0) {
+    // Try alternative response structure
+    if (data.prayerTime && Array.isArray(data.prayerTime)) {
+      prayerData = data.prayerTime.map((pt: AlternativePrayerTime) => ({
+        fajr: parseTimeToTimestamp(pt.imsak || pt.fajr),
+        syuruk: parseTimeToTimestamp(pt.syuruk),
+        dhuhr: parseTimeToTimestamp(pt.dhuhr),
+        asr: parseTimeToTimestamp(pt.asr),
+        maghrib: parseTimeToTimestamp(pt.maghrib),
+        isha: parseTimeToTimestamp(pt.isha),
+        hijri: pt.hijri,
+        date: pt.date
+      }));
+    } else {
+      throw new Error('Data tidak lengkap atau format tidak disokong');
+    }
+  }
+
+  if (!prayerData || prayerData.length === 0) {
+    throw new Error('Data solat tidak ditemui');
   }
 
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify({
-      data: data.prayers, // Cache all prayers array
-      timestamp: Date.now()
+      data: prayerData,
+      timestamp: Date.now(),
+      year: currentYear,
+      month: currentMonth
     }));
   } catch (e) {
     console.error('Failed to cache prayer times', e);
   }
 
-  return getTodayPrayer(data.prayers);
+  return getTodayPrayer(prayerData);
+}
+
+// Helper function to parse time string to timestamp
+function parseTimeToTimestamp(timeStr: string): number {
+  if (!timeStr) return Date.now() / 1000;
+
+  // Handle different time formats: "05:49:00", "05:49", etc.
+  const parts = timeStr.split(':');
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1] || '0', 10);
+  const seconds = parseInt(parts[2] || '0', 10);
+
+  const date = new Date();
+  date.setHours(hours, minutes, seconds, 0);
+  return date.getTime() / 1000;
 }
 
 function getTodayPrayer(prayers: WaktuSolatApiTimings[]): WaktuSolatApiTimings {
@@ -168,15 +241,28 @@ function getTodayPrayer(prayers: WaktuSolatApiTimings[]): WaktuSolatApiTimings {
   const todayMonth = now.getMonth();
   const todayYear = now.getFullYear();
 
+  console.log(`Looking for prayer times for date: ${todayDate}/${todayMonth + 1}/${todayYear}`);
+  console.log(`Available prayers count: ${prayers.length}`);
+
   // Find prayer time that matches today's date
   const found = prayers.find(p => {
     const pDate = new Date(p.fajr * 1000);
-    return pDate.getDate() === todayDate && 
-           pDate.getMonth() === todayMonth && 
+    const match = pDate.getDate() === todayDate &&
+           pDate.getMonth() === todayMonth &&
            pDate.getFullYear() === todayYear;
+
+    if (match) {
+      console.log(`Found matching prayer time for: ${p.date || pDate.toDateString()}`);
+    }
+    return match;
   });
 
   // Fallback to first entry if not found (shouldn't happen usually)
+  if (!found) {
+    console.warn('No exact date match found, using first entry as fallback');
+    console.log('First entry date:', new Date(prayers[0].fajr * 1000).toDateString());
+  }
+
   return found || prayers[0];
 }
 
