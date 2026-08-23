@@ -41,7 +41,7 @@ export default function SettingsPage() {
             {['light', 'dark', 'system'].map((m) => (
               <button
                 key={m}
-                onClick={() => setTheme(m as any)}
+                onClick={() => setTheme(m as 'light' | 'dark' | 'system')}
                 className={cn(
                   "flex-1 py-3 rounded-xl text-xs font-bold capitalize transition-all active:scale-95 flex items-center justify-center gap-2",
                   theme === m 

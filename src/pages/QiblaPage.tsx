@@ -66,7 +66,7 @@ export default function QiblaPage() {
     // Android & Non-WebKit browsers
     else if (event.alpha !== null) {
       // Check if the event is absolute (reliable compass data)
-      if ('absolute' in event && (event as any).absolute === true) {
+      if ('absolute' in event && (event as DeviceOrientationEvent & { absolute?: boolean }).absolute === true) {
         // alpha is typically counter-clockwise (0=North, 90=West)
         // Convert to clockwise heading (0=North, 90=East)
         compassHeading = 360 - event.alpha;

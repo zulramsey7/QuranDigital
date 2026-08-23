@@ -19,6 +19,14 @@ type SirahStory = {
   scenes?: { img: string; text: string }[];
 };
 
+type SlideData = {
+  img?: string;
+  text: string;
+  type?: 'content' | 'hikmah';
+  title?: string;
+  year?: string;
+};
+
 const sirahData: { nabawiyah: SirahStory[], paraNabi: SirahStory[] } = {
   nabawiyah: [
     { 
@@ -279,10 +287,10 @@ export default function SirahPage() {
           <div className="flex-1 flex flex-col items-center w-full max-w-md mx-auto z-10 gap-6 border-2 border-transparent">
             
             {/* Image Section - Takes available space */}
-            {(currentSlideData as any).img && (
+            {(currentSlideData as SlideData).img && (
               <div className="w-full h-[45vh] relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 bg-black/5 dark:bg-white/5 shrink-0">
-                <img 
-                  src={(currentSlideData as any).img} 
+                <img
+                  src={(currentSlideData as SlideData).img}
                   className="absolute inset-0 w-full h-full object-contain p-2"
                   alt="Scene"
                   onError={(e) => {
@@ -294,8 +302,8 @@ export default function SirahPage() {
             )}
 
             {/* Text Content - Fixed size based on content, but shrinks if needed */}
-            <div className={`text-center flex-none w-full ${(currentSlideData as any).img ? '' : 'flex-1 flex flex-col justify-center'}`}>
-              {(currentSlideData as any).type === 'hikmah' && (
+            <div className={`text-center flex-none w-full ${(currentSlideData as SlideData).img ? '' : 'flex-1 flex flex-col justify-center'}`}>
+              {(currentSlideData as SlideData).type === 'hikmah' && (
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-widest mb-4">
                   <Star className="w-3 h-3 fill-amber-500" />
                   Hikmah
@@ -303,14 +311,14 @@ export default function SirahPage() {
               )}
 
               <p className={`
-                ${(currentSlideData as any).type === 'hikmah' 
-                  ? "font-serif italic text-xl md:text-3xl leading-relaxed text-slate-800 dark:text-amber-100" 
+                ${(currentSlideData as SlideData).type === 'hikmah'
+                  ? "font-serif italic text-xl md:text-3xl leading-relaxed text-slate-800 dark:text-amber-100"
                   : "text-lg md:text-2xl leading-relaxed text-slate-700 dark:text-slate-300 font-medium"}
               `}>
-                "{(currentSlideData as any).text}"
+                "{(currentSlideData as SlideData).text}"
               </p>
 
-              {(currentSlideData as any).type !== 'hikmah' && !(currentSlideData as any).img && (
+              {(currentSlideData as SlideData).type !== 'hikmah' && !(currentSlideData as SlideData).img && (
                  <div className="flex justify-center pt-8">
                    <div className="w-16 h-1 bg-emerald-500/20 rounded-full" />
                  </div>
