@@ -145,11 +145,13 @@ export default function QuranPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [playingAyah, setPlayingAyah] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  
+
   const [lastRead, setLastRead] = useState<{ surah: number; ayah: number; name?: string } | null>(() => {
     const saved = localStorage.getItem('last-read');
     return saved ? JSON.parse(saved) : null;
   });
+
+
 
   useEffect(() => {
     const fetchSurahs = async () => {
@@ -183,6 +185,14 @@ export default function QuranPage() {
     setSelectedSurah(surahNumber);
     fetchSurahDetails(surahNumber);
     window.scrollTo(0, 0);
+
+    // Update last-read bila user buka surah baru
+    const surah = surahs.find(s => s.number === surahNumber);
+    if (surah) {
+      const lastReadData = { surah: surah.number, ayah: 1, name: surah.englishName }; // Default to ayat 1
+      localStorage.setItem('last-read', JSON.stringify(lastReadData));
+      setLastRead(lastReadData);
+    }
   };
 
   const handleSaveBookmark = (ayahNumber: number, ayahText: string) => {

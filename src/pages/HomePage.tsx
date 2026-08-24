@@ -40,7 +40,7 @@ export default function HomePage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [lastRead, setLastRead] = useState<{ id: number; name: string } | null>(null);
+  const [lastRead, setLastRead] = useState<{ surah: number; ayah: number; name?: string } | null>(null);
 
   // --- 2. LOGIC GAMBAR (JSON & AUTO-ROTATE) ---
   const cardRef = useRef<HTMLDivElement>(null);
@@ -95,12 +95,28 @@ export default function HomePage() {
       setDeferredPrompt(e);
     };
     window.addEventListener('beforeinstallprompt', handler as EventListener);
-    const saved = localStorage.getItem('lastReadSurah');
+
+    // Load last-read from consistent storage key
+    const saved = localStorage.getItem('last-read');
     if (saved) {
       try {
         setLastRead(JSON.parse(saved));
       } catch (e) {
-        console.error(e);
+        console.error('Error loading last-read:', e);
+        // Fallback to old key for migration
+        const oldSaved = localStorage.getItem('lastReadSurah');
+        if (oldSaved) {
+          try {
+            const oldData = JSON.parse(oldSaved);
+            // Migrate old format to new format
+            const migratedData = { surah: oldData.id, ayah: 1, name: oldData.name };
+            setLastRead(migratedData);
+            localStorage.setItem('last-read', JSON.stringify(migratedData));
+            localStorage.removeItem('lastReadSurah'); // Clean up old key
+          } catch (e2) {
+            console.error('Error migrating last-read:', e2);
+          }
+        }
       }
     }
     return () => window.removeEventListener('beforeinstallprompt', handler as EventListener);
@@ -222,24 +238,39 @@ export default function HomePage() {
         </div>
 
         {/* 4. CONTINUE READING */}
-        <Link to="/quran" className="floating-card p-4 flex items-center justify-between bg-white dark:bg-secondary/20 border-none shadow-sm group">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Bookmark className="w-5 h-5 fill-current" /></div>
-            <div>
-              <h3 className="font-bold text-sm">
-                {lastRead
-                  ? language === 'ms'
+        {lastRead ? (
+          <Link to="/quran" className="floating-card p-4 flex items-center justify-between bg-white dark:bg-secondary/20 border-none shadow-sm group">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Bookmark className="w-5 h-5 fill-current" /></div>
+              <div>
+                <h3 className="font-bold text-sm">
+                  {language === 'ms'
                     ? `Sambung ${lastRead.name}`
-                    : `Resume ${lastRead.name}`
-                  : t('continueReadingTitle')}
-              </h3>
-              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
-                {t('continueReadingSubtitle')}
-              </p>
+                    : `Resume ${lastRead.name}`}
+                </h3>
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+                  {language === 'ms'
+                    ? `Ayat ${lastRead.ayah}`
+                    : `Verse ${lastRead.ayah}`}
+                </p>
+              </div>
             </div>
-          </div>
-          <Play className="w-4 h-4 text-primary fill-current group-hover:scale-125 transition-transform" />
-        </Link>
+            <Play className="w-4 h-4 text-primary fill-current group-hover:scale-125 transition-transform" />
+          </Link>
+        ) : (
+          <Link to="/quran" className="floating-card p-4 flex items-center justify-between bg-white dark:bg-secondary/20 border-none shadow-sm group">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Bookmark className="w-5 h-5 fill-current" /></div>
+              <div>
+                <h3 className="font-bold text-sm">{t('continueReadingTitle')}</h3>
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+                  {t('continueReadingSubtitle')}
+                </p>
+              </div>
+            </div>
+            <Play className="w-4 h-4 text-primary fill-current group-hover:scale-125 transition-transform" />
+          </Link>
+        )}
 
         {/* 5. FEATURE GRID */}
         <div className="grid grid-cols-4 gap-4">
