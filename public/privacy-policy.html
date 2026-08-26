@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dasar Privasi | JomNgaji (QuranDigital)</title>
+  <style>
+    :root {
+      --primary: #076244;
+      --primary-light: #0d8a62;
+      --text: #1f2937;
+      --text-muted: #4b5563;
+      --bg: #f9fafb;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #f3f4f6;
+        --text-muted: #9ca3af;
+        --bg: #111827;
+        --card-bg: #1f2937;
+        --border: #374151;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 36px 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      color: var(--primary);
+      font-size: 1.85rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .meta {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      color: var(--primary);
+      margin-top: 28px;
+      margin-bottom: 14px;
+      border-left: 4px solid var(--primary);
+      padding-left: 10px;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    p,
+    ul {
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    ul {
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .badge-box {
+      background: rgba(7, 98, 68, 0.08);
+      border: 1px solid rgba(7, 98, 68, 0.2);
+      border-radius: 10px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .lang-divider {
+      margin: 40px 0;
+      border: 0;
+      border-top: 2px dashed var(--border);
+    }
+
+    footer {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🕌 JomNgaji - Dasar Privasi</h1>
+      <p class="meta"><strong>Tarikh Berkuat Kuasa / Effective Date:</strong> 26 Ogos 2025 | <strong>Pembangun /
+          Developer:</strong> JomNgaji Team</p>
+    </header>
+
+    <main>
+      <!-- BAHASA MELAYU -->
+      <section>
+        <h2>1. Pengenalan</h2>
+        <p>Aplikasi <strong>JomNgaji (QuranDigital)</strong> menghormati dan komited untuk melindungi privasi setiap
+          pengguna. Dokumen ini menerangkan polisi kami mengenai pengumpulan, penggunaan, dan pengendalian data peranti
+          anda.</p>
+
+        <div class="badge-box">
+          <strong>Ringkasan Privasi:</strong> Kami <u>tidak</u> mengumpul, menjual, atau berkongsi sebarang maklumat
+          peribadi pengguna. Semua tetapan ibadah diproses secara selamat di dalam peranti anda sendiri
+          (<em>client-side</em>).
+        </div>
+
+        <h2>2. Kebenaran Peranti & Penggunaan Data</h2>
+
+        <h3>📍 Lokasi (GPS & Rangkaian)</h3>
+        <p>Kebenaran <code>ACCESS_FINE_LOCATION</code> & <code>ACCESS_COARSE_LOCATION</code> digunakan secara eksklusif
+          untuk:</p>
+        <ul>
+          <li>Mengira waktu solat yang tepat mengikut koordinat semasa anda.</li>
+          <li>Menentukan darjah dan kompas arah Kiblat ke arah Kaabah.</li>
+        </ul>
+        <p><em>Data lokasi diproses secara setempat dan tidak pernah dihantar ke pelayan luaran.</em></p>
+
+        <h3>🔔 Notifikasi & Penggera Waktu Solat</h3>
+        <p>Kebenaran <code>POST_NOTIFICATIONS</code> dan <code>SCHEDULE_EXACT_ALARM</code> membolehkan aplikasi
+          menjadualkan peringatan azan pada waktu solat tepat secara automatik.</p>
+
+        <h3>💾 Storan Tempatan</h3>
+        <p>Pilihan peribadi seperti penanda halaman Al-Quran (<em>bookmarks</em>), rekod tasbih, tema gelap/cerah, dan
+          saiz teks disimpan dalam storan peranti anda sahaja.</p>
+
+        <h2>3. Privasi Kanak-Kanak</h2>
+        <p>Aplikasi ini selamat untuk semua peringkat umur dan tidak mengumpul sebarang data daripada kanak-kanak di
+          bawah umur 13 tahun.</p>
+
+        <h2>4. Hubungi Kami</h2>
+        <p>Sekiranya anda mempunyai sebarang soalan, sila hubungi kami di: <strong>zulfikarazizul7@gmail.com</strong>
+        </p>
+      </section>
+
+      <hr class="lang-divider" />
+
+      <!-- ENGLISH VERSION -->
+      <section>
+        <h2>English: Privacy Policy Summary</h2>
+        <p><strong>JomNgaji (QuranDigital)</strong> is designed as a privacy-friendly Islamic utility application. We do
+          not collect, store, or sell any personally identifiable information (PII).</p>
+
+        <h3>Device Permissions:</h3>
+        <ul>
+          <li><strong>Location Access:</strong> Used solely to calculate precise prayer times and determine Qibla
+            direction locally on your device.</li>
+          <li><strong>Notifications & Exact Alarms:</strong> Used locally to trigger Azan audio and prayer time alerts.
+          </li>
+          <li><strong>Local Storage:</strong> Saves your Quran bookmarks, theme preferences, and tasbih counts locally.
+          </li>
+        </ul>
+
+        <h3>Contact:</h3>
+        <p>For inquiries regarding this privacy policy, please contact <strong>zulfikarazizul7@gmail.com</strong>.</p>
+      </section>
+    </main>
+
+    <footer>
+      &copy; 2025 JomNgaji (QuranDigital). Hak Cipta Terpelihara.
+    </footer>
+  </div>
+</body>
+
+</html>
