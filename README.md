@@ -15,7 +15,7 @@
 
 | Ciri | Penerangan |
 | :--- | :--- |
-| **📖 Al-Quran Digital** | Teks lengkap 114 surah, terjemahan Bahasa Melayu, audio tilawah, carian ayat, penanda halaman (*bookmark*), dan penanda bacaan terakhir. |
+| **📖 Al-Quran Digital (Surah & 30 Juz)** | Teks lengkap Uthmani Tajwid 114 Surah & 30 Juz, lencana geometri Islam (*Rub el Hizb*), pelbagai pilihan qari ternama, terjemahan Bahasa Melayu, audio tilawah, carian pantas, penanda halaman (*bookmark*), dan penanda bacaan terakhir. |
 | **🕐 Waktu Solat Automatik** | Pengiraan waktu solat tepat berasaskan koordinat GPS semasa (diselaraskan zon rasmi Malaysia / JAKIM & global). |
 | **🔔 Notifikasi & Audio Azan** | Pemberitahuan azan tepat pada masanya menggunakan sistem notifikasi natif Android (*Local Notifications* & *Exact Alarm*). |
 | **🧭 Kompas Arah Kiblat** | Penentu arah Kaabah berketepatan tinggi menggunakan sensor kompas magnetik peranti dengan paparan darjah & animasi kompas moden. |
@@ -193,16 +193,28 @@ Sebarang cadangan penambahbaikan dan *pull request* amat dialu-alukan:
 4. *Push* ke *branch* tersebut (`git push origin feature/FiturBaharu`)
 5. Buka *Pull Request*
 
+## 🌐 Sumber Data & Integrasi API (API Sources)
+
+Aplikasi **JomNgaji** mengintegrasikan sumber API Islamik yang dipercayai, selamat, dan berwibawa:
+
+| Perkhidmatan | Penyedia API & Dokumentasi | Penerangan Data |
+| :--- | :--- | :--- |
+| **📖 Al-Quran & Tajwid** | [Quran Foundation (Quran.com API v4)](https://api.quran.com/) | Teks Uthmani Tajwid, 114 Surah, 30 Juz tersusun, pecahan perkataan (*word-by-word*), audio qari berkualiti tinggi, dan terjemahan Bahasa Melayu. |
+| **🎙️ Audio Tilawah (Qari)** | [EveryAyah](https://everyayah.com/) / Quran.com Audio CDN | Rakaman audio ayat-demi-ayat oleh qari terkemuka (Mishary Rashid Alafasy, Abdul Basit, Al-Husary, Saad Al-Ghamdi). |
+| **🕐 Waktu Solat (Malaysia)** | [WaktuSolat.app](https://waktusolat.app/) (Data Rasmi JAKIM) | Waktu solat berjadual mengikut zon-zon rasmi seluruh negeri di Malaysia. |
+| **🌍 Waktu Solat & Kiblat Global** | [Aladhan API](https://aladhan.com/) | Pengiraan astronomi waktu solat antarabangsa dan formula darjah arah Kiblat. |
+| **🔄 Edge Functions & Cache** | Supabase Edge Functions | Proksi API & sistem caching pintar untuk kelajuan muat turun pantas dan penjimatan kuota data. |
+
 ---
 
 ## 📄 Lesen & Penghargaan
 
 - **Lesen**: Projek ini dilesenkan di bawah lesen Open-Source.
-- **Sumber Data & Penghargaan**:
-  - Data Al-Quran: [eQuran.id](https://equran.id/) & [AlQuran Cloud](https://alquran.cloud/)
-  - Data Waktu Solat: [WaktuSolat.app](https://waktusolat.app/) / JAKIM Malaysia
+- **Penghargaan & Hak Cipta**:
+  - Teks & Audio Al-Quran: [Quran Foundation](https://quran.foundation/) & [Quran.com](https://quran.com/)
+  - Data Waktu Solat: [Jabatan Kemajuan Islam Malaysia (JAKIM)](https://www.e-solat.gov.my/) / [WaktuSolat.app](https://waktusolat.app/)
   - Ikon: [Lucide Icons](https://lucide.dev/)
-  - Komponen UI: [shadcn/ui](https://ui.shadcn.com/)
+  - Komponen UI: [shadcn/ui](https://ui.shadcn.com/) & [Tailwind CSS](https://tailwindcss.com/)
 
 ---
 
