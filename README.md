@@ -1,223 +1,260 @@
-# 🕌 QuranDigital - JomNgaji (Mobile & Web)
+# JomNgaji Promo Site
 
-[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Capacitor](https://img.shields.io/badge/Capacitor-8.5-119EFF?style=for-the-badge&logo=capacitor&logoColor=white)](https://capacitorjs.com/)
-[![Android](https://img.shields.io/badge/Android%20Studio-Ready-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/studio)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-
-**JomNgaji (QuranDigital)** adalah aplikasi Islamik moden serba lengkap yang dibina untuk peranti **Android (melalui Capacitor & Android Studio)** serta **Web / Progressive Web App (PWA)**. Aplikasi ini menyediakan pengalaman ibadah digital yang lancar, pantas, responsif dan boleh digunakan secara luar talian (offline).
+Laman web promosi rasmi untuk aplikasi **JomNgaji** — aplikasi Al-Quran digital untuk Android.  
+Website ini **hanya** untuk promosi, maklumat dan pautan muat turun Google Play. Ia bukan aplikasi Quran dan tidak mengandungi fungsi bacaan Quran, waktu solat atau kiblat secara langsung.
 
 ---
 
-## 📱 Ciri-Ciri Utama
+## Ciri-ciri Website
 
-| Ciri | Penerangan |
-| :--- | :--- |
-| **📖 Al-Quran Digital (Surah & 30 Juz)** | Teks lengkap Uthmani Tajwid 114 Surah & 30 Juz, lencana geometri Islam (*Rub el Hizb*), pelbagai pilihan qari ternama, terjemahan Bahasa Melayu, audio tilawah, carian pantas, penanda halaman (*bookmark*), dan penanda bacaan terakhir. |
-| **🕐 Waktu Solat Automatik** | Pengiraan waktu solat tepat berasaskan koordinat GPS semasa (diselaraskan zon rasmi Malaysia / JAKIM & global). |
-| **🔔 Notifikasi & Audio Azan** | Pemberitahuan azan tepat pada masanya menggunakan sistem notifikasi natif Android (*Local Notifications* & *Exact Alarm*). |
-| **🧭 Kompas Arah Kiblat** | Penentu arah Kaabah berketepatan tinggi menggunakan sensor kompas magnetik peranti dengan paparan darjah & animasi kompas moden. |
-| **📿 Tasbih Digital** | Kaunter zikir interaktif dengan maklum balas getaran haptik (*vibration*), simpanan kiraan automatik, dan pilihan bacaan zikir. |
-| **🤲 Doa & Zikir Harian** | Himpunan doa harian, zikir pagi & petang, doa selepas solat, serta terjemahan dan rujukan. |
-| **📚 Sirah Nabawiyah** | Kisah perjalanan hidup Rasulullah SAW, garis masa peristiwa penting, serta kisah 25 Rasul & Nabi AS dengan iktibar. |
-| **🌙 Yasin & Tahlil** | Bacaan Surah Yasin, Tahlil Lengkap, dan Tahlil Ringkas untuk amalan tahlil arwah atau majlis kenduri. |
-| **📅 Jadual Waktu Solat** | Paparan jadual solat bulanan mengikut zon kawasan yang boleh disemak dan dirujuk secara mudah. |
-| **⚙️ Kustomasi & Tema** | Sokongan Mod Gelap (*Dark Mode*), Mod Cerah, pelarasan saiz fon ayat Al-Quran, dan pilihan bahasa (BM / English). |
+| Halaman | URL | Kandungan |
+|---------|-----|-----------|
+| Laman Utama | `/` | Hero, screenshot aplikasi, FAQ, CTA muat turun |
+| Ciri-ciri | `/features` | Senarai lengkap ciri aplikasi |
+| Iklan | `/iklan` | Pakej pengiklanan & borang hubungi |
+| Tentang | `/tentang` | Maklumat JomNgaji & credits |
+| Dasar Privasi | `/privacy` | Ringkasan privasi + pautan policy penuh |
 
----
-
-## 🛠️ Stack Teknologi
-
-- **Frontend Core**: [React 18](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Vite](https://vitejs.dev/)
-- **Mobile Native Runtime**: [Capacitor 8](https://capacitorjs.com/) (Cross-platform native bridge)
-- **Native Android IDE**: [Android Studio](https://developer.android.com/studio) (Gradle build system, Java / Kotlin runtime)
-- **UI & Styling**: [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives), [Lucide React](https://lucide.dev/)
-- **State & Routing**: [React Router DOM v6](https://reactrouter.com/), Context API, [TanStack React Query](https://tanstack.com/query)
-- **Capacitor Plugins Digunakan**:
-  - `@capacitor/android` - Plugin teras Android
-  - `@capacitor/geolocation` - Pengesanan koordinat GPS untuk waktu solat & kiblat
-  - `@capacitor/local-notifications` - Penjadualan notifikasi & penggera azan tempatan
-  - `@capacitor/status-bar` - Kawalan warna & tema status bar Android
-  - `@capacitor/app` - Pengendali *back button* natif Android (*hardware back button*)
-  - `@capacitor/share` & `@capacitor/filesystem` - Perkongsian ayat Al-Quran dan pengurusan fail
-  - `@capacitor/browser` - Pembukaan pautan web luar dengan selamat
+**Lain-lain:**
+- Light / Dark mode
+- Responsif (mobile, tablet, desktop)
+- SEO & Open Graph (share di WhatsApp, Facebook, Twitter)
+- Phone mockup untuk screenshot aplikasi
+- Menu navigasi desktop + menu mudah alih (hamburger)
+- Footer lengkap dengan pautan, emel hubungi & maklumat muat turun
 
 ---
 
-## 📋 Prasyarat Pembangunan
+## Stack Teknologi
 
-Sebelum memulakan pembangunan atau membina fail APK, pastikan persekitaran komputer anda mempunyai:
-
-1. **[Node.js](https://nodejs.org/)** (Versi 18.x atau 20.x ke atas) & **npm**
-2. **[Android Studio](https://developer.android.com/studio)** (Versi terkini seperti Ladybug / Iguana / Koala)
-3. **Java Development Kit (JDK 17 atau 21)** (Disyorkan mengikut keperluan Gradle Android Studio)
-4. **Android SDK Platform & Build-Tools** (Dipasang melalui SDK Manager dalam Android Studio)
+- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [TanStack Start](https://tanstack.com/start) + [TanStack Router](https://tanstack.com/router) (file-based routing)
+- [Vite 8](https://vite.dev/)
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- [Radix UI](https://www.radix-ui.com/) + [shadcn/ui](https://ui.shadcn.com/) (komponen UI)
+- [Lucide React](https://lucide.dev/) (ikon)
+- [Nitro](https://nitro.build/) (server / deploy)
+- [Sharp](https://sharp.pixelplumbing.com/) (optimize gambar & generate OG image)
 
 ---
 
-## 🚀 Panduan Pemasangan & Pembangunan
+## Struktur Projek
 
-### 1. Klon Repositori & Pasang Dependensi
-
-```bash
-# Masuk ke direktori projek
-cd QuranDigital-main
-
-# Pasang pakej modul
-npm install
+```
+jomngaji-promo-site-main/
+├── public/
+│   ├── favicon.png
+│   └── og-image.jpg          # Gambar share sosial (1200×630)
+├── scripts/
+│   ├── optimize-images.mjs   # PNG → WebP
+│   └── generate-og.mjs         # Jana semula og-image.jpg
+├── src/
+│   ├── assets/               # Logo & screenshot aplikasi
+│   ├── components/
+│   │   ├── site.tsx          # Header, footer, butang Google Play
+│   │   ├── phone-mockup.tsx  # Bingkai telefon untuk screenshot
+│   │   ├── faq-section.tsx   # Soalan lazim
+│   │   └── ui/               # Komponen shadcn/ui
+│   ├── lib/
+│   │   └── site-meta.ts      # SEO & Open Graph helper
+│   ├── routes/               # Halaman (satu fail = satu route)
+│   │   ├── __root.tsx        # Layout root & shell HTML
+│   │   ├── index.tsx         # Laman utama
+│   │   ├── features.tsx
+│   │   ├── iklan.tsx
+│   │   ├── tentang.tsx
+│   │   └── privacy.tsx
+│   ├── styles.css            # Design system (warna hijau JomNgaji)
+│   └── router.tsx
+├── netlify.toml
+├── package.json
+└── vite.config.ts
 ```
 
-### 2. Jalankan Server Pembangunan Web
+---
 
-Untuk menguji dan membangunkan paparan UI secara pantas di pelayar web:
+## Mula Pembangunan
+
+### Prasyarat
+
+- [Node.js](https://nodejs.org/) 20 atau lebih baharu
+- npm
+
+### Pasang & jalankan
 
 ```bash
+git clone <url-repositori>
+cd jomngaji-promo-site-main
+npm install
 npm run dev
 ```
 
-Buka pelayar di `http://localhost:8080` (atau port yang dipaparkan di terminal).
+Buka `http://localhost:5173` (atau port yang dipaparkan dalam terminal).
+
+### Skrip npm
+
+| Perintah | Fungsi |
+|----------|--------|
+| `npm run dev` | Server pembangunan tempatan |
+| `npm run build` | Build production |
+| `npm run preview` | Preview build production |
+| `npm run lint` | Semak ESLint |
+| `npm run format` | Format kod dengan Prettier |
+| `npm run optimize-images` | Optimize screenshot & logo ke WebP |
+| `npm run generate-og` | Jana semula `public/og-image.jpg` |
 
 ---
 
-## 📱 Aliran Kerja Android & Capacitor
+## Konfigurasi
 
-### 1. Bina Web App (Production Build)
+### Pautan & emel (wajib sebelum publish)
 
-Setiap kali terdapat perubahan pada kod React/HTML/CSS, bina fail statik terlebih dahulu:
+Kemaskini nilai dalam `src/components/site.tsx`:
+
+```ts
+export const GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=...";
+export const PRIVACY_POLICY_URL = "https://...";
+export const CONTACT_EMAIL = "hello@jomngaji.com";
+export const ADS_CONTACT_EMAIL = "iklan@jomngaji.com";
+```
+
+### Domain untuk Open Graph
+
+Cipta fail `.env` di root projek:
+
+```env
+VITE_SITE_URL=https://jomngaji.com
+```
+
+Nilai ini digunakan untuk `og:url` dan `og:image` supaya preview share di media sosial menggunakan URL mutlak yang betul.
+
+### Media sosial (pilihan)
+
+Tambah pautan dalam `SOCIAL_LINKS` di `src/components/site.tsx`:
+
+```ts
+import { Instagram } from "lucide-react";
+
+export const SOCIAL_LINKS = [
+  { label: "Instagram", href: "https://instagram.com/jomngaji", icon: Instagram },
+];
+```
+
+---
+
+## Aset Gambar
+
+### Screenshot aplikasi
+
+Letakkan fail PNG dalam `src/assets/`:
+
+- `screen-quran.png`
+- `screen-prayer.png`
+- `screen-kiblat.png`
+
+Kemudian jalankan:
+
+```bash
+npm run optimize-images
+```
+
+Skrip ini akan:
+- Resize ke **640×1280** (nisbah telefon)
+- Export versi **WebP** untuk load pantas
+
+Website menggunakan fail `.webp`; fail `.png` kekal sebagai sumber.
+
+### Logo
+
+- Sumber: `src/assets/logo.png`
+- WebP auto-generated: `src/assets/logo.webp`
+
+### OG image (share sosial)
+
+```bash
+npm run generate-og
+```
+
+Hasil: `public/og-image.jpg` (1200×630). Jalankan semula selepas tukar logo atau screenshot waktu solat.
+
+---
+
+## Design System
+
+Identiti visual JomNgaji — **hijau Islamic, moden & minimal**.
+
+- Warna utama: hijau (`primary`) — butang, ikon, highlight
+- Font: Plus Jakarta Sans (UI), Amiri (teks Arab)
+- Sokong light & dark mode
+- Rounded corners, card shadow lembut, animasi fade-up ringan
+
+Semua token warna ditakrif dalam `src/styles.css`.
+
+---
+
+## SEO
+
+Setiap halaman menggunakan helper `pageMeta()` dari `src/lib/site-meta.ts` yang menyediakan:
+
+- `<title>` & meta description
+- Open Graph (`og:title`, `og:description`, `og:image`, …)
+- Twitter Card (`summary_large_image`)
+- Canonical URL
+
+**Title lalai:** `JomNgaji – Al-Quran Digital Untuk Semua`
+
+---
+
+## Deploy
+
+### Build production
 
 ```bash
 npm run build
 ```
 
-Fail binaan akan dihasilkan di dalam folder `dist/`.
+Output build dijana dalam folder `.output/`.
 
-### 2. Salin & Segerakkan ke Folder Android (Capacitor Sync)
+### Netlify
 
-Segerakkan fail binaan web dan konfigurasi plugin ke projek Android:
+Projek ini menyertakan `netlify.toml`. Pastikan tetapan publish directory sepadan dengan output build semasa (semak selepas `npm run build`). Untuk TanStack Start + Nitro, anda mungkin perlu kemaskini `publish` path atau gunakan adapter SSR yang sesuai.
 
-```bash
-npx cap sync android
-```
+### Cloudflare (alternatif)
 
-*(Atau gunakan `npx cap copy android` jika tiada plugin natif baharu dipasang).*
-
-### 3. Buka Projek di Android Studio
-
-Lancarkan Android Studio dengan memanggil arahan:
+Build menyokong deploy Nitro ke Cloudflare:
 
 ```bash
-npx cap open android
-```
-
-Android Studio akan membuka folder projek `android/`.
-
----
-
-## 🔨 Membina APK & App Bundle (AAB)
-
-Melalui **Android Studio**:
-
-1. Tunggu proses **Gradle Sync** selesai sepenuhnya.
-2. **Uji di Emulator / Peranti Sebenar**:
-   - Sambungkan telefon Android dengan mod *USB Debugging* dihidupkan, atau lancarkan Android Virtual Device (AVD).
-   - Klik butang hijau **Run 'app'** (ikon ▶️) di bahagian atas Android Studio.
-3. **Bina APK Debug / Release**:
-   - Pergi ke menu: **Build** ➜ **Build Bundle(s) / APK(s)** ➜ **Build APK(s)**.
-   - Fail `.apk` boleh didapati di: `android/app/build/outputs/apk/debug/app-debug.apk`.
-4. **Bina Signed AAB untuk Google Play Store**:
-   - Pergi ke menu: **Build** ➜ **Generate Signed Bundle / APK...**
-   - Pilih **Android App Bundle** atau **APK**, masukkan Keystore anda, dan pilih *Release*.
-
----
-
-## 🔒 Kebenaran Android (Permissions)
-
-Aplikasi ini menggunakan kebenaran berikut yang didefinisikan dalam `android/app/src/main/AndroidManifest.xml`:
-
-| Kebenaran | Tujuan Kegunaan |
-| :--- | :--- |
-| `ACCESS_FINE_LOCATION` & `ACCESS_COARSE_LOCATION` | Mendapatkan kedudukan geografi pengguna untuk mengira waktu solat mengikut zon setempat dan menentukan darjah kiblat ke Kaabah. Data lokasi hanya diproses di peranti (*client-side*). |
-| `POST_NOTIFICATIONS` | Memaparkan peringatan waktu solat dan pemberitahuan azan (Android 13+). |
-| `SCHEDULE_EXACT_ALARM` & `USE_EXACT_ALARM` | Memastikan peringatan azan berbunyi tepat pada minit dan saat waktu solat tiba. |
-| `RECEIVE_BOOT_COMPLETED` | Menjadualkan semula waktu solat dan notifikasi azan secara automatik selepas peranti dihidupkan semula (*restart*). |
-| `VIBRATE` | Memberi getaran haptik sewaktu menekan tasbih digital dan amaran waktu solat. |
-| `INTERNET` | Mengambil data waktu solat, muat turun surah Al-Quran, dan terjemahan. |
-
----
-
-## 📂 Struktur Projek
-
-```
-QuranDigital-main/
-├── android/                   # Projek Native Android (dibuka menggunakan Android Studio)
-│   ├── app/
-│   │   ├── src/main/AndroidManifest.xml   # Kebenaran & konfigurasi Android
-│   │   └── build.gradle                   # Konfigurasi dependensi Gradle
-│   └── ...
-├── src/                       # Kod Sumber Utama (React & TypeScript)
-│   ├── components/            # Komponen UI & Layout
-│   │   ├── AndroidBackHandler.tsx   # Pengendali butang Back peranti Android
-│   │   ├── NativeStatusBar.tsx      # Kawalan Status Bar Capacitor
-│   │   └── ui/                      # Komponen reka bentuk shadcn/ui
-│   ├── contexts/              # Pengurusan State (Location, Theme, Azan, Bookmark)
-│   ├── hooks/                 # Custom React hooks (useAzanNotifications, dll.)
-│   ├── lib/                   # Utiliti (pengiraan kiblat, perkongsian, waktu solat)
-│   ├── pages/                 # Halaman aplikasi (Quran, Solat, Kiblat, Tasbih, dll.)
-│   ├── App.tsx                # Komponen utama & Routing
-│   └── main.tsx               # Titik permulaan React
-├── public/                    # Aset statik (audio azan, ikon pwa, gambar sirah)
-├── capacitor.config.ts        # Konfigurasi Capacitor (App ID, App Name, Plugin)
-├── package.json               # Dependensi & skrip npm
-├── PRIVACY_POLICY.md          # Dokumen Dasar Privasi (Google Play Store compliance)
-├── tailwind.config.ts         # Konfigurasi Tailwind CSS
-└── vite.config.ts             # Konfigurasi bundler Vite
+npm run build
+npx nitro deploy --prebuilt
 ```
 
 ---
 
-## 📜 Dasar Privasi (Privacy Policy)
+## Apa Yang **Tidak** Ada Dalam Projek Ini
 
-Aplikasi **JomNgaji** amat mementingkan privasi pengguna. Kami tidak mengumpul, menjual, atau berkongsi sebarang maklumat peribadi pengguna. Sila baca dokumen penuh [PRIVACY_POLICY.md](file:///d:/download/QuranDigital-main/QuranDigital-main/PRIVACY_POLICY.md) untuk perincian pematuhan standard Google Play Console.
+Website ini **promosi sahaja**. Ia tidak termasuk:
 
----
+- Aplikasi Android / Capacitor
+- Fungsi bacaan Quran, juz, surah, kiblat atau waktu solat
+- API Quran / Waktu Solat
+- AdMob atau iklan dalam web
+- Source code aplikasi JomNgaji Android
 
-## 🤝 Sumbangan (Contributing)
-
-Sebarang cadangan penambahbaikan dan *pull request* amat dialu-alukan:
-
-1. *Fork* repositori ini
-2. Cipta *Branch* baharu (`git checkout -b feature/FiturBaharu`)
-3. *Commit* perubahan anda (`git commit -m 'Menambah fitur baharu'`)
-4. *Push* ke *branch* tersebut (`git push origin feature/FiturBaharu`)
-5. Buka *Pull Request*
-
-## 🌐 Sumber Data & Integrasi API (API Sources)
-
-Aplikasi **JomNgaji** mengintegrasikan sumber API Islamik yang dipercayai, selamat, dan berwibawa:
-
-| Perkhidmatan | Penyedia API & Dokumentasi | Penerangan Data |
-| :--- | :--- | :--- |
-| **📖 Al-Quran & Tajwid** | [Quran Foundation (Quran.com API v4)](https://api.quran.com/) | Teks Uthmani Tajwid, 114 Surah, 30 Juz tersusun, pecahan perkataan (*word-by-word*), audio qari berkualiti tinggi, dan terjemahan Bahasa Melayu. |
-| **🎙️ Audio Tilawah (Qari)** | [EveryAyah](https://everyayah.com/) / Quran.com Audio CDN | Rakaman audio ayat-demi-ayat oleh qari terkemuka (Mishary Rashid Alafasy, Abdul Basit, Al-Husary, Saad Al-Ghamdi). |
-| **🕐 Waktu Solat (Malaysia)** | [WaktuSolat.app](https://waktusolat.app/) (Data Rasmi JAKIM) | Waktu solat berjadual mengikut zon-zon rasmi seluruh negeri di Malaysia. |
-| **🌍 Waktu Solat & Kiblat Global** | [Aladhan API](https://aladhan.com/) | Pengiraan astronomi waktu solat antarabangsa dan formula darjah arah Kiblat. |
-| **🔄 Edge Functions & Cache** | Supabase Edge Functions | Proksi API & sistem caching pintar untuk kelajuan muat turun pantas dan penjimatan kuota data. |
+Matlamat tunggal: **Promosi → Maklumat → Muat Turun di Google Play**
 
 ---
 
-## 📄 Lesen & Penghargaan
+## Credits & Penghargaan
 
-- **Lesen**: Projek ini dilesenkan di bawah lesen Open-Source.
-- **Penghargaan & Hak Cipta**:
-  - Teks & Audio Al-Quran: [Quran Foundation](https://quran.foundation/) & [Quran.com](https://quran.com/)
-  - Data Waktu Solat: [Jabatan Kemajuan Islam Malaysia (JAKIM)](https://www.e-solat.gov.my/) / [WaktuSolat.app](https://waktusolat.app/)
-  - Ikon: [Lucide Icons](https://lucide.dev/)
-  - Komponen UI: [shadcn/ui](https://ui.shadcn.com/) & [Tailwind CSS](https://tailwindcss.com/)
+| Sumber | Peranan |
+|--------|---------|
+| [quran.foundation](https://quran.foundation) | Sumber teks Al-Quran |
+| [WaktuSolat.app](https://waktusolat.app) | Data waktu solat |
+| [shadcn/ui](https://ui.shadcn.com/) | Komponen UI |
+| [Lucide](https://lucide.dev/) | Ikon |
 
 ---
 
-<p align="center">
-  Dibuat dengan penuh dedikasi ❤️ untuk kemudahan ibadah umat Islam sejagat.
-</p>
+## Lesen
+
+Projek peribadi untuk JomNgaji. Hak cipta terpelihara.
